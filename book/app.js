@@ -19,6 +19,27 @@ const DEFAULT_REVIEWS = [
 
 let selectedTests = []; // {name, price}
 
+/* ---------- Tab navigation (एका वेळी एकच सेक्शन दिसतं) ---------- */
+const SECTION_IDS = ["home", "tests", "booking", "payment", "reviews", "contact"];
+function showSection(name) {
+  SECTION_IDS.forEach((id) => {
+    const el = document.getElementById(`section-${id}`);
+    if (el) el.hidden = id !== name;
+  });
+  document.querySelectorAll(".nav-btn").forEach((b) => {
+    b.classList.toggle("active", b.dataset.section === name);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+document.getElementById("mainNav").addEventListener("click", (e) => {
+  const btn = e.target.closest(".nav-btn");
+  if (btn) showSection(btn.dataset.section);
+});
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".jump-to");
+  if (btn) showSection(btn.dataset.section);
+});
+
 /* ---------- Register service worker ---------- */
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -102,7 +123,7 @@ function toggleTest(name, price) {
 function renderSelected() {
   const box = document.getElementById("selectedTestsList");
   if (selectedTests.length === 0) {
-    box.innerHTML = "कोणतीही टेस्ट निवडलेली नाही — वरील यादीतून निवडा किंवा खाली टाईप करा.";
+    box.innerHTML = `कोणतीही टेस्ट निवडलेली नाही — <button type="button" class="link-btn jump-to" data-section="tests">टेस्ट लिस्टमधून निवडा</button> किंवा खाली टाईप करा.`;
     return;
   }
   box.innerHTML = selectedTests
@@ -229,18 +250,21 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
 
   // WhatsApp confirmation message (customer taps Send once — lab receives it instantly)
   const waMsg =
-    `*नवीन बुकिंग - Kalyan Pathlab*%0A` +
-    `नाव: ${fullName}%0A` +
-    `मोबाईल: ${phone}%0A` +
-    `पत्ता: ${address}, ${city}%0A` +
-    `टेस्ट: ${testNames.join(", ") || "-"}%0A` +
-    `अंदाजे रक्कम: ₹${total}%0A` +
-    `दिवस/वेळ: ${date} ${time}%0A` +
-    `डॉक्टर रेफरन्स: ${doctor}%0A` +
-    `रिपोर्ट: ${reportMode}` +
-    (capturedLocation ? `%0Aलोकेशन: ${capturedLocation}` : "");
+    `✅ *नवीन बुकिंग - Kalyan Pathlab* ✅\n` +
+    `━━━━━━━━━━━━━━\n` +
+    `👤 *नाव:* ${fullName}\n` +
+    `📞 *मोबाईल:* ${phone}\n` +
+    `📍 *पत्ता:* ${address}, ${city}\n` +
+    `🧪 *टेस्ट/पॅकेज:* ${testNames.join(", ") || "-"}\n` +
+    `💰 *अंदाजे रक्कम:* ₹${total}\n` +
+    `📅 *कलेक्शन दिवस/वेळ:* ${date} ${time}\n` +
+    `👨‍⚕️ *डॉक्टर रेफरन्स:* ${doctor}\n` +
+    `📄 *रिपोर्ट हवा:* ${reportMode}` +
+    (capturedLocation ? `\n📍 *लोकेशन:* ${capturedLocation}` : "") +
+    `\n━━━━━━━━━━━━━━\n` +
+    `_संस्कार फाउंडेशन संचलित · Care For Quality_`;
 
-  const waLink = `https://wa.me/${CONFIG.labWhatsApp}?text=${waMsg}`;
+  const waLink = `https://wa.me/${CONFIG.labWhatsApp}?text=${encodeURIComponent(waMsg)}`;
 
   const box = document.getElementById("confirmBox");
   box.hidden = false;

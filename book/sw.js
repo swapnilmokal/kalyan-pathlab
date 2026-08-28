@@ -1,4 +1,4 @@
-const CACHE = "kalyan-pathlab-v1";
+const CACHE = "kalyan-pathlab-v2";
 const ASSETS = [
   "./",
   "./index.html",
