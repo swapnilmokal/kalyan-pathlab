@@ -18,14 +18,15 @@
 html{scroll-behavior:smooth;}
 body{
   margin:0;
-  font-family:'Noto Sans Devanagari','Segoe UI',system-ui,-apple-system,sans-serif;
+  font-family:'Noto Sans Devanagari','Poppins','Segoe UI',system-ui,-apple-system,sans-serif;
   background:var(--bg);
   color:var(--text);
-  line-height:1.5;
+  line-height:1.6;
   -webkit-font-smoothing:antialiased;
 }
-h1,h2,h3{font-weight:800; margin:0 0 8px;}
-h2{font-size:1.4rem; color:var(--navy);}
+h1,h2,h3{font-family:'Poppins','Noto Sans Devanagari',sans-serif; font-weight:800; margin:0 0 8px; letter-spacing:-0.01em;}
+h2{font-size:1.45rem; color:var(--navy); position:relative; padding-bottom:10px;}
+h2::after{content:""; position:absolute; left:0; bottom:0; width:46px; height:4px; background:linear-gradient(90deg,var(--red),var(--gold)); border-radius:4px;}
 a{color:var(--red); text-decoration:none;}
 section{padding:28px 18px; max-width:720px; margin:0 auto;}
 .section-sub{color:var(--muted); margin-top:-4px; margin-bottom:16px; font-size:0.95rem;}
@@ -45,7 +46,9 @@ section{padding:28px 18px; max-width:720px; margin:0 auto;}
 @media (prefers-reduced-motion: reduce){ .ecg-line svg{animation:none;} }
 
 /* ===== Hero ===== */
-.hero{text-align:center; padding-top:34px;}
+.hero{padding-top:30px;}
+.hero-grid{display:flex; flex-direction:column-reverse; gap:26px;}
+.hero-copy{text-align:center;}
 .discount-badge{display:inline-block; background:#fdeaea; color:var(--red-dark); font-weight:700; padding:6px 14px; border-radius:999px; font-size:0.85rem; margin-bottom:14px; border:1px solid #f7c6c6;}
 .hero h1{font-size:1.9rem; color:var(--navy); line-height:1.25;}
 .hero h1 span{color:var(--red);}
@@ -53,14 +56,44 @@ section{padding:28px 18px; max-width:720px; margin:0 auto;}
 .hero-actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:26px;}
 .hero-stats{display:flex; justify-content:center; gap:22px; flex-wrap:wrap;}
 .hero-stats div{display:flex; flex-direction:column; align-items:center;}
-.hero-stats strong{font-size:1.3rem; color:var(--navy);}
+.hero-stats strong{font-size:1.3rem; color:var(--navy); font-family:'Poppins',sans-serif;}
 .hero-stats span{font-size:0.75rem; color:var(--muted);}
+.hero-photo{position:relative; border-radius:20px; overflow:hidden; box-shadow:var(--shadow);}
+.hero-photo img{width:100%; height:220px; object-fit:cover; display:block;}
+.hero-photo-caption{position:absolute; left:0; right:0; bottom:0; background:linear-gradient(0deg,rgba(11,20,64,0.85),transparent); color:#fff; font-size:0.78rem; font-weight:600; padding:24px 14px 10px;}
+
+/* ===== About ===== */
+.about{display:flex; flex-direction:column; gap:20px;}
+.about-photo img{width:100%; border-radius:18px; box-shadow:var(--shadow); object-fit:cover; max-height:280px;}
+.about-copy p{color:var(--muted); font-size:0.94rem;}
+.about-stats{display:flex; gap:26px; margin-top:14px;}
+.about-stats strong{display:block; font-size:1.3rem; color:var(--navy); font-family:'Poppins',sans-serif;}
+.about-stats span{font-size:0.78rem; color:var(--muted);}
+
+/* ===== Gallery ===== */
+.gallery-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+.gallery-grid figure{margin:0; border-radius:14px; overflow:hidden; box-shadow:var(--shadow); position:relative;}
+.gallery-grid img{width:100%; height:120px; object-fit:cover; display:block;}
+.gallery-grid figcaption{position:absolute; left:0; right:0; bottom:0; background:rgba(11,20,64,0.75); color:#fff; font-size:0.65rem; font-weight:700; text-align:center; padding:4px 2px;}
+
+@media (min-width:640px){
+  .hero-grid{flex-direction:row; align-items:center;}
+  .hero-copy{flex:1; text-align:left;}
+  .hero-photo{flex:1;}
+  .hero-photo img{height:280px;}
+  .hero-actions{justify-content:flex-start;}
+  .hero-stats{justify-content:flex-start;}
+  .about{flex-direction:row; align-items:center;}
+  .about-photo{flex:1;}
+  .about-copy{flex:1.2;}
+  .gallery-grid img{height:160px;}
+}
 
 /* ===== Buttons ===== */
-.btn{display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:13px 20px; border-radius:999px; font-weight:700; font-size:0.95rem; border:none; cursor:pointer; transition:transform .12s ease;}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:13px 22px; border-radius:999px; font-weight:700; font-size:0.95rem; border:none; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease;}
 .btn:active{transform:scale(0.97);}
-.btn-primary{background:var(--red); color:#fff;}
-.btn-whatsapp{background:var(--whatsapp); color:#fff;}
+.btn-primary{background:linear-gradient(135deg,var(--red),var(--red-dark)); color:#fff; box-shadow:0 6px 16px rgba(229,3,10,0.28);}
+.btn-whatsapp{background:linear-gradient(135deg,#2fe07a,var(--whatsapp)); color:#fff; box-shadow:0 6px 16px rgba(37,211,102,0.28);}
 .btn-outline{background:transparent; color:var(--navy); border:2px solid var(--navy);}
 .btn-block{width:100%; margin-top:6px;}
 .btn-sm{padding:8px 14px; font-size:0.85rem;}
@@ -126,11 +159,9 @@ textarea{min-height:70px; resize:vertical;}
 .review-card p{margin:0 0 6px; font-size:0.92rem;}
 .review-card .review-meta{font-size:0.78rem; color:var(--muted); font-weight:700;}
 
-/* ===== Review Modal ===== */
-.modal-overlay{position:fixed; inset:0; background:rgba(11,20,64,0.55); z-index:100; display:flex; align-items:flex-end; justify-content:center;}
-.modal-window{background:var(--card); width:100%; max-width:520px; border-radius:18px 18px 0 0; padding:22px 20px 26px; max-height:90vh; overflow-y:auto; position:relative;}
-@media (min-width:600px){ .modal-overlay{align-items:center;} .modal-window{border-radius:18px;} }
-.modal-close{position:absolute; top:14px; right:14px; background:var(--bg); border:none; width:32px; height:32px; border-radius:50%; font-size:1rem; cursor:pointer;}
+/* ===== Review Panel (inline, popup नाही) ===== */
+.review-panel{background:var(--card); border:1.5px solid var(--line); border-radius:16px; padding:20px; margin-top:16px; box-shadow:var(--shadow); animation:panelOpen .25s ease;}
+@keyframes panelOpen{from{opacity:0; transform:translateY(-8px);} to{opacity:1; transform:translateY(0);}}
 #reviewForm{display:flex; flex-direction:column; gap:12px; margin-top:10px;}
 .star-picker{display:flex; gap:6px; font-size:1.8rem;}
 .star-picker button{background:none; border:none; cursor:pointer; color:#d8dae6; padding:0; line-height:1;}

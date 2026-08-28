@@ -313,16 +313,16 @@ function loadApprovedReviews() {
 }
 loadApprovedReviews();
 
-/* ---------- Review modal open/close ---------- */
-const reviewModal = document.getElementById("reviewModalOverlay");
-document.getElementById("openReviewModal").addEventListener("click", () => {
-  reviewModal.hidden = false;
+/* ---------- Review panel open/close (inline, popup नाही) ---------- */
+const reviewPanel = document.getElementById("reviewPanel");
+const openReviewBtn = document.getElementById("openReviewModal");
+openReviewBtn.addEventListener("click", () => {
+  const isHidden = reviewPanel.hidden;
+  reviewPanel.hidden = !isHidden;
   document.getElementById("reviewThanks").hidden = true;
   document.getElementById("reviewForm").hidden = false;
-});
-document.getElementById("closeReviewModal").addEventListener("click", () => (reviewModal.hidden = true));
-reviewModal.addEventListener("click", (e) => {
-  if (e.target === reviewModal) reviewModal.hidden = true;
+  openReviewBtn.textContent = isHidden ? "✕ रिव्ह्यू फॉर्म बंद करा" : "✍️ तुमचा रिव्ह्यू लिहा";
+  if (isHidden) reviewPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
 
 /* ---------- Star picker ---------- */
@@ -367,7 +367,10 @@ document.getElementById("reviewForm").addEventListener("submit", (e) => {
   currentRating = 0;
   starPicker.querySelectorAll("button").forEach((b) => b.classList.remove("on"));
 
-  setTimeout(() => (reviewModal.hidden = true), 2200);
+  setTimeout(() => {
+    reviewPanel.hidden = true;
+    openReviewBtn.textContent = "✍️ तुमचा रिव्ह्यू लिहा";
+  }, 2200);
 });
 
 /* ---------- Init ---------- */
