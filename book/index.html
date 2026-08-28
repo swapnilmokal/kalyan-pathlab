@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Kalyan Pathlab — ऑनलाइन ब्लड टेस्ट बुकिंग</title>
+<meta name="description" content="Kalyan Pathlab (संस्कार फाउंडेशन संचलित) - सर्व ब्लड टेस्टवर 30% ते 70% सवलत. कल्याण, डोंबिवली, अंबरनाथ, बदलापूर, उल्हासनगर, ठाणे, मुंबई, नवी मुंबई येथे मोफत होम सर्विस." />
+<meta name="theme-color" content="#0b1440" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="icon" href="./icons/icon-192.png" />
+<link rel="apple-touch-icon" href="./icons/icon-192.png" />
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+<!-- ===== TOP BAR ===== -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <img src="./icons/logo.png" alt="Kalyan Pathlab" class="topbar-logo" />
+    <div class="topbar-text">
+      <span class="topbar-name">Kalyan Pathlab</span>
+      <span class="topbar-tag">संस्कार फाउंडेशन संचलित · Care For Quality</span>
+    </div>
+    <a class="topbar-call" href="tel:+919870020674" aria-label="कॉल करा">☎</a>
+  </div>
+  <div class="ecg-line" aria-hidden="true">
+    <svg viewBox="0 0 600 40" preserveAspectRatio="none"><polyline points="0,20 60,20 80,5 100,35 120,20 180,20 200,8 215,32 230,20 300,20 320,5 340,35 360,20 420,20 440,8 455,32 470,20 600,20"/></svg>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="discount-badge">सर्व टेस्टवर <strong>30% ते 70%</strong> सवलत</div>
+  <h1>तुमची तपासणी,<br /><span>घरबसल्या व विश्वासाने.</span></h1>
+  <p class="hero-sub">रक्त तपासणी, फुल बॉडी चेकअप — अचूक रिपोर्ट्स, वाजवी दरात. सॅम्पल कलेक्शनसाठी घरी येण्याची सेवा पूर्ण मोफत.</p>
+  <div class="hero-actions">
+    <a href="#booking" class="btn btn-primary">🩸 आत्ताच बुकिंग करा</a>
+    <a href="https://wa.me/919870020674?text=Namaskar%2C%20mala%20blood%20test%20booking%20baddal%20mahiti%20hवी%20aahe" target="_blank" rel="noopener" class="btn btn-whatsapp">WhatsApp वर विचारा</a>
+  </div>
+  <div class="hero-stats">
+    <div><strong>50+</strong><span>टेस्ट व प्रोफाइल्स</span></div>
+    <div><strong>8</strong><span>शहरांत मोफत होम सर्विस</span></div>
+    <div><strong>2</strong><span>डायरेक्ट फोन लाईन्स</span></div>
+  </div>
+</section>
+
+<!-- ===== CITIES ===== -->
+<section class="cities">
+  <h2>मोफत होम सॅम्पल कलेक्शन — या शहरांत</h2>
+  <div class="chip-row" id="cityChips"></div>
+</section>
+
+<!-- ===== TEST LIST ===== -->
+<section class="tests" id="tests">
+  <h2>टेस्ट व प्राईज लिस्ट</h2>
+  <div class="search-box">
+    <input type="search" id="testSearch" placeholder="टेस्टचे नाव टाईप करा… उदा. Thyroid, Sugar, CBC" />
+  </div>
+  <div class="category-tabs" id="categoryTabs"></div>
+  <div id="testListWrap"></div>
+  <p class="no-result" id="noResult" hidden>तुम्ही शोधलेली टेस्ट यादीत नाही? काळजी नाही — कॉल करा, आमच्याकडे उपलब्ध असू शकते.</p>
+</section>
+
+<!-- ===== CART / SELECTED ===== -->
+<div class="cart-bar" id="cartBar" hidden>
+  <span id="cartSummary">0 टेस्ट निवडल्या</span>
+  <a href="#booking" class="btn btn-primary btn-sm">बुक करा →</a>
+</div>
+
+<!-- ===== BOOKING FORM ===== -->
+<section class="booking" id="booking">
+  <h2>बुकिंग फॉर्म</h2>
+  <p class="section-sub">खालील माहिती भरा — बुकिंग झाल्यावर तुम्हाला व आम्हाला दोघांनाही कन्फर्मेशन मिळेल.</p>
+
+  <form id="bookingForm">
+    <div class="selected-tests-box" id="selectedTestsBox">
+      <strong>निवडलेल्या टेस्ट:</strong>
+      <div id="selectedTestsList" class="selected-list">कोणतीही टेस्ट निवडलेली नाही — वरील यादीतून निवडा किंवा खाली टाईप करा.</div>
+    </div>
+
+    <label>टेस्ट/पॅकेजचे नाव (हवं असल्यास टाईप करा)
+      <input type="text" id="manualTest" placeholder="उदा. Full Body Checkup" />
+    </label>
+
+    <label>तुमचे पूर्ण नाव *
+      <input type="text" id="fullName" required placeholder="पूर्ण नाव" />
+    </label>
+
+    <label>मोबाईल नंबर *
+      <input type="tel" id="phone" required pattern="[0-9]{10}" placeholder="10 अंकी मोबाईल नंबर" />
+    </label>
+
+    <label>पर्यायी संपर्क नंबर
+      <input type="tel" id="altPhone" placeholder="घरचा/दुसरा नंबर (ऐच्छिक)" />
+    </label>
+
+    <label>पूर्ण पत्ता *
+      <textarea id="address" required placeholder="घर/फ्लॅट नं, इमारत, एरिया, शहर, पिनकोड"></textarea>
+    </label>
+
+    <label>शहर *
+      <select id="city" required></select>
+    </label>
+
+    <div class="location-row">
+      <button type="button" id="getLocationBtn" class="btn btn-outline btn-sm">📍 माझे सध्याचे लोकेशन जोडा (ऐच्छिक)</button>
+      <span id="locationStatus"></span>
+    </div>
+
+    <label>रेफरन्स डॉक्टर किंवा स्वतः
+      <input type="text" id="doctor" placeholder="डॉ. चे नाव लिहा, किंवा 'स्वतः' असे लिहा" />
+    </label>
+
+    <div class="two-col">
+      <label>सॅम्पल कलेक्शनचा दिवस *
+        <input type="date" id="collectionDate" required />
+      </label>
+      <label>वेळ *
+        <input type="time" id="collectionTime" required />
+      </label>
+    </div>
+
+    <label>रिपोर्ट कसा हवा? *</label>
+    <div class="radio-row">
+      <label class="radio-pill"><input type="radio" name="reportMode" value="Hard Copy" checked /> हार्ड कॉपी (घरी)</label>
+      <label class="radio-pill"><input type="radio" name="reportMode" value="WhatsApp" /> WhatsApp</label>
+      <label class="radio-pill"><input type="radio" name="reportMode" value="Email" /> ईमेल</label>
+    </div>
+
+    <label id="emailFieldWrap" hidden>ईमेल आयडी
+      <input type="email" id="email" placeholder="report@example.com" />
+    </label>
+
+    <label>डॉक्टरचे प्रिस्क्रिप्शन (असल्यास, ऐच्छिक)
+      <input type="file" id="prescription" accept="image/*,.pdf" />
+    </label>
+
+    <label class="checkbox-row">
+      <input type="checkbox" id="consent" required />
+      वरील सर्व माहिती बरोबर आहे व मी सॅम्पल कलेक्शनसाठी संपर्क करण्यास संमती देतो.
+    </label>
+
+    <button type="submit" class="btn btn-primary btn-block">✅ बुकिंग कन्फर्म करा</button>
+    <p class="form-note">बुकिंगनंतर WhatsApp विंडो उघडेल — तिथे फक्त "Send" दाबा, म्हणजे आमच्याकडे लगेच बुकिंग पोहोचेल.</p>
+  </form>
+
+  <div id="confirmBox" class="confirm-box" hidden></div>
+</section>
+
+<!-- ===== PAYMENT ===== -->
+<section class="payment">
+  <h2>ऑनलाइन पेमेंट (ऐच्छिक)</h2>
+  <p class="section-sub">सॅम्पल कलेक्शनच्या वेळी कॅश किंवा खालील QR कोड स्कॅन करून UPI ने पेमेंट करू शकता.</p>
+  <div class="qr-box">
+    <img src="./icons/qr.png" alt="UPI Payment QR - Kalyan Pathlab" />
+    <p>UPI ID: <strong>enterprises60658@nyes</strong></p>
+  </div>
+</section>
+
+<!-- ===== REVIEWS ===== -->
+<section class="reviews" id="reviews">
+  <h2>पेशंट्सचा अनुभव</h2>
+  <p class="section-sub">आमच्याकडे टेस्ट केलेल्या पेशंट्सचे मत — तुमचाही अनुभव शेअर करा.</p>
+
+  <div class="review-summary">
+    <span class="big-rating" id="avgRating">5.0</span>
+    <span class="stars" id="avgStars">★★★★★</span>
+    <span id="reviewCount">(4 रिव्ह्यू)</span>
+  </div>
+
+  <div class="review-list" id="reviewList"></div>
+
+  <button type="button" id="openReviewModal" class="btn btn-outline btn-block">✍️ तुमचा रिव्ह्यू लिहा</button>
+</section>
+
+<!-- ===== REVIEW MODAL (Editable Window) ===== -->
+<div class="modal-overlay" id="reviewModalOverlay" hidden>
+  <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
+    <button type="button" class="modal-close" id="closeReviewModal" aria-label="बंद करा">✕</button>
+    <h3 id="reviewModalTitle">तुमचा रिव्ह्यू लिहा</h3>
+    <form id="reviewForm">
+      <label>तुमचे नाव *
+        <input type="text" id="reviewName" required placeholder="तुमचे नाव" />
+      </label>
+
+      <label>मोबाईल नंबर (फक्त पडताळणीसाठी, पब्लिक दिसणार नाही)
+        <input type="tel" id="reviewPhone" pattern="[0-9]{10}" placeholder="10 अंकी मोबाईल नंबर" />
+      </label>
+
+      <label>तुम्ही कोणती टेस्ट/सर्व्हिस घेतली?
+        <input type="text" id="reviewTestTaken" placeholder="उदा. Full Body Checkup" />
+      </label>
+
+      <label>रेटिंग द्या *</label>
+      <div class="star-picker" id="starPicker">
+        <button type="button" data-val="1" aria-label="1 स्टार">★</button>
+        <button type="button" data-val="2" aria-label="2 स्टार">★</button>
+        <button type="button" data-val="3" aria-label="3 स्टार">★</button>
+        <button type="button" data-val="4" aria-label="4 स्टार">★</button>
+        <button type="button" data-val="5" aria-label="5 स्टार">★</button>
+      </div>
+      <input type="hidden" id="reviewRating" value="0" />
+
+      <label>तुमचा अभिप्राय *
+        <textarea id="reviewFeedback" required placeholder="तुमचा अनुभव इथे लिहा…"></textarea>
+      </label>
+
+      <button type="submit" class="btn btn-primary btn-block">रिव्ह्यू सबमिट करा</button>
+      <p class="form-note">रिव्ह्यू आमच्या टीमकडून तपासल्यानंतर पेजवर दिसेल.</p>
+    </form>
+    <div id="reviewThanks" class="confirm-box" hidden></div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <img src="./icons/logo.png" alt="Kalyan Pathlab" class="footer-logo" />
+  <p class="footer-tag">संस्कार फाउंडेशन संचलित · Care For Quality</p>
+
+  <div class="footer-grid">
+    <div>
+      <strong>पत्ता</strong>
+      <p>Shop No. 3, 1st Floor, Parvati Apartment,<br />Tisgaon Naka, Kalyan East – 421306</p>
+      <a href="https://www.google.com/maps/search/?api=1&query=Parvati%20Apartment%20Tisgaon%20Naka%20Kalyan%20East%20421306" target="_blank" rel="noopener">Google Maps वर पहा →</a>
+    </div>
+    <div>
+      <strong>संपर्क</strong>
+      <p><a href="tel:+919870020674">98700 20674</a> / <a href="tel:+918828111774">88281 11774</a></p>
+      <p><a href="mailto:kalyan.pathlab.21@gmail.com">kalyan.pathlab.21@gmail.com</a></p>
+      <a href="https://wa.me/919870020674" target="_blank" rel="noopener">WhatsApp वर मेसेज करा →</a>
+    </div>
+    <div>
+      <strong>वेळ</strong>
+      <p>सोम - शनि: 7:00 AM – 9:00 PM<br />रवि: 8:00 AM – 1:00 PM</p>
+    </div>
+  </div>
+
+  <a class="main-site-link" href="https://swapnilmokal.github.io/kalyan-pathlab/" target="_blank" rel="noopener">← आमच्या मुख्य वेबसाईटवर परत जा</a>
+  <p class="copyright">© Kalyan Pathlab, Kalyan East · संस्कार फाउंडेशन संचलित</p>
+</footer>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="./tests-data.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
