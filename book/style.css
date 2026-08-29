@@ -41,6 +41,8 @@ section{padding:30px 18px; max-width:720px; margin:0 auto;}
 .topbar-tag{font-size:0.8rem; color:#cfd4ee; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;}
 .topbar-call{background:var(--red); color:#fff; width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; box-shadow:0 3px 10px rgba(229,3,10,0.4); transition:transform .15s ease;}
 .topbar-call:active{transform:scale(0.9);}
+.topbar-share{background:transparent; color:#fff; width:46px; height:46px; border-radius:50%; border:2px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; cursor:pointer; transition:transform .15s ease, background .15s ease;}
+.topbar-share:active{transform:scale(0.9); background:rgba(255,255,255,0.15);}
 @keyframes logoPop{from{opacity:0; transform:scale(0.8);} to{opacity:1; transform:scale(1);}}
 
 .ecg-line{width:100%; height:14px; overflow:hidden; opacity:0.55;}

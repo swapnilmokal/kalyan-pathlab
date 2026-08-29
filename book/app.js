@@ -19,6 +19,29 @@ const DEFAULT_REVIEWS = [
 
 let selectedTests = []; // {name, price}
 
+/* ---------- Share button (मोबाईलचा native share sheet उघडतो) ---------- */
+const shareBtn = document.getElementById("shareBtn");
+if (shareBtn) {
+  shareBtn.addEventListener("click", async () => {
+    const shareData = {
+      title: "Kalyan Pathlab — ऑनलाइन ब्लड टेस्ट बुकिंग",
+      text: "Kalyan Pathlab वरून घरबसल्या ब्लड टेस्ट बुक करा — सर्व टेस्टवर 30% ते 70% सवलत!",
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        // यूजरने शेअर रद्द केलं तर काही करायची गरज नाही
+      }
+    } else {
+      // Share API नसलेल्या जुन्या ब्राउझरसाठी WhatsApp वर पर्याय
+      const waText = encodeURIComponent(`${shareData.text}\n${shareData.url}`);
+      window.open(`https://wa.me/?text=${waText}`, "_blank");
+    }
+  });
+}
+
 /* ---------- Tab navigation (एका वेळी एकच सेक्शन दिसतं) ---------- */
 const SECTION_IDS = ["home", "tests", "booking", "payment", "reviews", "contact"];
 function showSection(name) {
