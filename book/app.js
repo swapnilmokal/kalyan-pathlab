@@ -6,7 +6,7 @@ const CONFIG = {
   labWhatsApp: "919870020674",          // बुकिंग/रिपोर्ट साठी लॅबचा WhatsApp नंबर
   labEmail: "kalyan.pathlab.21@gmail.com",
   // खाली Google Apps Script Web App डिप्लॉय केल्यावर मिळणारी लिंक टाका (README.md पहा)
-  appsScriptUrl: "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE",
+  appsScriptUrl: "https://script.google.com/macros/s/AKfycbxDuHCtbcv4rxhU2Vp_uq4sDAzSlbIexDNwCyiy0Z17HVtiF3y0diMb4_JhQDiZd94P/exec",
   cities: ["कल्याण", "डोंबिवली", "अंबरनाथ", "बदलापूर", "उल्हासनगर", "ठाणे", "मुंबई", "नवी मुंबई"]
 };
 
@@ -219,7 +219,16 @@ function showToast(msg) {
   setTimeout(() => (t.hidden = true), 3500);
 }
 
-/* ---------- Send data to Google Apps Script backend (Sheet + auto email) ---------- */
+/* ---------- Send data to Google Apps Script backend (Sheet + Drive + auto email) ---------- */
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]); // data:...;base64, नंतरचा भाग
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 function sendToBackend(payload) {
   if (!CONFIG.appsScriptUrl || CONFIG.appsScriptUrl.startsWith("PASTE_")) return;
   fetch(CONFIG.appsScriptUrl, {
@@ -231,7 +240,7 @@ function sendToBackend(payload) {
 }
 
 /* ---------- Booking form submit ---------- */
-document.getElementById("bookingForm").addEventListener("submit", (e) => {
+document.getElementById("bookingForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const manualTest = document.getElementById("manualTest").value.trim();
@@ -245,6 +254,7 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
   const time = document.getElementById("collectionTime").value;
   const reportMode = document.querySelector('input[name="reportMode"]:checked').value;
   const email = document.getElementById("email").value.trim();
+  const prescriptionFile = document.getElementById("prescription").files[0];
 
   if (selectedTests.length === 0 && !manualTest) {
     showToast("कृपया किमान एक टेस्ट निवडा किंवा नाव टाईप करा.");
@@ -268,6 +278,22 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
     tests: testNames.join(", "),
     estimatedTotal: total
   };
+
+  // प्रिस्क्रिप्शन फोटो/PDF दिला असल्यास तो Google Drive मध्ये सेव्ह करण्यासाठी सोबत पाठवतो
+  if (prescriptionFile) {
+    const MAX_SIZE = 8 * 1024 * 1024; // 8MB
+    if (prescriptionFile.size > MAX_SIZE) {
+      showToast("प्रिस्क्रिप्शन फाईल खूप मोठी आहे (8MB पेक्षा जास्त) — फाईलशिवाय बुकिंग पाठवली जाईल.");
+    } else {
+      try {
+        payload.prescriptionBase64 = await fileToBase64(prescriptionFile);
+        payload.prescriptionName = prescriptionFile.name;
+        payload.prescriptionType = prescriptionFile.type;
+      } catch (err) {
+        // फाईल वाचता आली नाही तरी बुकिंग पुढे जाऊ द्या
+      }
+    }
+  }
 
   sendToBackend(payload);
 
