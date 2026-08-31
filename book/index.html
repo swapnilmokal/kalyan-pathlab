@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -19,16 +19,6 @@
 </head>
 <body>
 
-<!-- ===== भाषा निवड (नेहमी सगळ्यात वरती) ===== -->
-<div class="lang-bar">
-  <span class="lang-bar-icon">🌐</span>
-  <select id="langSelect" aria-label="Language / भाषा">
-    <option value="mr">मराठी</option>
-    <option value="hi">हिंदी</option>
-    <option value="en">English</option>
-  </select>
-</div>
-
 <!-- ===== TOP BAR ===== -->
 <header class="topbar">
   <div class="topbar-inner">
@@ -45,7 +35,7 @@
   </div>
 </header>
 
-<!-- ===== MAIN NAV TABS ===== -->
+<!-- ===== MAIN NAV TABS + भाषा निवड (एकाच रांगेत) ===== -->
 <nav class="main-nav" id="mainNav">
   <button type="button" class="nav-btn active" data-section="home" data-i18n="nav_home">🏠 मुख्यपृष्ठ</button>
   <button type="button" class="nav-btn" data-section="tests" data-i18n="nav_tests">🧪 टेस्ट लिस्ट</button>
@@ -53,6 +43,14 @@
   <button type="button" class="nav-btn" data-section="payment" data-i18n="nav_payment">💳 पेमेंट</button>
   <button type="button" class="nav-btn" data-section="reviews" data-i18n="nav_reviews">⭐ रिव्ह्यूज</button>
   <button type="button" class="nav-btn" data-section="contact" data-i18n="nav_contact">📞 संपर्क</button>
+  <span class="nav-lang">
+    <span class="nav-lang-icon">🌐</span>
+    <select id="langSelect" aria-label="Language / भाषा">
+      <option value="en">English</option>
+      <option value="mr">मराठी</option>
+      <option value="hi">हिंदी</option>
+    </select>
+  </span>
 </nav>
 
 <!-- ===== HOME ===== -->

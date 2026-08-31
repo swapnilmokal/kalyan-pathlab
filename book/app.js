@@ -53,7 +53,13 @@ function showSection(name) {
   document.querySelectorAll(".nav-btn").forEach((b) => {
     b.classList.toggle("active", b.dataset.section === name);
   });
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  // सेक्शन बदलल्यावर तो नक्की वरती (sticky topbar/nav च्या खाली) दिसावा म्हणून
+  // window.scrollTo ऐवजी त्याच सेक्शनला थेट scrollIntoView करतो — जुन्या स्क्रोल
+  // पोझिशनमुळे नवीन सेक्शन अर्धवट/लपलेला दिसण्याची शक्यता यामुळे राहत नाही.
+  requestAnimationFrame(() => {
+    const target = document.getElementById(`section-${name}`);
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
 }
 document.getElementById("mainNav").addEventListener("click", (e) => {
   const btn = e.target.closest(".nav-btn");

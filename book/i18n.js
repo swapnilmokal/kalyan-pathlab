@@ -212,7 +212,7 @@ const CATEGORY_TRANSLATIONS = {
   packages: { hi: "फुल बॉडी चेकअप पैकेज", en: "Full Body Checkup Packages" }
 };
 
-let currentLang = localStorage.getItem("kp_lang") || "mr";
+let currentLang = localStorage.getItem("kp_lang") || "en";
 
 function t(key) {
   const entry = TRANSLATIONS[key];

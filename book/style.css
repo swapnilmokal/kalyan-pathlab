@@ -50,10 +50,10 @@ section{padding:30px 18px; max-width:720px; margin:0 auto;}
 @keyframes ecgmove{from{transform:translateX(0);} to{transform:translateX(-50%);}}
 @media (prefers-reduced-motion: reduce){ .ecg-line svg{animation:none;} }
 
-/* ===== भाषा निवड पट्टी ===== */
-.lang-bar{display:flex; align-items:center; justify-content:flex-end; gap:6px; background:#f1f2f8; padding:6px 14px; font-size:0.85rem; border-bottom:1px solid var(--line);}
-.lang-bar-icon{font-size:0.95rem;}
-.lang-bar select{border:1.5px solid var(--line); border-radius:999px; padding:4px 10px; font-size:0.85rem; font-weight:700; color:var(--navy); background:#fff; font-family:inherit;}
+/* ===== भाषा निवड (आता nav-tabs रांगेतच) ===== */
+.nav-lang{display:inline-flex; align-items:center; gap:5px; flex-shrink:0; margin-left:2px;}
+.nav-lang-icon{font-size:0.95rem;}
+.nav-lang select{border:1.5px solid var(--line); border-radius:999px; padding:9px 12px; font-size:0.85rem; font-weight:700; color:var(--navy); background:var(--bg); font-family:inherit;}
 
 /* ===== Main tab navigation ===== */
 .main-nav{position:sticky; top:0; z-index:49; display:flex; gap:8px; overflow-x:auto; background:#fff; border-bottom:1px solid var(--line); padding:12px; scrollbar-width:none;}
@@ -61,7 +61,7 @@ section{padding:30px 18px; max-width:720px; margin:0 auto;}
 .nav-btn{flex-shrink:0; border:1.5px solid var(--line); background:var(--bg); color:var(--navy); font-weight:700; font-size:0.95rem; padding:10px 17px; border-radius:999px; cursor:pointer; white-space:nowrap; transition:all .18s ease;}
 .nav-btn.active{background:var(--navy); color:#fff; border-color:var(--navy); box-shadow:0 3px 10px rgba(11,20,64,0.25); transform:translateY(-1px);}
 .nav-btn:active{transform:scale(0.95);}
-.page-section{animation:panelOpen .28s ease;}
+.page-section{animation:panelOpen .28s ease; scroll-margin-top:150px;}
 .link-btn{background:none; border:none; color:var(--red); font-weight:700; text-decoration:underline; cursor:pointer; padding:0; font-size:inherit;}
 
 /* ===== Hero ===== */
