@@ -1,7 +1,7 @@
 // Kalyan Pathlab - Test & Profile price list
 // mrp = मूळ किंमत, price = 30-70% सवलतीनंतरची किंमत
 // लॅब मालक ही यादी सहज बदलू शकतात (खाली प्रत्येक ओळ एक टेस्ट आहे)
-const TEST_CATEGORIES = [
+let TEST_CATEGORIES = [
   {
     id: "basic",
     name: "बेसिक व रुटीन टेस्ट",

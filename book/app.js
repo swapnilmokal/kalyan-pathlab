@@ -20,27 +20,28 @@ const DEFAULT_REVIEWS = [
 let selectedTests = []; // {name, price}
 
 /* ---------- Share button (मोबाईलचा native share sheet उघडतो) ---------- */
-const shareBtn = document.getElementById("shareBtn");
-if (shareBtn) {
-  shareBtn.addEventListener("click", async () => {
-    const shareData = {
-      title: "Kalyan Pathlab — ऑनलाइन ब्लड टेस्ट बुकिंग",
-      text: "Kalyan Pathlab वरून घरबसल्या ब्लड टेस्ट बुक करा — सर्व टेस्टवर 30% ते 70% सवलत!",
-      url: window.location.href,
-    };
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        // यूजरने शेअर रद्द केलं तर काही करायची गरज नाही
-      }
-    } else {
-      // Share API नसलेल्या जुन्या ब्राउझरसाठी WhatsApp वर पर्याय
-      const waText = encodeURIComponent(`${shareData.text}\n${shareData.url}`);
-      window.open(`https://wa.me/?text=${waText}`, "_blank");
+async function shareApp() {
+  const shareData = {
+    title: "Kalyan Pathlab — ऑनलाइन ब्लड टेस्ट बुकिंग",
+    text: "Kalyan Pathlab वरून घरबसल्या ब्लड टेस्ट बुक करा — सर्व टेस्टवर 30% ते 70% सवलत!",
+    url: window.location.href,
+  };
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+    } catch (err) {
+      // यूजरने शेअर रद्द केलं तर काही करायची गरज नाही
     }
-  });
+  } else {
+    // Share API नसलेल्या जुन्या ब्राउझरसाठी WhatsApp वर पर्याय
+    const waText = encodeURIComponent(`${shareData.text}\n${shareData.url}`);
+    window.open(`https://wa.me/?text=${waText}`, "_blank");
+  }
 }
+["shareBtn", "shareBtn2"].forEach((id) => {
+  const btn = document.getElementById(id);
+  if (btn) btn.addEventListener("click", shareApp);
+});
 
 /* ---------- Tab navigation (एका वेळी एकच सेक्शन दिसतं) ---------- */
 const SECTION_IDS = ["home", "tests", "booking", "payment", "reviews", "contact"];
@@ -73,27 +74,31 @@ if ("serviceWorker" in navigator) {
 /* ---------- Cities ---------- */
 function renderCities() {
   const chips = document.getElementById("cityChips");
-  chips.innerHTML = CONFIG.cities.map((c) => `<span>${c}</span>`).join("");
+  chips.innerHTML = CONFIG.cities.map((c) => `<span>${translateCityName(c)}</span>`).join("");
   const select = document.getElementById("city");
+  const prevValue = select.value;
   select.innerHTML =
-    `<option value="">शहर निवडा</option>` +
-    CONFIG.cities.map((c) => `<option value="${c}">${c}</option>`).join("");
+    `<option value="">${t("city_placeholder_option")}</option>` +
+    CONFIG.cities.map((c) => `<option value="${c}">${translateCityName(c)}</option>`).join("");
+  if (prevValue) select.value = prevValue;
 }
 
 /* ---------- Test list ---------- */
 function renderCategoryTabs() {
   const wrap = document.getElementById("categoryTabs");
+  const prevActive = wrap.querySelector("button.active")?.dataset.cat || "all";
   wrap.innerHTML =
-    `<button data-cat="all" class="active">सर्व</button>` +
-    TEST_CATEGORIES.map((c) => `<button data-cat="${c.id}">${c.name}</button>`).join("");
-  wrap.addEventListener("click", (e) => {
-    const btn = e.target.closest("button");
-    if (!btn) return;
-    wrap.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    renderTestList(document.getElementById("testSearch").value, btn.dataset.cat);
-  });
+    `<button data-cat="all" class="${prevActive === "all" ? "active" : ""}">${t("cat_all")}</button>` +
+    TEST_CATEGORIES.map((c) => `<button data-cat="${c.id}" class="${prevActive === c.id ? "active" : ""}">${translateCategoryName(c)}</button>`).join("");
 }
+document.getElementById("categoryTabs").addEventListener("click", (e) => {
+  const wrap = e.currentTarget;
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  wrap.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderTestList(document.getElementById("testSearch").value, btn.dataset.cat);
+});
 
 function renderTestList(filterText = "", catFilter = "all") {
   const wrap = document.getElementById("testListWrap");
@@ -107,7 +112,7 @@ function renderTestList(filterText = "", catFilter = "all") {
     const matches = cat.tests.filter((t) => t.name.toLowerCase().includes(term));
     if (matches.length === 0) return;
     anyShown = true;
-    html += `<div class="test-category-title">${cat.name}</div>`;
+    html += `<div class="test-category-title">${translateCategoryName(cat)}</div>`;
     matches.forEach((t) => {
       const isAdded = selectedTests.some((s) => s.name === t.name);
       html += `
@@ -146,13 +151,13 @@ function toggleTest(name, price) {
 function renderSelected() {
   const box = document.getElementById("selectedTestsList");
   if (selectedTests.length === 0) {
-    box.innerHTML = `कोणतीही टेस्ट निवडलेली नाही — <button type="button" class="link-btn jump-to" data-section="tests">टेस्ट लिस्टमधून निवडा</button> किंवा खाली टाईप करा.`;
+    box.innerHTML = `${t("selected_tests_empty")}<button type="button" class="link-btn jump-to" data-section="tests">${t("selected_tests_choose_link")}</button>${t("selected_tests_or_type")}`;
     return;
   }
   box.innerHTML = selectedTests
     .map(
       (s, i) =>
-        `<span>${s.name} · ₹${s.price} <button type="button" data-i="${i}" aria-label="काढा">✕</button></span>`
+        `<span>${s.name} · ₹${s.price} <button type="button" data-i="${i}" aria-label="Remove">✕</button></span>`
     )
     .join("");
   box.querySelectorAll("button[data-i]").forEach((btn) => {
@@ -174,7 +179,8 @@ function updateCartBar() {
   }
   bar.hidden = false;
   const total = selectedTests.reduce((sum, s) => sum + s.price, 0);
-  summary.textContent = `${selectedTests.length} टेस्ट निवडल्या · अंदाजे ₹${total}`;
+  const countWord = currentLang === "en" ? `${selectedTests.length} tests selected` : currentLang === "hi" ? `${selectedTests.length} टेस्ट चयनित` : `${selectedTests.length} टेस्ट निवडल्या`;
+  summary.textContent = `${countWord} · ₹${total}`;
 }
 
 /* ---------- Search ---------- */
@@ -195,18 +201,18 @@ let capturedLocation = "";
 document.getElementById("getLocationBtn").addEventListener("click", () => {
   const status = document.getElementById("locationStatus");
   if (!navigator.geolocation) {
-    status.textContent = "या ब्राउझरमध्ये लोकेशन सपोर्ट नाही.";
+    status.textContent = t("loc_not_supported");
     return;
   }
-  status.textContent = "लोकेशन शोधत आहे…";
+  status.textContent = t("loc_searching");
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       const { latitude, longitude } = pos.coords;
       capturedLocation = `https://www.google.com/maps?q=${latitude},${longitude}`;
-      status.textContent = "✓ लोकेशन जोडले";
+      status.textContent = t("loc_added");
     },
     () => {
-      status.textContent = "लोकेशन मिळाले नाही — परवानगी द्या किंवा नंतर प्रयत्न करा.";
+      status.textContent = t("loc_failed");
     }
   );
 });
@@ -240,7 +246,7 @@ function sendToBackend(payload) {
 }
 
 /* ---------- Booking form submit ---------- */
-document.getElementById("bookingForm").addEventListener("submit", async (e) => {
+document.getElementById("bookingForm").addEventListener("submit", (e) => {
   e.preventDefault();
 
   const manualTest = document.getElementById("manualTest").value.trim();
@@ -257,11 +263,11 @@ document.getElementById("bookingForm").addEventListener("submit", async (e) => {
   const prescriptionFile = document.getElementById("prescription").files[0];
 
   if (selectedTests.length === 0 && !manualTest) {
-    showToast("कृपया किमान एक टेस्ट निवडा किंवा नाव टाईप करा.");
+    showToast(t("toast_select_test"));
     return;
   }
   if (!city) {
-    showToast("कृपया शहर निवडा.");
+    showToast(t("toast_select_city"));
     return;
   }
 
@@ -278,24 +284,6 @@ document.getElementById("bookingForm").addEventListener("submit", async (e) => {
     tests: testNames.join(", "),
     estimatedTotal: total
   };
-
-  // प्रिस्क्रिप्शन फोटो/PDF दिला असल्यास तो Google Drive मध्ये सेव्ह करण्यासाठी सोबत पाठवतो
-  if (prescriptionFile) {
-    const MAX_SIZE = 8 * 1024 * 1024; // 8MB
-    if (prescriptionFile.size > MAX_SIZE) {
-      showToast("प्रिस्क्रिप्शन फाईल खूप मोठी आहे (8MB पेक्षा जास्त) — फाईलशिवाय बुकिंग पाठवली जाईल.");
-    } else {
-      try {
-        payload.prescriptionBase64 = await fileToBase64(prescriptionFile);
-        payload.prescriptionName = prescriptionFile.name;
-        payload.prescriptionType = prescriptionFile.type;
-      } catch (err) {
-        // फाईल वाचता आली नाही तरी बुकिंग पुढे जाऊ द्या
-      }
-    }
-  }
-
-  sendToBackend(payload);
 
   // WhatsApp confirmation message (customer taps Send once — lab receives it instantly)
   const waMsg =
@@ -315,23 +303,47 @@ document.getElementById("bookingForm").addEventListener("submit", async (e) => {
 
   const waLink = `https://wa.me/${CONFIG.labWhatsApp}?text=${encodeURIComponent(waMsg)}`;
 
+  // ⚠️ इथे लगेच (कुठलाही await/विलंब न होता) WhatsApp उघडतो — ब्राउझरचा
+  // पॉप-अप ब्लॉकर फक्त "sync" क्लिकनंतर लगेच केलेलं window.open() ब्लॉक
+  // करत नाही; कुठलाही "await" या ओळीच्या आधी आला की हे ब्लॉक होतं,
+  // म्हणून टेस्ट/प्रिस्क्रिप्शनच्या प्रोसेसिंगच्या आधीच हे केलं आहे.
+  window.open(waLink, "_blank");
+
   const box = document.getElementById("confirmBox");
   box.hidden = false;
   box.innerHTML = `
-    <strong>✅ बुकिंगची माहिती तयार झाली!</strong>
-    <p>खालील बटणावर क्लिक करून WhatsApp मध्ये फक्त "Send" दाबा — म्हणजे तुमची बुकिंग लगेच आमच्यापर्यंत पोहोचेल.</p>
-    <a href="${waLink}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block">WhatsApp वर बुकिंग पाठवा</a>
-    <p style="margin-top:10px;">किंवा थेट कॉल करा: <a href="tel:+919870020674">98700 20674</a></p>
+    <strong>${t("confirm_box_title")}</strong>
+    <p>${t("confirm_box_text")}</p>
+    <a href="${waLink}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block">${t("confirm_box_wa_btn")}</a>
+    <p style="margin-top:10px;">${t("confirm_box_or_call")} <a href="tel:+919870020674">98700 20674</a></p>
   `;
   box.scrollIntoView({ behavior: "smooth", block: "center" });
-
-  window.open(waLink, "_blank");
 
   e.target.reset();
   selectedTests = [];
   renderSelected();
   updateCartBar();
-  showToast("बुकिंग माहिती तयार झाली ✓");
+  showToast(t("toast_booking_ready"));
+
+  // प्रिस्क्रिप्शन फाईल वाचणं व बॅकएंडला डेटा पाठवणं — हे पार्श्वभूमीत होतं,
+  // वरचं WhatsApp उघडणं व फॉर्म रिसेट यात याची वाट बघितली जात नाही.
+  (async () => {
+    if (prescriptionFile) {
+      const MAX_SIZE = 8 * 1024 * 1024; // 8MB
+      if (prescriptionFile.size > MAX_SIZE) {
+        showToast(t("toast_prescription_large"));
+      } else {
+        try {
+          payload.prescriptionBase64 = await fileToBase64(prescriptionFile);
+          payload.prescriptionName = prescriptionFile.name;
+          payload.prescriptionType = prescriptionFile.type;
+        } catch (err) {
+          // फाईल वाचता आली नाही तरी बुकिंग पुढे जाऊ द्या
+        }
+      }
+    }
+    sendToBackend(payload);
+  })();
 });
 
 /* =====================================================================
@@ -359,7 +371,7 @@ function renderReviews(list) {
   const avg = (list.reduce((s, r) => s + r.rating, 0) / list.length).toFixed(1);
   document.getElementById("avgRating").textContent = avg;
   document.getElementById("avgStars").textContent = starString(Math.round(avg));
-  document.getElementById("reviewCount").textContent = `(${list.length} रिव्ह्यू)`;
+  document.getElementById("reviewCount").textContent = `(${list.length} ${t("review_word")})`;
 }
 
 function escapeHtml(str) {
@@ -394,7 +406,7 @@ openReviewBtn.addEventListener("click", () => {
   reviewPanel.hidden = !isHidden;
   document.getElementById("reviewThanks").hidden = true;
   document.getElementById("reviewForm").hidden = false;
-  openReviewBtn.textContent = isHidden ? "✕ रिव्ह्यू फॉर्म बंद करा" : "✍️ तुमचा रिव्ह्यू लिहा";
+  openReviewBtn.textContent = isHidden ? t("btn_close_review") : t("btn_write_review");
   if (isHidden) reviewPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
 
@@ -419,7 +431,7 @@ document.getElementById("reviewForm").addEventListener("submit", (e) => {
   const feedback = document.getElementById("reviewFeedback").value.trim();
 
   if (currentRating === 0) {
-    showToast("कृपया स्टार रेटिंग द्या.");
+    showToast(t("toast_give_rating"));
     return;
   }
 
@@ -434,7 +446,7 @@ document.getElementById("reviewForm").addEventListener("submit", (e) => {
   document.getElementById("reviewForm").hidden = true;
   const thanks = document.getElementById("reviewThanks");
   thanks.hidden = false;
-  thanks.innerHTML = `<strong>धन्यवाद, ${escapeHtml(name)}! 🙏</strong><p>तुमचा रिव्ह्यू आमच्या टीमकडून तपासल्यानंतर पेजवर दिसेल.</p>`;
+  thanks.innerHTML = `<strong>${t("thank_you")}, ${escapeHtml(name)}! 🙏</strong><p>${t("review_thanks_note")}</p>`;
 
   e.target.reset();
   currentRating = 0;
@@ -442,12 +454,57 @@ document.getElementById("reviewForm").addEventListener("submit", (e) => {
 
   setTimeout(() => {
     reviewPanel.hidden = true;
-    openReviewBtn.textContent = "✍️ तुमचा रिव्ह्यू लिहा";
+    openReviewBtn.textContent = t("btn_write_review");
   }, 2200);
 });
+
+/* ---------- भाषा बदलली की JS-generated भाग पुन्हा रेंडर करणे ---------- */
+function onLanguageChanged() {
+  renderCities();
+  renderCategoryTabs();
+  renderTestList(
+    document.getElementById("testSearch") ? document.getElementById("testSearch").value : "",
+    document.querySelector(".category-tabs button.active")?.dataset.cat || "all"
+  );
+  renderSelected();
+  updateCartBar();
+  if (typeof allReviews !== "undefined") renderReviews(allReviews);
+  if (typeof reviewPanel !== "undefined" && typeof openReviewBtn !== "undefined") {
+    openReviewBtn.textContent = reviewPanel.hidden ? t("btn_write_review") : t("btn_close_review");
+  }
+}
+
+/* ---------- Sheet मधून टेस्ट/किंमती लाईव्ह आणणे (Excel मध्ये बदल केला की इथेही बदलतो) ---------- */
+function fetchLiveTests() {
+  if (!CONFIG.appsScriptUrl || CONFIG.appsScriptUrl.startsWith("PASTE_")) return;
+  fetch(`${CONFIG.appsScriptUrl}?action=tests`)
+    .then((res) => res.json())
+    .then((rows) => {
+      if (!Array.isArray(rows) || rows.length === 0) return; // Sheet सेटअप नसेल तर आधीची (built-in) यादीच वापरतो
+      const grouped = [];
+      const catIndex = {};
+      rows.forEach((r) => {
+        const catName = (r.category || "इतर टेस्ट").trim();
+        if (!(catName in catIndex)) {
+          catIndex[catName] = grouped.length;
+          grouped.push({ id: `cat${grouped.length}`, name: catName, tests: [] });
+        }
+        grouped[catIndex[catName]].tests.push({
+          name: r.name,
+          mrp: Number(r.mrp) || 0,
+          price: Number(r.price) || 0
+        });
+      });
+      TEST_CATEGORIES = grouped;
+      renderCategoryTabs();
+      renderTestList();
+    })
+    .catch(() => {}); // इंटरनेट/लिंक प्रॉब्लेम असल्यास built-in यादी तशीच राहते
+}
 
 /* ---------- Init ---------- */
 renderCities();
 renderCategoryTabs();
 renderTestList();
 renderSelected();
+fetchLiveTests();

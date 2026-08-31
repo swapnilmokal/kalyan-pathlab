@@ -50,6 +50,11 @@ section{padding:30px 18px; max-width:720px; margin:0 auto;}
 @keyframes ecgmove{from{transform:translateX(0);} to{transform:translateX(-50%);}}
 @media (prefers-reduced-motion: reduce){ .ecg-line svg{animation:none;} }
 
+/* ===== भाषा निवड पट्टी ===== */
+.lang-bar{display:flex; align-items:center; justify-content:flex-end; gap:6px; background:#f1f2f8; padding:6px 14px; font-size:0.85rem; border-bottom:1px solid var(--line);}
+.lang-bar-icon{font-size:0.95rem;}
+.lang-bar select{border:1.5px solid var(--line); border-radius:999px; padding:4px 10px; font-size:0.85rem; font-weight:700; color:var(--navy); background:#fff; font-family:inherit;}
+
 /* ===== Main tab navigation ===== */
 .main-nav{position:sticky; top:0; z-index:49; display:flex; gap:8px; overflow-x:auto; background:#fff; border-bottom:1px solid var(--line); padding:12px; scrollbar-width:none;}
 .main-nav::-webkit-scrollbar{display:none;}
