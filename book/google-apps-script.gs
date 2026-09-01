@@ -73,6 +73,12 @@ function doPost(e) {
     sendBookingEmails(ss, data, prescriptionUrl);
   } else if (data.type === "review") {
     saveReview(ss, data);
+  } else if (data.type === "adminAction") {
+    if (!checkAdminPassword(data.password)) {
+      return ContentService.createTextOutput(JSON.stringify({ error: "unauthorized" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    handleAdminAction(ss, data);
   }
 
   return ContentService.createTextOutput(JSON.stringify({ ok: true }))
@@ -108,8 +114,97 @@ function doGet(e) {
     return ContentService.createTextOutput(JSON.stringify(getTestsFromSheet(ss)))
       .setMimeType(ContentService.MimeType.JSON);
   }
+  if (e.parameter.action === "patientLookup") {
+    return ContentService.createTextOutput(JSON.stringify(lookupPatient(ss, e.parameter.phone)))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  if (e.parameter.action === "adminData") {
+    if (!checkAdminPassword(e.parameter.password)) {
+      return ContentService.createTextOutput(JSON.stringify({ error: "unauthorized" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    return ContentService.createTextOutput(JSON.stringify(getAllAdminData(ss)))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
   return ContentService.createTextOutput(JSON.stringify({ status: "ok" }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* =====================================================================
+   Admin पासवर्ड — कोडमध्ये कुठेही लिहायचा नाही (सुरक्षिततेसाठी).
+   ऐवजी Apps Script मध्ये: डावीकडे ⚙️ "Project Settings" > खाली
+   "Script Properties" > "Add script property" > Property: ADMIN_PASSWORD,
+   Value: तुम्हाला हवा तो पासवर्ड — असं एकदाच सेट करा.
+   ===================================================================== */
+function checkAdminPassword(pw) {
+  const stored = PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD");
+  return !!stored && String(pw) === stored;
+}
+
+// फोन नंबरवरून त्या पेशंटची सगळ्यात अलीकडची बुकिंग शोधते (नाव/पत्ता/शहर/डॉक्टर
+// आपोआप भरण्यासाठी — बुकिंग फॉर्मवर वापरलं जातं, हे कुठलाही पासवर्ड न मागता
+// उपलब्ध आहे कारण पेशंट स्वतःचाच नंबर टाकत आहे असं गृहीत धरलं आहे)
+function lookupPatient(ss, phone) {
+  if (!phone) return { found: false };
+  const sheet = ss.getSheetByName("Bookings");
+  if (!sheet || sheet.getLastRow() < 2) return { found: false };
+  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 15).getValues();
+  // सगळ्यात खालची (=सगळ्यात अलीकडची) जुळणारी रांग शोधतो
+  for (let i = rows.length - 1; i >= 0; i--) {
+    if (String(rows[i][2]).trim() === String(phone).trim()) {
+      return {
+        found: true,
+        fullName: rows[i][1],
+        address: rows[i][4],
+        city: rows[i][5],
+        doctor: rows[i][7],
+        lastTests: rows[i][12],
+        lastDate: rows[i][8],
+        visitCount: rows.filter((r) => String(r[2]).trim() === String(phone).trim()).length
+      };
+    }
+  }
+  return { found: false };
+}
+
+// Admin पॅनलसाठी सगळा डेटा (सगळ्या बुकिंग्ज + सगळे रिव्ह्यू) एकत्र परत पाठवते
+function getAllAdminData(ss) {
+  const bookingSheet = ss.getSheetByName("Bookings");
+  const reviewSheet = ss.getSheetByName("Reviews");
+
+  let bookings = [];
+  if (bookingSheet && bookingSheet.getLastRow() >= 2) {
+    const rows = bookingSheet.getRange(2, 1, bookingSheet.getLastRow() - 1, 15).getValues();
+    bookings = rows.map((r) => ({
+      timestamp: r[0], fullName: r[1], phone: r[2], altPhone: r[3], address: r[4], city: r[5],
+      location: r[6], doctor: r[7], date: r[8], time: r[9], reportMode: r[10], email: r[11],
+      tests: r[12], amount: r[13], prescription: r[14]
+    })).reverse(); // नवीन सगळ्यात वरती दिसाव्यात
+  }
+
+  let reviews = [];
+  if (reviewSheet && reviewSheet.getLastRow() >= 2) {
+    const rows = reviewSheet.getRange(2, 1, reviewSheet.getLastRow() - 1, 7).getValues();
+    reviews = rows.map((r, i) => ({
+      rowNum: i + 2, timestamp: r[0], name: r[1], phone: r[2], test: r[3],
+      rating: r[4], feedback: r[5], status: r[6]
+    })).reverse();
+  }
+
+  return { bookings, reviews, sheetUrl: ss.getUrl() };
+}
+
+// Admin पॅनलमधून रिव्ह्यू Approve/Reject किंवा डिलीट करण्यासाठी
+function handleAdminAction(ss, data) {
+  const reviewSheet = ss.getSheetByName("Reviews");
+  if (!reviewSheet) return;
+  if (data.action === "approveReview") {
+    reviewSheet.getRange(data.rowNum, 7).setValue("Approved");
+  } else if (data.action === "rejectReview") {
+    reviewSheet.getRange(data.rowNum, 7).setValue("Rejected");
+  } else if (data.action === "deleteReview") {
+    reviewSheet.deleteRow(data.rowNum);
+  }
 }
 
 // "Tests" Sheet मधून सगळ्या टेस्ट/किंमती वाचून परत पाठवते (Sheet नसेल तर रिकामी यादी —

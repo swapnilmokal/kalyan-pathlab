@@ -1,4 +1,4 @@
-const CACHE = "kalyan-pathlab-v4";
+const CACHE = "kalyan-pathlab-v5";
 const ASSETS = [
   "./",
   "./index.html",
@@ -29,6 +29,9 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
+  // बॅकएंडचा (Apps Script) लाईव्ह डेटा कधीही कॅश करायचा नाही — नेहमी थेट
+  // नेटवर्कवरून ताजा डेटा आणायचा (बुकिंग, रिव्ह्यू, किंमती, Admin डेटा वगैरे)
+  if (e.request.url.includes("script.google.com")) return;
   e.respondWith(
     caches.match(e.request).then((cached) => {
       const fetchPromise = fetch(e.request)

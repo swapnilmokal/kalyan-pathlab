@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kalyan Pathlab — Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="./icons/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./admin-style.css" />
+</head>
+<body>
+
+<!-- ===== LOGIN स्क्रीन ===== -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-card">
+    <img src="./icons/logo.png" alt="Kalyan Pathlab" class="login-logo" />
+    <h1>Admin Panel</h1>
+    <p class="login-sub">फक्त लॅब मालकासाठी — पासवर्ड टाका</p>
+    <input type="password" id="passwordInput" placeholder="पासवर्ड" autocomplete="current-password" />
+    <button type="button" id="loginBtn" class="btn btn-primary btn-block">Login</button>
+    <p id="loginError" class="login-error" hidden>चुकीचा पासवर्ड — पुन्हा प्रयत्न करा.</p>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD (लॉगिन झाल्यावर दिसतं) ===== -->
+<div id="dashboard" hidden>
+  <header class="admin-topbar">
+    <img src="./icons/logo.png" alt="Kalyan Pathlab" class="admin-logo" />
+    <div class="admin-title">
+      <strong>Kalyan Pathlab — Admin</strong>
+      <span id="lastUpdated"></span>
+    </div>
+    <button type="button" id="refreshBtn" class="icon-btn" aria-label="Refresh">🔄</button>
+    <button type="button" id="logoutBtn" class="icon-btn" aria-label="Logout">🚪</button>
+  </header>
+
+  <nav class="admin-tabs">
+    <button type="button" class="admin-tab active" data-tab="bookings">📅 Bookings</button>
+    <button type="button" class="admin-tab" data-tab="reviews">⭐ Reviews</button>
+    <button type="button" class="admin-tab" data-tab="patients">🔍 Find Patient</button>
+  </nav>
+
+  <div class="stat-row" id="statRow"></div>
+
+  <!-- Bookings tab -->
+  <section id="tab-bookings" class="admin-section">
+    <input type="search" id="bookingSearch" class="admin-search" placeholder="Search by name, phone, or test…" />
+    <div id="bookingList" class="admin-list"></div>
+  </section>
+
+  <!-- Reviews tab -->
+  <section id="tab-reviews" class="admin-section" hidden>
+    <div class="review-filter">
+      <button type="button" class="filter-chip active" data-status="all">All</button>
+      <button type="button" class="filter-chip" data-status="Pending">Pending</button>
+      <button type="button" class="filter-chip" data-status="Approved">Approved</button>
+      <button type="button" class="filter-chip" data-status="Rejected">Rejected</button>
+    </div>
+    <div id="reviewList" class="admin-list"></div>
+  </section>
+
+  <!-- Find patient tab -->
+  <section id="tab-patients" class="admin-section" hidden>
+    <input type="tel" id="patientPhoneSearch" class="admin-search" placeholder="Enter 10-digit phone number…" />
+    <button type="button" id="patientSearchBtn" class="btn btn-primary btn-block" style="margin-top:10px;">Search</button>
+    <div id="patientResult" style="margin-top:16px;"></div>
+  </section>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="./admin.js"></script>
+</body>
+</html>

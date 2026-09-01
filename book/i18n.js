@@ -179,7 +179,13 @@ const TRANSLATIONS = {
   confirm_box_wa_btn: { mr: "WhatsApp वर बुकिंग पाठवा", hi: "WhatsApp पर बुकिंग भेजें", en: "Send Booking via WhatsApp" },
   confirm_box_or_call: { mr: "किंवा थेट कॉल करा:", hi: "या सीधे कॉल करें:", en: "Or call us directly:" },
   thank_you: { mr: "धन्यवाद", hi: "धन्यवाद", en: "Thank you" },
-  review_word: { mr: "रिव्ह्यू", hi: "रिव्यू", en: "reviews" }
+  review_word: { mr: "रिव्ह्यू", hi: "रिव्यू", en: "reviews" },
+
+  welcome_back: { mr: "पुन्हा स्वागत आहे", hi: "फिर से स्वागत है", en: "Welcome back" },
+  visits_count_prefix: { mr: "आधीच्या भेटी:", hi: "पिछली विज़िट:", en: "Previous visits:" },
+  last_test_prefix: { mr: "शेवटची टेस्ट", hi: "पिछली टेस्ट", en: "Last test" },
+  autofill_btn: { mr: "माहिती भरा", hi: "जानकारी भरें", en: "Fill my details" },
+  autofill_done: { mr: "माहिती भरली ✓", hi: "जानकारी भर दी ✓", en: "Details filled ✓" }
 };
 
 // ठराविक शहरांची नावं भाषेनुसार दाखवण्यासाठी (पाठवला जाणारा खरा डेटा नेहमी मराठीतच राहतो,

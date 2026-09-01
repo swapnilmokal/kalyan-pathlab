@@ -251,6 +251,41 @@ function sendToBackend(payload) {
   }).catch(() => {});
 }
 
+/* ---------- जुना पेशंट ओळखणे (फोन नंबरवरून आधीची माहिती) ---------- */
+document.getElementById("phone").addEventListener("blur", () => {
+  const phone = document.getElementById("phone").value.trim();
+  const note = document.getElementById("returningPatientNote");
+  if (!/^[0-9]{10}$/.test(phone)) {
+    note.hidden = true;
+    return;
+  }
+  if (!CONFIG.appsScriptUrl || CONFIG.appsScriptUrl.startsWith("PASTE_")) return;
+
+  fetch(`${CONFIG.appsScriptUrl}?action=patientLookup&phone=${phone}`)
+    .then((res) => res.json())
+    .then((info) => {
+      if (!info.found) {
+        note.hidden = true;
+        return;
+      }
+      note.hidden = false;
+      note.innerHTML = `
+        👋 ${t("welcome_back")}, <strong>${escapeHtml(info.fullName)}</strong>!
+        ${t("visits_count_prefix")} ${info.visitCount}. ${t("last_test_prefix")}: ${escapeHtml(info.lastTests || "-")}.
+        <button type="button" id="autofillBtn" class="link-btn">${t("autofill_btn")}</button>
+      `;
+      document.getElementById("autofillBtn").addEventListener("click", () => {
+        document.getElementById("fullName").value = info.fullName || "";
+        document.getElementById("address").value = info.address || "";
+        if (info.city) document.getElementById("city").value = info.city;
+        if (info.doctor) document.getElementById("doctor").value = info.doctor;
+        note.hidden = true;
+        showToast(t("autofill_done"));
+      });
+    })
+    .catch(() => { note.hidden = true; });
+});
+
 /* ---------- Booking form submit ---------- */
 document.getElementById("bookingForm").addEventListener("submit", (e) => {
   e.preventDefault();

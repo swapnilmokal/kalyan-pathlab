@@ -166,6 +166,7 @@ textarea{min-height:74px; resize:vertical;}
 .selected-list span{background:var(--card); border:1px solid var(--line); padding:6px 11px; border-radius:999px; font-size:0.85rem; display:inline-flex; align-items:center; gap:6px; animation:fadeInUp .25s ease;}
 .selected-list button{border:none; background:none; color:var(--red); cursor:pointer; font-weight:800;}
 .form-note{font-size:0.84rem; color:var(--muted); text-align:center;}
+.returning-note{background:#eef3ff; border:1px solid #c9dbff; border-radius:12px; padding:11px 14px; font-size:0.88rem; color:var(--navy); animation:fadeInUp .25s ease;}
 .confirm-box{margin-top:16px; background:#eafaf0; border:1.5px solid #b7ebc9; border-radius:12px; padding:17px; font-size:0.96rem; animation:fadeInUp .3s ease;}
 .confirm-box a{font-weight:700;}
 
