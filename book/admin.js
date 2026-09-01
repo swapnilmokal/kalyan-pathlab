@@ -5,7 +5,7 @@
    सर्व्हरवरच (Apps Script मध्ये) होते.
    ===================================================================== */
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDuHCtbcv4rxhU2Vp_uq4sDAzSlbIexDNwCyiy0Z17HVtiF3y0diMb4_JhQDiZd94P/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5NiqYnOITBj6jSsaK6HEwPetk-dh078Ufl6Yod-eEA2u5AW7Yq_ks-VTwqAJNxxBU/exec";
 
 let ADMIN_PASSWORD_CACHE = ""; // फक्त याच सेशनसाठी मेमरीत ठेवतो (रिफ्रेश केल्यावर पुन्हा लॉगिन लागेल)
 let ALL_DATA = { bookings: [], reviews: [] };
@@ -38,6 +38,15 @@ function doLogin() {
       btn.textContent = "Login";
       btn.disabled = false;
       if (data.error) {
+        document.getElementById("loginError").textContent = "चुकीचा पासवर्ड — पुन्हा प्रयत्न करा.";
+        document.getElementById("loginError").hidden = false;
+        return;
+      }
+      if (!Array.isArray(data.bookings)) {
+        // हे तेव्हा घडतं जेव्हा Apps Script मध्ये अजून जुनाच (Admin सपोर्ट
+        // नसलेला) कोड डिप्लॉय आहे — नवीन कोड पेस्ट करून पुन्हा Deploy करा
+        document.getElementById("loginError").textContent =
+          "बॅकएंड अजून जुनं आहे असं दिसतंय — कृपया Apps Script मध्ये नवीन कोड पेस्ट करून पुन्हा Deploy (Manage deployments → New version) करा.";
         document.getElementById("loginError").hidden = false;
         return;
       }
