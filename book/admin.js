@@ -5,7 +5,7 @@
    सर्व्हरवरच (Apps Script मध्ये) होते.
    ===================================================================== */
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5NiqYnOITBj6jSsaK6HEwPetk-dh078Ufl6Yod-eEA2u5AW7Yq_ks-VTwqAJNxxBU/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGGKmd7X7DnnUn6jCrT6TGYjCFcK0kROWwRihFCLnDGb-2kWwbEAD9HKcqXuWdZeUA/exec";
 
 let ADMIN_PASSWORD_CACHE = ""; // फक्त याच सेशनसाठी मेमरीत ठेवतो (रिफ्रेश केल्यावर पुन्हा लॉगिन लागेल)
 let ALL_DATA = { bookings: [], reviews: [] };
