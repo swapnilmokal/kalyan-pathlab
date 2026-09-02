@@ -167,7 +167,7 @@ function lookupPatient(ss, phone) {
   return { found: false };
 }
 
-// Admin पॅनलसाठी सगळा डेटा (सगळ्या बुकिंग्ज + सगळे रिव्ह्यू) एकत्र परत पाठवते
+// Admin पॅनलसाठी सगळा डेटा (सगळ्या बुकिंग्ज + सगळे रिव्ह्यू + सगळ्या टेस्ट) एकत्र परत पाठवते
 function getAllAdminData(ss) {
   const bookingSheet = ss.getSheetByName("Bookings");
   const reviewSheet = ss.getSheetByName("Reviews");
@@ -191,19 +191,48 @@ function getAllAdminData(ss) {
     })).reverse();
   }
 
-  return { bookings, reviews, sheetUrl: ss.getUrl() };
+  const tests = getTestsFromSheetWithRowNum(ss);
+
+  return { bookings, reviews, tests, sheetUrl: ss.getUrl() };
 }
 
-// Admin पॅनलमधून रिव्ह्यू Approve/Reject किंवा डिलीट करण्यासाठी
+// "Tests" Sheet मधून रांग-क्रमांकासकट सगळ्या टेस्ट वाचते (Admin पॅनलमध्ये Edit/Delete साठी रांग-क्रमांक लागतो)
+function getTestsFromSheetWithRowNum(ss) {
+  const sheet = ss.getSheetByName("Tests");
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 4).getValues();
+  return rows
+    .map((r, i) => ({ rowNum: i + 2, category: r[0], name: r[1], mrp: r[2], price: r[3] }))
+    .filter((t) => String(t.name).trim() !== "");
+}
+
+// Admin पॅनलमधून रिव्ह्यू Approve/Reject/डिलीट, आणि टेस्ट Add/Update/Delete करण्यासाठी
 function handleAdminAction(ss, data) {
   const reviewSheet = ss.getSheetByName("Reviews");
-  if (!reviewSheet) return;
-  if (data.action === "approveReview") {
+  if (data.action === "approveReview" && reviewSheet) {
     reviewSheet.getRange(data.rowNum, 7).setValue("Approved");
-  } else if (data.action === "rejectReview") {
+  } else if (data.action === "rejectReview" && reviewSheet) {
     reviewSheet.getRange(data.rowNum, 7).setValue("Rejected");
-  } else if (data.action === "deleteReview") {
+  } else if (data.action === "deleteReview" && reviewSheet) {
     reviewSheet.deleteRow(data.rowNum);
+  } else if (data.action === "addTest") {
+    let sheet = ss.getSheetByName("Tests");
+    if (!sheet) {
+      sheet = ss.insertSheet("Tests");
+      const headers = ["Category (कॅटेगरी)", "Test Name (टेस्टचं नाव)", "MRP (₹)", "Price (₹)"];
+      sheet.appendRow(headers);
+      formatHeaderRow(sheet, headers.length);
+    }
+    sheet.appendRow([data.category, data.name, Number(data.mrp) || 0, Number(data.price) || 0]);
+    sheet.autoResizeColumns(1, 4);
+  } else if (data.action === "updateTest") {
+    const sheet = ss.getSheetByName("Tests");
+    if (sheet) {
+      sheet.getRange(data.rowNum, 1, 1, 4).setValues([[data.category, data.name, Number(data.mrp) || 0, Number(data.price) || 0]]);
+    }
+  } else if (data.action === "deleteTest") {
+    const sheet = ss.getSheetByName("Tests");
+    if (sheet) sheet.deleteRow(data.rowNum);
   }
 }
 
@@ -451,4 +480,13 @@ function getApprovedReviews(ss) {
   return rows
     .filter((r) => String(r[6]).toLowerCase() === "approved")
     .map((r) => ({ name: r[1], test: r[3], rating: Number(r[4]), feedback: r[5] }));
+}
+
+// परवानगी (authorization) पूर्ण झाली आहे का हे तपासण्यासाठी — Run ड्रॉपडाऊनमधून
+// निवडून एकदा चालवायचं फंक्शन. यशस्वी झाल्यास ईमेल येईल.
+function testAuth() {
+  getSheet_().getSheets();
+  DriveApp.getRootFolder();
+  PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD");
+  MailApp.sendEmail(LAB_OWNER_EMAIL, "Test successful - Kalyan Pathlab", "Backend is working correctly!");
 }

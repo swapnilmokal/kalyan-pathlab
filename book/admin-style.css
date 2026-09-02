@@ -1,5 +1,6 @@
 :root{--navy:#0b1440; --red:#e5030a; --red-dark:#b30208; --gold:#f5b400; --bg:#f7f8fc; --card:#fff; --line:#e6e8f2; --text:#1c2038; --muted:#6a6f8c; --whatsapp:#25d366;}
 *{box-sizing:border-box;}
+[hidden]{display:none !important;}
 body{margin:0; font-family:'Noto Sans Devanagari','Poppins','Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text);}
 
 /* ===== Login ===== */
@@ -62,6 +63,11 @@ body{margin:0; font-family:'Noto Sans Devanagari','Poppins','Segoe UI',system-ui
 .mini-btn.approve{background:#d4f5e0; color:#137a3f;}
 .mini-btn.reject{background:#ffe6cc; color:#a15a00;}
 .mini-btn.delete{background:#fde0e0; color:#a12424;}
+
+/* ===== Add/Edit test form ===== */
+.add-test-form{background:#fff; border:1.5px solid var(--line); border-radius:14px; padding:14px; margin-top:12px; display:flex; flex-direction:column; gap:10px;}
+.add-test-form input{padding:12px 13px; border-radius:10px; border:1.5px solid var(--line); font-size:0.95rem; width:100%;}
+.two-col-inline{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
 
 /* ===== Toast ===== */
 .toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--navy); color:#fff; padding:12px 22px; border-radius:999px; font-size:0.9rem; z-index:200; box-shadow:0 6px 20px rgba(0,0,0,0.3);}
