@@ -12,86 +12,60 @@
 </head>
 <body>
 
-<!-- ===== LOGIN स्क्रीन ===== -->
-<div id="loginScreen" class="login-wrap">
-  <div class="login-card">
-    <img src="./icons/logo.png" alt="Kalyan Pathlab" class="login-logo" />
-    <h1>Admin Panel</h1>
-    <p class="login-sub">फक्त लॅब मालकासाठी — पासवर्ड टाका</p>
-    <input type="password" id="passwordInput" placeholder="पासवर्ड" autocomplete="current-password" />
-    <button type="button" id="loginBtn" class="btn btn-primary btn-block">Login</button>
-    <p id="loginError" class="login-error" hidden>चुकीचा पासवर्ड — पुन्हा प्रयत्न करा.</p>
+<header class="admin-topbar">
+  <img src="./icons/logo.png" alt="Kalyan Pathlab" class="admin-logo" />
+  <div class="admin-title"><strong>Kalyan Pathlab — Admin</strong><span id="lastUpdated">Loading…</span></div>
+  <button type="button" id="refreshBtn" class="icon-btn" aria-label="Refresh">🔄</button>
+</header>
+
+<nav class="admin-tabs">
+  <button type="button" class="admin-tab active" data-tab="bookings">📅 Bookings</button>
+  <button type="button" class="admin-tab" data-tab="reviews">⭐ Reviews</button>
+  <button type="button" class="admin-tab" data-tab="tests">🧪 Tests</button>
+  <button type="button" class="admin-tab" data-tab="patients">🔍 Find Patient</button>
+</nav>
+
+<div class="stat-row" id="statRow"></div>
+
+<section id="tab-bookings" class="admin-section">
+  <input type="search" id="bookingSearch" class="admin-search" placeholder="Search by name, phone, or test…" />
+  <div id="bookingList" class="admin-list"></div>
+</section>
+
+<section id="tab-reviews" class="admin-section" hidden>
+  <div class="review-filter">
+    <button type="button" class="filter-chip active" data-status="all">All</button>
+    <button type="button" class="filter-chip" data-status="Pending">Pending</button>
+    <button type="button" class="filter-chip" data-status="Approved">Approved</button>
+    <button type="button" class="filter-chip" data-status="Rejected">Rejected</button>
   </div>
-</div>
+  <div id="reviewList" class="admin-list"></div>
+</section>
 
-<!-- ===== DASHBOARD (लॉगिन झाल्यावर दिसतं) ===== -->
-<div id="dashboard" hidden>
-  <header class="admin-topbar">
-    <img src="./icons/logo.png" alt="Kalyan Pathlab" class="admin-logo" />
-    <div class="admin-title">
-      <strong>Kalyan Pathlab — Admin</strong>
-      <span id="lastUpdated"></span>
+<section id="tab-tests" class="admin-section" hidden>
+  <button type="button" id="showAddTestBtn" class="btn btn-primary btn-block">+ Add New Test</button>
+  <div id="addTestForm" class="add-test-form" hidden>
+    <input type="text" id="testCategory" placeholder="Category (e.g. Diabetes Profile)" list="categoryList" />
+    <datalist id="categoryList"></datalist>
+    <input type="text" id="testName" placeholder="Test Name (e.g. HbA1c)" />
+    <div class="two-col-inline">
+      <input type="number" id="testMrp" placeholder="MRP ₹" />
+      <input type="number" id="testPrice" placeholder="Discount Price ₹" />
     </div>
-    <button type="button" id="refreshBtn" class="icon-btn" aria-label="Refresh">🔄</button>
-    <button type="button" id="logoutBtn" class="icon-btn" aria-label="Logout">🚪</button>
-  </header>
+    <button type="button" id="saveTestBtn" class="btn btn-primary btn-block">Save Test</button>
+    <button type="button" id="cancelTestBtn" class="link-btn" style="display:block;text-align:center;margin-top:8px">Cancel</button>
+  </div>
+  <input type="search" id="testSearchAdmin" class="admin-search" placeholder="Search tests…" style="margin-top:14px" />
+  <div id="testListAdmin" class="admin-list"></div>
+</section>
 
-  <nav class="admin-tabs">
-    <button type="button" class="admin-tab active" data-tab="bookings">📅 Bookings</button>
-    <button type="button" class="admin-tab" data-tab="reviews">⭐ Reviews</button>
-    <button type="button" class="admin-tab" data-tab="tests">🧪 Tests</button>
-    <button type="button" class="admin-tab" data-tab="patients">🔍 Find Patient</button>
-  </nav>
-
-  <div class="stat-row" id="statRow"></div>
-
-  <!-- Bookings tab -->
-  <section id="tab-bookings" class="admin-section">
-    <input type="search" id="bookingSearch" class="admin-search" placeholder="Search by name, phone, or test…" />
-    <div id="bookingList" class="admin-list"></div>
-  </section>
-
-  <!-- Reviews tab -->
-  <section id="tab-reviews" class="admin-section" hidden>
-    <div class="review-filter">
-      <button type="button" class="filter-chip active" data-status="all">All</button>
-      <button type="button" class="filter-chip" data-status="Pending">Pending</button>
-      <button type="button" class="filter-chip" data-status="Approved">Approved</button>
-      <button type="button" class="filter-chip" data-status="Rejected">Rejected</button>
-    </div>
-    <div id="reviewList" class="admin-list"></div>
-  </section>
-
-  <!-- Tests tab -->
-  <section id="tab-tests" class="admin-section" hidden>
-    <button type="button" id="showAddTestBtn" class="btn btn-primary btn-block">+ Add New Test</button>
-
-    <div id="addTestForm" class="add-test-form" hidden>
-      <input type="text" id="testCategory" placeholder="Category (e.g. Diabetes Profile)" list="categoryList" />
-      <datalist id="categoryList"></datalist>
-      <input type="text" id="testName" placeholder="Test Name (e.g. HbA1c)" />
-      <div class="two-col-inline">
-        <input type="number" id="testMrp" placeholder="MRP ₹" />
-        <input type="number" id="testPrice" placeholder="Discount Price ₹" />
-      </div>
-      <button type="button" id="saveTestBtn" class="btn btn-primary btn-block">Save Test</button>
-      <button type="button" id="cancelTestBtn" class="link-btn" style="display:block; text-align:center; margin-top:8px;">Cancel</button>
-    </div>
-
-    <input type="search" id="testSearchAdmin" class="admin-search" placeholder="Search tests…" style="margin-top:14px;" />
-    <div id="testListAdmin" class="admin-list"></div>
-  </section>
-
-  <!-- Find patient tab -->
-  <section id="tab-patients" class="admin-section" hidden>
-    <input type="tel" id="patientPhoneSearch" class="admin-search" placeholder="Enter 10-digit phone number…" />
-    <button type="button" id="patientSearchBtn" class="btn btn-primary btn-block" style="margin-top:10px;">Search</button>
-    <div id="patientResult" style="margin-top:16px;"></div>
-  </section>
-</div>
+<section id="tab-patients" class="admin-section" hidden>
+  <input type="tel" id="patientPhoneSearch" class="admin-search" placeholder="Enter 10-digit phone number…" />
+  <button type="button" id="patientSearchBtn" class="btn btn-primary btn-block" style="margin-top:10px">Search</button>
+  <div id="patientResult" style="margin-top:16px"></div>
+</section>
 
 <div id="toast" class="toast" hidden></div>
-
 <script src="./admin.js"></script>
 </body>
 </html>
