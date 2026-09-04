@@ -1,6 +1,6 @@
 /* Kalyan Pathlab - Admin Panel (no login — keep this page's link private) */
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby9nlYZGUiPXz6-P7zrxsuJGJgLqLFIKcaVds8zYUQk3REKGVVPbi5z9vzkjnq7XullDQ/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4gojco-gBKb6L9OzJs3_O1v9XI3qSI011FykeysgtheaGuLRYo888fkjdBvUCzeIPOg/exec";
 const CUSTOMER_APP_URL = "https://swapnilmokal.github.io/kalyan-pathlab/book/";
 
 const TRANSLATIONS = {
