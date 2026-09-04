@@ -185,7 +185,9 @@ const TRANSLATIONS = {
   visits_count_prefix: { mr: "आधीच्या भेटी:", hi: "पिछली विज़िट:", en: "Previous visits:" },
   last_test_prefix: { mr: "शेवटची टेस्ट", hi: "पिछली टेस्ट", en: "Last test" },
   autofill_btn: { mr: "माहिती भरा", hi: "जानकारी भरें", en: "Fill my details" },
-  autofill_done: { mr: "माहिती भरली ✓", hi: "जानकारी भर दी ✓", en: "Details filled ✓" }
+  autofill_done: { mr: "माहिती भरली ✓", hi: "जानकारी भर दी ✓", en: "Details filled ✓" },
+  your_patient_id: { mr: "तुमचा Patient ID", hi: "आपका Patient ID", en: "Your Patient ID" },
+  new_patient_id_note: { mr: "तुमचा Patient ID पुढच्या बुकिंगपासून दिसेल.", hi: "आपका Patient ID अगली बुकिंग से दिखेगा।", en: "Your Patient ID will appear from your next booking." }
 };
 
 // ठराविक शहरांची नावं भाषेनुसार दाखवण्यासाठी (पाठवला जाणारा खरा डेटा नेहमी मराठीतच राहतो,

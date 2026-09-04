@@ -1,63 +1,12 @@
-/* =====================================================================
-   Kalyan Pathlab - Google Apps Script Backend (मोफत)
-   ---------------------------------------------------------------------
-   हे काय करते:
-   1. बुकिंग फॉर्मचा डेटा Google Sheet मध्ये आपोआप, नीट फॉरमॅट करून
-      (रंगीत हेडर, व्यवस्थित कॉलम) एका "डेटाबेस" सारखं सेव्ह करते.
-   2. बुकिंग झाल्यावर लॅब मालकाला (तुम्हाला) एक सुंदर, व्यवस्थित ईमेल
-      जातो — त्यात पेशंटची सगळी माहिती व "पूर्ण डेटाबेस पहा" ही थेट
-      लिंकसुद्धा असते, जेणेकरून फोनवरूनही एका क्लिकवर पूर्ण यादी दिसेल.
-      ग्राहकाने ईमेल दिला असल्यास त्यालाही कन्फर्मेशन जाते.
-      — सगळं आपोआप, पूर्ण मोफत, तुम्हाला काहीही बटण दाबायची गरज नाही.
-   3. रिव्ह्यूज सुद्धा Sheet मध्ये सेव्ह करते (Status = Pending) —
-      तुम्ही स्वतः Sheet मध्ये जाऊन "Approved" असं टाईप केल्याशिवाय
-      तो रिव्ह्यू वेबसाईटवर कधीही दिसणार नाही (व्हेरिफिकेशन तुमच्याच
-      हातात).
-   4. Reviews Sheet मध्ये जास्तीत जास्त 50 रिव्ह्यू ठेवले जातात —
-      51 वा रिव्ह्यू आला की सगळ्यात जुना (Approved असो वा Pending)
-      आपोआप डिलीट होतो, त्यामुळे यादी नेहमी जास्तीत जास्त 50 एवढीच
-      राहते.
-   5. पेशंटने डॉक्टरचं प्रिस्क्रिप्शन (फोटो/PDF) अपलोड केलं असेल, तर ती
-      फाईल आपोआप तुमच्या Google Drive मध्ये "Kalyan Pathlab -
-      Prescriptions" नावाच्या फोल्डरमध्ये सेव्ह होते, आणि तिची लिंक
-      Sheet मध्ये व ईमेलमध्येही दिसते.
-
-   ⚠️ आधीच एकदा हा Apps Script डिप्लॉय केला असेल आणि आता फक्त कोड
-   अपडेट करत असाल, तर："New deployment" नाही — त्याऐवजी वरती उजवीकडे
-   "Deploy" > "Manage deployments" > पेन्सिल (✏️) आयकॉन > "Version:
-   New version" निवडा > "Deploy". (Web app URL तोच राहतो, बदलायची
-   गरज नाही.)
-
-   ================= सेटअप कसा करायचा (मोबाईलवरून) =====================
-   1. Chrome मध्ये थेट ही लिंक उघडा: https://script.google.com/home
-   2. "+ New project" वर टॅप करा (डावीकडे किंवा वरती दिसेल)
-   3. आत जे डीफॉल्ट कोड असेल (function myFunction() {}) ते पूर्ण
-      डिलीट करून, खालचा पूर्ण कोड इथे पेस्ट करा
-   4. वरती नाव बदलू शकता (उदा. "Kalyan Pathlab Backend"), मग 💾 Save
-      आयकॉनवर टॅप करा
-   5. वरती उजवीकडे "Deploy" > "New deployment" टॅप करा
-      - ⚙️ आयकॉनवर टॅप करून Type: "Web app" निवडा
-      - Execute as: "Me"
-      - Who has access: "Anyone"
-      - "Deploy" दाबा (पहिल्यांदा परवानगी मागेल - Advance > Go to...
-        (unsafe) > Allow असं करून परवानगी द्या)
-   6. एक "Web app URL" मिळेल (https://script.google.com/macros/s/xxxx/exec)
-      ही लिंक कॉपी करा.
-   7. app.js फाईलमध्ये वरती CONFIG.appsScriptUrl मध्ये ही लिंक पेस्ट करा.
-   8. झालं! आता बुकिंग व रिव्ह्यू आपोआप Sheet मध्ये जमा होतील + ईमेल जाईल.
-
-   (टीप: वरचा कोड "Kalyan Pathlab Data" या ठराविक Sheet शी थेट जोडलेला
-   आहे — त्यामुळे हा स्वतंत्र (standalone) प्रोजेक्ट म्हणून बनवला तरी
-   चालतो, Sheet मधून "Extensions" द्वारे उघडायची गरज नाही.)
-   ===================================================================== */
+/* Kalyan Pathlab - Backend (Google Apps Script) */
 
 const LAB_OWNER_EMAIL = "kalyan.pathlab.21@gmail.com";
 const LAB_NAME = "Kalyan Pathlab";
 const BRAND_COLOR = "#0b1440";
 const ACCENT_COLOR = "#e5030a";
 const PRESCRIPTION_FOLDER_NAME = "Kalyan Pathlab - Prescriptions";
-const MAX_REVIEWS = 50; // Reviews Sheet मध्ये जास्तीत जास्त एवढेच रिव्ह्यू ठेवायचे — यापेक्षा जास्त झाल्यास सगळ्यात जुने आपोआप डिलीट होतील
-const SPREADSHEET_ID = "18VyPSHOMhxpDNseeZtMHGXvzaCDQVc1ew4g0qoKO02I"; // "Kalyan Pathlab Data" या शीटचा आयडी — बदलण्याची गरज नाही
+const MAX_REVIEWS = 50;
+const SPREADSHEET_ID = "18VyPSHOMhxpDNseeZtMHGXvzaCDQVc1ew4g0qoKO02I";
 
 function getSheet_() {
   return SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -66,204 +15,170 @@ function getSheet_() {
 function doPost(e) {
   const data = JSON.parse(e.postData.contents);
   const ss = getSheet_();
-
   if (data.type === "booking") {
-    const prescriptionUrl = saveprescriptionIfAny(data);
-    saveBooking(ss, data, prescriptionUrl);
-    sendBookingEmails(ss, data, prescriptionUrl);
+    const prescriptionUrl = savePrescriptionIfAny(data);
+    const patientInfo = getOrCreatePatientId(ss, data.phone, data.fullName);
+    saveBooking(ss, data, prescriptionUrl, patientInfo.patientId);
+    sendBookingEmails(ss, data, prescriptionUrl, patientInfo);
   } else if (data.type === "review") {
     saveReview(ss, data);
   } else if (data.type === "adminAction") {
-    if (!checkAdminPassword(data.password)) {
-      return ContentService.createTextOutput(JSON.stringify({ error: "unauthorized" }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
     handleAdminAction(ss, data);
   }
-
-  return ContentService.createTextOutput(JSON.stringify({ ok: true }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-// प्रिस्क्रिप्शन फोटो/PDF दिला असल्यास तो Google Drive मध्ये सेव्ह करून त्याची लिंक परत देते
-function saveprescriptionIfAny(d) {
-  if (!d.prescriptionBase64) return "";
-  try {
-    let folder;
-    const folders = DriveApp.getFoldersByName(PRESCRIPTION_FOLDER_NAME);
-    folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(PRESCRIPTION_FOLDER_NAME);
-
-    const bytes = Utilities.base64Decode(d.prescriptionBase64);
-    const blob = Utilities.newBlob(bytes, d.prescriptionType || "application/octet-stream",
-      `${d.fullName || "patient"}_${d.phone || ""}_${new Date().getTime()}_${d.prescriptionName || "prescription"}`);
-    const file = folder.createFile(blob);
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    return file.getUrl();
-  } catch (err) {
-    return ""; // फाईल सेव्ह करता आली नाही तरी बुकिंग पुढे चालू राहील
-  }
+  return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
 }
 
 function doGet(e) {
   const ss = getSheet_();
-  if (e.parameter.action === "reviews") {
-    return ContentService.createTextOutput(JSON.stringify(getApprovedReviews(ss)))
-      .setMimeType(ContentService.MimeType.JSON);
+  const action = e.parameter.action;
+  if (action === "reviews") return json_(getApprovedReviews(ss));
+  if (action === "tests") return json_(getTestsFromSheet(ss));
+  if (action === "patientLookup") return json_(lookupPatient(ss, e.parameter.phone));
+  if (action === "adminData") return json_(getAllAdminData(ss));
+  return json_({ status: "ok" });
+}
+
+function json_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ---------- Prescription upload ---------- */
+function savePrescriptionIfAny(d) {
+  if (!d.prescriptionBase64) return "";
+  try {
+    const folders = DriveApp.getFoldersByName(PRESCRIPTION_FOLDER_NAME);
+    const folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(PRESCRIPTION_FOLDER_NAME);
+    const bytes = Utilities.base64Decode(d.prescriptionBase64);
+    const name = `${d.fullName || "patient"}_${d.phone || ""}_${Date.now()}_${d.prescriptionName || "prescription"}`;
+    const blob = Utilities.newBlob(bytes, d.prescriptionType || "application/octet-stream", name);
+    const file = folder.createFile(blob);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    return file.getUrl();
+  } catch (err) {
+    return "";
   }
-  if (e.parameter.action === "tests") {
-    return ContentService.createTextOutput(JSON.stringify(getTestsFromSheet(ss)))
-      .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ---------- Unique Patient ID ---------- */
+function getOrCreatePatientId(ss, phone, fullName) {
+  let sheet = ss.getSheetByName("Patients");
+  if (!sheet) {
+    sheet = ss.insertSheet("Patients");
+    const headers = ["Patient ID", "Phone", "Name", "First Visit"];
+    sheet.appendRow(headers);
+    formatHeaderRow(sheet, headers.length);
   }
-  if (e.parameter.action === "patientLookup") {
-    return ContentService.createTextOutput(JSON.stringify(lookupPatient(ss, e.parameter.phone)))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-  if (e.parameter.action === "adminData") {
-    if (!checkAdminPassword(e.parameter.password)) {
-      return ContentService.createTextOutput(JSON.stringify({ error: "unauthorized" }))
-        .setMimeType(ContentService.MimeType.JSON);
+  const lastRow = sheet.getLastRow();
+  if (lastRow >= 2) {
+    const rows = sheet.getRange(2, 1, lastRow - 1, 2).getValues();
+    for (let i = 0; i < rows.length; i++) {
+      if (String(rows[i][1]).trim() === String(phone).trim()) {
+        const prevTests = getPreviousTestSummary(ss, phone);
+        return { patientId: rows[i][0], isReturning: true, prevTests };
+      }
     }
-    return ContentService.createTextOutput(JSON.stringify(getAllAdminData(ss)))
-      .setMimeType(ContentService.MimeType.JSON);
   }
-  return ContentService.createTextOutput(JSON.stringify({ status: "ok" }))
-    .setMimeType(ContentService.MimeType.JSON);
+  const newId = "KP" + String(lastRow).padStart(4, "0");
+  sheet.appendRow([newId, phone, fullName, new Date()]);
+  return { patientId: newId, isReturning: false, prevTests: "" };
 }
 
-/* =====================================================================
-   Admin पासवर्ड — कोडमध्ये कुठेही लिहायचा नाही (सुरक्षिततेसाठी).
-   ऐवजी Apps Script मध्ये: डावीकडे ⚙️ "Project Settings" > खाली
-   "Script Properties" > "Add script property" > Property: ADMIN_PASSWORD,
-   Value: तुम्हाला हवा तो पासवर्ड — असं एकदाच सेट करा.
-   ===================================================================== */
-function checkAdminPassword(pw) {
-  const stored = PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD");
-  return !!stored && String(pw) === stored;
+function getPreviousTestSummary(ss, phone) {
+  const sheet = ss.getSheetByName("Bookings");
+  if (!sheet || sheet.getLastRow() < 2) return "";
+  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 15).getValues();
+  for (let i = rows.length - 1; i >= 0; i--) {
+    if (String(rows[i][2]).trim() === String(phone).trim()) {
+      return `${rows[i][12]} (${rows[i][8]})`;
+    }
+  }
+  return "";
 }
 
-// फोन नंबरवरून त्या पेशंटची सगळ्यात अलीकडची बुकिंग शोधते (नाव/पत्ता/शहर/डॉक्टर
-// आपोआप भरण्यासाठी — बुकिंग फॉर्मवर वापरलं जातं, हे कुठलाही पासवर्ड न मागता
-// उपलब्ध आहे कारण पेशंट स्वतःचाच नंबर टाकत आहे असं गृहीत धरलं आहे)
+/* ---------- Patient lookup (returning patient autofill) ---------- */
 function lookupPatient(ss, phone) {
   if (!phone) return { found: false };
   const sheet = ss.getSheetByName("Bookings");
   if (!sheet || sheet.getLastRow() < 2) return { found: false };
-  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 15).getValues();
-  // सगळ्यात खालची (=सगळ्यात अलीकडची) जुळणारी रांग शोधतो
+  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 16).getValues();
   for (let i = rows.length - 1; i >= 0; i--) {
     if (String(rows[i][2]).trim() === String(phone).trim()) {
       return {
-        found: true,
-        fullName: rows[i][1],
-        address: rows[i][4],
-        city: rows[i][5],
-        doctor: rows[i][7],
-        lastTests: rows[i][12],
-        lastDate: rows[i][8],
-        visitCount: rows.filter((r) => String(r[2]).trim() === String(phone).trim()).length
+        found: true, patientId: rows[i][15], fullName: rows[i][1], address: rows[i][4], city: rows[i][5],
+        doctor: rows[i][7], lastTests: rows[i][12], lastDate: rows[i][8],
+        visitCount: rows.filter(r => String(r[2]).trim() === String(phone).trim()).length
       };
     }
   }
   return { found: false };
 }
 
-// Admin पॅनलसाठी सगळा डेटा (सगळ्या बुकिंग्ज + सगळे रिव्ह्यू + सगळ्या टेस्ट) एकत्र परत पाठवते
+/* ---------- Admin data ---------- */
 function getAllAdminData(ss) {
   const bookingSheet = ss.getSheetByName("Bookings");
   const reviewSheet = ss.getSheetByName("Reviews");
-
   let bookings = [];
   if (bookingSheet && bookingSheet.getLastRow() >= 2) {
-    const rows = bookingSheet.getRange(2, 1, bookingSheet.getLastRow() - 1, 15).getValues();
-    bookings = rows.map((r) => ({
+    const rows = bookingSheet.getRange(2, 1, bookingSheet.getLastRow() - 1, 16).getValues();
+    bookings = rows.map(r => ({
       timestamp: r[0], fullName: r[1], phone: r[2], altPhone: r[3], address: r[4], city: r[5],
       location: r[6], doctor: r[7], date: r[8], time: r[9], reportMode: r[10], email: r[11],
-      tests: r[12], amount: r[13], prescription: r[14]
-    })).reverse(); // नवीन सगळ्यात वरती दिसाव्यात
+      tests: r[12], amount: r[13], prescription: r[14], patientId: r[15]
+    })).reverse();
   }
-
   let reviews = [];
   if (reviewSheet && reviewSheet.getLastRow() >= 2) {
     const rows = reviewSheet.getRange(2, 1, reviewSheet.getLastRow() - 1, 7).getValues();
     reviews = rows.map((r, i) => ({
-      rowNum: i + 2, timestamp: r[0], name: r[1], phone: r[2], test: r[3],
-      rating: r[4], feedback: r[5], status: r[6]
+      rowNum: i + 2, timestamp: r[0], name: r[1], phone: r[2], test: r[3], rating: r[4], feedback: r[5], status: r[6]
     })).reverse();
   }
-
-  const tests = getTestsFromSheetWithRowNum(ss);
-
-  return { bookings, reviews, tests, sheetUrl: ss.getUrl() };
+  return { bookings, reviews, tests: getTestsFromSheet(ss, true), sheetUrl: ss.getUrl() };
 }
 
-// "Tests" Sheet मधून रांग-क्रमांकासकट सगळ्या टेस्ट वाचते (Admin पॅनलमध्ये Edit/Delete साठी रांग-क्रमांक लागतो)
-function getTestsFromSheetWithRowNum(ss) {
-  const sheet = ss.getSheetByName("Tests");
-  if (!sheet || sheet.getLastRow() < 2) return [];
-  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 4).getValues();
-  return rows
-    .map((r, i) => ({ rowNum: i + 2, category: r[0], name: r[1], mrp: r[2], price: r[3] }))
-    .filter((t) => String(t.name).trim() !== "");
-}
-
-// Admin पॅनलमधून रिव्ह्यू Approve/Reject/डिलीट, आणि टेस्ट Add/Update/Delete करण्यासाठी
 function handleAdminAction(ss, data) {
   const reviewSheet = ss.getSheetByName("Reviews");
-  if (data.action === "approveReview" && reviewSheet) {
-    reviewSheet.getRange(data.rowNum, 7).setValue("Approved");
-  } else if (data.action === "rejectReview" && reviewSheet) {
-    reviewSheet.getRange(data.rowNum, 7).setValue("Rejected");
-  } else if (data.action === "deleteReview" && reviewSheet) {
-    reviewSheet.deleteRow(data.rowNum);
-  } else if (data.action === "addTest") {
+  if (data.action === "approveReview" && reviewSheet) reviewSheet.getRange(data.rowNum, 7).setValue("Approved");
+  else if (data.action === "rejectReview" && reviewSheet) reviewSheet.getRange(data.rowNum, 7).setValue("Rejected");
+  else if (data.action === "deleteReview" && reviewSheet) reviewSheet.deleteRow(data.rowNum);
+  else if (data.action === "addTest") {
     let sheet = ss.getSheetByName("Tests");
-    if (!sheet) {
-      sheet = ss.insertSheet("Tests");
-      const headers = ["Category (कॅटेगरी)", "Test Name (टेस्टचं नाव)", "MRP (₹)", "Price (₹)"];
-      sheet.appendRow(headers);
-      formatHeaderRow(sheet, headers.length);
-    }
+    if (!sheet) sheet = createTestsSheet_(ss);
     sheet.appendRow([data.category, data.name, Number(data.mrp) || 0, Number(data.price) || 0]);
     sheet.autoResizeColumns(1, 4);
   } else if (data.action === "updateTest") {
     const sheet = ss.getSheetByName("Tests");
-    if (sheet) {
-      sheet.getRange(data.rowNum, 1, 1, 4).setValues([[data.category, data.name, Number(data.mrp) || 0, Number(data.price) || 0]]);
-    }
+    if (sheet) sheet.getRange(data.rowNum, 1, 1, 4).setValues([[data.category, data.name, Number(data.mrp) || 0, Number(data.price) || 0]]);
   } else if (data.action === "deleteTest") {
     const sheet = ss.getSheetByName("Tests");
     if (sheet) sheet.deleteRow(data.rowNum);
   }
 }
 
-// "Tests" Sheet मधून सगळ्या टेस्ट/किंमती वाचून परत पाठवते (Sheet नसेल तर रिकामी यादी —
-// तेव्हा वेबसाईट आपोआप आधीच्या built-in यादीचा वापर करते)
-function getTestsFromSheet(ss) {
+/* ---------- Tests ---------- */
+function createTestsSheet_(ss) {
+  const sheet = ss.insertSheet("Tests");
+  const headers = ["Category", "Test Name", "MRP", "Price"];
+  sheet.appendRow(headers);
+  formatHeaderRow(sheet, headers.length);
+  return sheet;
+}
+
+function getTestsFromSheet(ss, withRowNum) {
   const sheet = ss.getSheetByName("Tests");
   if (!sheet || sheet.getLastRow() < 2) return [];
   const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 4).getValues();
   return rows
-    .filter((r) => String(r[1]).trim() !== "") // टेस्टचं नाव रिकामं असेल तर ती रांग सोडून देतो
-    .map((r) => ({ category: r[0], name: r[1], mrp: r[2], price: r[3] }));
+    .map((r, i) => withRowNum
+      ? { rowNum: i + 2, category: r[0], name: r[1], mrp: r[2], price: r[3] }
+      : { category: r[0], name: r[1], mrp: r[2], price: r[3] })
+    .filter(t => String(t.name).trim() !== "");
 }
 
-// हे फंक्शन फक्त एकदाच, Apps Script एडिटरमधून "Run" करायचं — यामुळे "Tests" नावाचं
-// Sheet तयार होऊन सध्याची पूर्ण टेस्ट/किंमत यादी त्यात भरली जाते. नंतर तुम्ही त्या
-// Sheet मध्ये रांग जोडून/काढून/बदलून थेट वेबसाईटवरची यादी अपडेट करू शकता — दुसरं
-// काहीही करायची गरज नाही (एक-दोन मिनिटांत वेबसाईट रिफ्रेश केल्यावर बदल दिसतो).
 function seedTestsSheet() {
   const ss = getSheet_();
-  let sheet = ss.getSheetByName("Tests");
-  if (sheet) {
-    Logger.log('"Tests" Sheet आधीच अस्तित्वात आहे — काही केलं नाही. पुन्हा मूळ यादीने भरायचं असेल, तर आधी Sheet मधला "Tests" नावाचा टॅब स्वतः डिलीट करा, मग हे फंक्शन पुन्हा Run करा.');
-    return;
-  }
-  sheet = ss.insertSheet("Tests");
-
-  const headers = ["Category (कॅटेगरी)", "Test Name (टेस्टचं नाव)", "MRP (₹)", "Price (₹)"];
-  sheet.appendRow(headers);
-  formatHeaderRow(sheet, headers.length);
-
+  if (ss.getSheetByName("Tests")) { Logger.log("Tests sheet already exists."); return; }
+  const sheet = createTestsSheet_(ss);
   const seedData = [
     ["Basic & Routine Tests", "Complete Blood Count (CBC)", 500, 199],
     ["Basic & Routine Tests", "Hemoglobin (Hb)", 200, 99],
@@ -322,171 +237,100 @@ function seedTestsSheet() {
     ["Full Body Checkup Packages", "Master Health Checkup (with Vitamins)", 6000, 1899],
     ["Full Body Checkup Packages", "Pre-Marriage Health Checkup", 2500, 899]
   ];
-
   sheet.getRange(2, 1, seedData.length, 4).setValues(seedData);
   sheet.autoResizeColumns(1, 4);
-  Logger.log(`झालं! "Tests" Sheet तयार झालं — एकूण ${seedData.length} टेस्ट भरल्या. आता या Sheet मध्ये बदल केल्यास वेबसाईटवरही तोच बदल दिसेल.`);
+  Logger.log("Tests sheet created with " + seedData.length + " tests.");
 }
 
-/* ---------------- सुंदर हेडर बनवण्याचं सामायिक फंक्शन ---------------- */
 function formatHeaderRow(sheet, numCols) {
   const header = sheet.getRange(1, 1, 1, numCols);
-  header.setBackground(BRAND_COLOR);
-  header.setFontColor("#ffffff");
-  header.setFontWeight("bold");
-  header.setFontSize(11);
-  header.setVerticalAlignment("middle");
+  header.setBackground(BRAND_COLOR).setFontColor("#ffffff").setFontWeight("bold").setFontSize(11).setVerticalAlignment("middle");
   sheet.setFrozenRows(1);
   sheet.setRowHeight(1, 32);
 }
 
-/* ---------------- Bookings ---------------- */
-function saveBooking(ss, d, prescriptionUrl) {
+/* ---------- Bookings ---------- */
+function saveBooking(ss, d, prescriptionUrl, patientId) {
   let sheet = ss.getSheetByName("Bookings");
-  const isNew = !sheet;
-  if (isNew) sheet = ss.insertSheet("Bookings");
-
-  if (sheet.getLastRow() === 0) {
-    const headers = [
-      "दिनांक/वेळ", "पेशंटचे नाव", "मोबाईल", "पर्यायी नंबर", "पत्ता", "शहर",
-      "लोकेशन लिंक", "डॉक्टर", "कलेक्शन दिवस", "कलेक्शन वेळ", "रिपोर्ट कसा हवा",
-      "ग्राहकाचा ईमेल", "टेस्ट/पॅकेज", "अंदाजे रक्कम (₹)", "प्रिस्क्रिप्शन (Drive लिंक)"
-    ];
+  if (!sheet) {
+    sheet = ss.insertSheet("Bookings");
+    const headers = ["Timestamp", "Name", "Phone", "Alt Phone", "Address", "City", "Location", "Doctor", "Date", "Time", "Report Mode", "Email", "Tests", "Amount", "Prescription", "Patient ID"];
     sheet.appendRow(headers);
     formatHeaderRow(sheet, headers.length);
   }
-
-  sheet.appendRow([
-    d.timestamp, d.fullName, d.phone, d.altPhone, d.address, d.city, d.location,
-    d.doctor, d.date, d.time, d.reportMode, d.email, d.tests, d.estimatedTotal,
-    prescriptionUrl || ""
-  ]);
-
+  sheet.appendRow([d.timestamp, d.fullName, d.phone, d.altPhone, d.address, d.city, d.location, d.doctor, d.date, d.time, d.reportMode, d.email, d.tests, d.estimatedTotal, prescriptionUrl || "", patientId || ""]);
   sheet.autoResizeColumns(1, sheet.getLastColumn());
 }
 
-function sendBookingEmails(ss, d, prescriptionUrl) {
+function sendBookingEmails(ss, d, prescriptionUrl, patientInfo) {
   const sheetUrl = ss.getUrl();
-  const subject = `🩸 नवीन बुकिंग - ${d.fullName} (${d.date})`;
-
-  const htmlBody = `
-    <div style="font-family:Arial,sans-serif; max-width:520px; margin:auto; border:1px solid #e5e5e5; border-radius:10px; overflow:hidden;">
-      <div style="background:${BRAND_COLOR}; color:#fff; padding:16px 20px;">
-        <h2 style="margin:0; font-size:18px;">✅ नवीन बुकिंग मिळाली</h2>
-        <p style="margin:4px 0 0; font-size:13px; color:#cfd4ee;">Kalyan Pathlab · संस्कार फाउंडेशन संचलित</p>
-      </div>
-      <table style="width:100%; border-collapse:collapse; font-size:14px;">
-        ${emailRow("👤 नाव", d.fullName)}
-        ${emailRow("📞 मोबाईल", d.phone)}
-        ${d.altPhone ? emailRow("📞 पर्यायी नंबर", d.altPhone) : ""}
-        ${emailRow("📍 पत्ता", `${d.address}, ${d.city}`)}
-        ${d.location ? emailRow("🗺️ लोकेशन", `<a href="${d.location}">Google Maps वर पहा</a>`) : ""}
-        ${emailRow("🧪 टेस्ट/पॅकेज", d.tests)}
-        ${emailRow("💰 अंदाजे रक्कम", `₹${d.estimatedTotal}`)}
-        ${emailRow("📅 कलेक्शन", `${d.date} · ${d.time}`)}
-        ${emailRow("👨‍⚕️ डॉक्टर रेफरन्स", d.doctor)}
-        ${emailRow("📄 रिपोर्ट हवा", d.reportMode)}
-        ${d.email ? emailRow("✉️ ग्राहकाचा ईमेल", d.email) : ""}
-        ${prescriptionUrl ? emailRow("📎 प्रिस्क्रिप्शन", `<a href="${prescriptionUrl}">फाईल पहा</a>`) : ""}
-      </table>
-      <div style="padding:16px 20px; text-align:center; background:#f7f8fc;">
-        <a href="${sheetUrl}" style="display:inline-block; background:${ACCENT_COLOR}; color:#fff; text-decoration:none; font-weight:bold; padding:10px 22px; border-radius:24px; font-size:14px;">📊 पूर्ण डेटाबेस (सर्व बुकिंग्ज) पहा</a>
-      </div>
-    </div>`;
-
-  // लॅब मालकाला ईमेल (आपोआप, सुंदर फॉरमॅटमध्ये)
-  MailApp.sendEmail({ to: LAB_OWNER_EMAIL, subject: subject, htmlBody: htmlBody });
-
-  // ग्राहकाने ईमेल दिला असल्यास त्यालाही कन्फर्मेशन (आपोआप)
+  const rows = [
+    emailRow("Patient ID", patientInfo.patientId + (patientInfo.isReturning ? " (Returning)" : " (New)")),
+    emailRow("Name", d.fullName), emailRow("Phone", d.phone),
+    d.altPhone ? emailRow("Alt Phone", d.altPhone) : "",
+    emailRow("Address", `${d.address}, ${d.city}`),
+    d.location ? emailRow("Location", `<a href="${d.location}">View on Maps</a>`) : "",
+    emailRow("Tests", d.tests), emailRow("Amount", `₹${d.estimatedTotal}`),
+    emailRow("Collection", `${d.date} · ${d.time}`), emailRow("Doctor", d.doctor),
+    emailRow("Report Mode", d.reportMode),
+    d.email ? emailRow("Customer Email", d.email) : "",
+    patientInfo.isReturning && patientInfo.prevTests ? emailRow("Previous Test", patientInfo.prevTests) : "",
+    prescriptionUrl ? emailRow("Prescription", `<a href="${prescriptionUrl}">View File</a>`) : ""
+  ].join("");
+  const html = `<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;border:1px solid #e5e5e5;border-radius:10px;overflow:hidden">
+    <div style="background:${BRAND_COLOR};color:#fff;padding:16px 20px"><h2 style="margin:0;font-size:18px">✅ New Booking</h2><p style="margin:4px 0 0;font-size:13px;color:#cfd4ee">Kalyan Pathlab</p></div>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">${rows}</table>
+    <div style="padding:16px 20px;text-align:center;background:#f7f8fc"><a href="${sheetUrl}" style="display:inline-block;background:${ACCENT_COLOR};color:#fff;text-decoration:none;font-weight:bold;padding:10px 22px;border-radius:24px;font-size:14px">📊 View Full Database</a></div></div>`;
+  MailApp.sendEmail({ to: LAB_OWNER_EMAIL, subject: `🩸 New Booking - ${d.fullName} (${d.date})`, htmlBody: html });
   if (d.email) {
-    const customerHtml = `
-      <div style="font-family:Arial,sans-serif; max-width:520px; margin:auto; border:1px solid #e5e5e5; border-radius:10px; overflow:hidden;">
-        <div style="background:${BRAND_COLOR}; color:#fff; padding:16px 20px;">
-          <h2 style="margin:0; font-size:18px;">✅ तुमची बुकिंग कन्फर्म झाली</h2>
-        </div>
-        <div style="padding:18px 20px; font-size:14px; color:#222;">
-          <p>नमस्कार <strong>${d.fullName}</strong>,</p>
-          <p>${LAB_NAME} येथे तुमची बुकिंग यशस्वीरित्या नोंदवली गेली आहे.</p>
-          <table style="width:100%; border-collapse:collapse; margin:10px 0;">
-            ${emailRow("🧪 टेस्ट", d.tests)}
-            ${emailRow("📅 सॅम्पल कलेक्शन", `${d.date} · ${d.time}`)}
-            ${emailRow("📍 पत्ता", `${d.address}, ${d.city}`)}
-            ${emailRow("💰 अंदाजे रक्कम", `₹${d.estimatedTotal}`)}
-          </table>
-          <p>काही प्रश्न असल्यास संपर्क करा: <a href="tel:+919870020674">98700 20674</a> / <a href="tel:+918828111774">88281 11774</a></p>
-          <p style="margin-top:18px;">धन्यवाद,<br /><strong>${LAB_NAME}</strong><br /><span style="color:#666; font-size:12px;">संस्कार फाउंडेशन संचलित · Care For Quality</span></p>
-        </div>
-      </div>`;
-    MailApp.sendEmail({ to: d.email, subject: `तुमची बुकिंग कन्फर्म झाली - ${LAB_NAME}`, htmlBody: customerHtml });
+    const custHtml = `<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;border:1px solid #e5e5e5;border-radius:10px;overflow:hidden">
+      <div style="background:${BRAND_COLOR};color:#fff;padding:16px 20px"><h2 style="margin:0;font-size:18px">✅ Booking Confirmed</h2></div>
+      <div style="padding:18px 20px;font-size:14px;color:#222">
+        <p>Hi <strong>${d.fullName}</strong>, your booking with ${LAB_NAME} is confirmed.</p>
+        <p style="background:#f7f8fc;padding:10px 14px;border-radius:8px;font-size:13px">Your Patient ID: <strong>${patientInfo.patientId}</strong> — please save this for future visits.</p>
+        <table style="width:100%;border-collapse:collapse;margin:10px 0">${emailRow("Tests", d.tests)}${emailRow("Collection", `${d.date} · ${d.time}`)}${emailRow("Address", `${d.address}, ${d.city}`)}${emailRow("Amount", `₹${d.estimatedTotal}`)}</table>
+        <p>Questions? Call <a href="tel:+919870020674">98700 20674</a> / <a href="tel:+918828111774">88281 11774</a></p>
+        <p style="margin-top:18px">Thanks,<br><strong>${LAB_NAME}</strong></p>
+      </div></div>`;
+    MailApp.sendEmail({ to: d.email, subject: `Booking Confirmed - ${LAB_NAME}`, htmlBody: custHtml });
   }
 }
 
 function emailRow(label, value) {
-  return `<tr>
-    <td style="padding:8px 20px; color:#666; border-bottom:1px solid #f0f0f0; white-space:nowrap;">${label}</td>
-    <td style="padding:8px 20px; color:#111; border-bottom:1px solid #f0f0f0; font-weight:600;">${value}</td>
-  </tr>`;
+  return `<tr><td style="padding:8px 20px;color:#666;border-bottom:1px solid #f0f0f0;white-space:nowrap">${label}</td><td style="padding:8px 20px;color:#111;border-bottom:1px solid #f0f0f0;font-weight:600">${value}</td></tr>`;
 }
 
-/* ---------------- Reviews ---------------- */
+/* ---------- Reviews ---------- */
 function saveReview(ss, d) {
   let sheet = ss.getSheetByName("Reviews");
-  const isNew = !sheet;
-  if (isNew) sheet = ss.insertSheet("Reviews");
-
-  if (sheet.getLastRow() === 0) {
-    const headers = ["दिनांक/वेळ", "नाव", "मोबाईल", "टेस्ट", "रेटिंग", "अभिप्राय", "Status"];
+  if (!sheet) {
+    sheet = ss.insertSheet("Reviews");
+    const headers = ["Timestamp", "Name", "Phone", "Test", "Rating", "Feedback", "Status"];
     sheet.appendRow(headers);
     formatHeaderRow(sheet, headers.length);
   }
-
   sheet.appendRow([d.timestamp, d.name, d.phone, d.test, d.rating, d.feedback, "Pending"]);
   sheet.autoResizeColumns(1, sheet.getLastColumn());
   enforceReviewLimit(sheet, MAX_REVIEWS);
-
-  // नवीन रिव्ह्यू आल्याची सूचना लॅब मालकाला
   const sheetUrl = ss.getUrl();
-  const html = `
-    <div style="font-family:Arial,sans-serif; max-width:520px; margin:auto; border:1px solid #e5e5e5; border-radius:10px; overflow:hidden;">
-      <div style="background:${BRAND_COLOR}; color:#fff; padding:16px 20px;">
-        <h2 style="margin:0; font-size:18px;">⭐ नवीन रिव्ह्यू आला</h2>
-      </div>
-      <div style="padding:18px 20px; font-size:14px; color:#222;">
-        <p><strong>${d.name}</strong> — ${"★".repeat(d.rating)}${"☆".repeat(5 - d.rating)}</p>
-        <p style="background:#f7f8fc; padding:12px; border-radius:8px; font-style:italic;">"${d.feedback}"</p>
-        <p>Sheet मध्ये जाऊन <strong>Status</strong> कॉलममध्ये <strong>Approved</strong> लिहा, म्हणजे तो वेबसाईटवर दिसेल.</p>
-        <div style="text-align:center; margin-top:14px;">
-          <a href="${sheetUrl}" style="display:inline-block; background:${ACCENT_COLOR}; color:#fff; text-decoration:none; font-weight:bold; padding:10px 22px; border-radius:24px; font-size:14px;">📊 Sheet उघडा</a>
-        </div>
-      </div>
-    </div>`;
-  MailApp.sendEmail({ to: LAB_OWNER_EMAIL, subject: `⭐ नवीन रिव्ह्यू आला - ${d.name} (${d.rating}★)`, htmlBody: html });
+  const html = `<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;border:1px solid #e5e5e5;border-radius:10px;overflow:hidden">
+    <div style="background:${BRAND_COLOR};color:#fff;padding:16px 20px"><h2 style="margin:0;font-size:18px">⭐ New Review</h2></div>
+    <div style="padding:18px 20px;font-size:14px;color:#222">
+      <p><strong>${d.name}</strong> — ${"★".repeat(d.rating)}${"☆".repeat(5 - d.rating)}</p>
+      <p style="background:#f7f8fc;padding:12px;border-radius:8px;font-style:italic">"${d.feedback}"</p>
+      <div style="text-align:center;margin-top:14px"><a href="${sheetUrl}" style="display:inline-block;background:${ACCENT_COLOR};color:#fff;text-decoration:none;font-weight:bold;padding:10px 22px;border-radius:24px;font-size:14px">📊 Open Sheet</a></div>
+    </div></div>`;
+  MailApp.sendEmail({ to: LAB_OWNER_EMAIL, subject: `⭐ New Review - ${d.name} (${d.rating}★)`, htmlBody: html });
 }
 
-// रिव्ह्यूंची संख्या ठराविक मर्यादेपेक्षा जास्त झाली, तर सगळ्यात जुने (वरचे) रिव्ह्यू आपोआप डिलीट करते
 function enforceReviewLimit(sheet, maxRows) {
-  const dataRows = sheet.getLastRow() - 1; // हेडर वगळून एकूण रिव्ह्यू
-  if (dataRows > maxRows) {
-    const excess = dataRows - maxRows;
-    sheet.deleteRows(2, excess); // रांग 2 पासून सुरू होणारे सगळ्यात जुने रिव्ह्यू काढतो (Approved/Pending दोन्ही धरून)
-  }
+  const dataRows = sheet.getLastRow() - 1;
+  if (dataRows > maxRows) sheet.deleteRows(2, dataRows - maxRows);
 }
 
-// Sheet मधल्या "Reviews" टॅबमधून फक्त Status="Approved" असलेले रिव्ह्यू परत पाठवते
 function getApprovedReviews(ss) {
   const sheet = ss.getSheetByName("Reviews");
   if (!sheet || sheet.getLastRow() < 2) return [];
   const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 7).getValues();
-  return rows
-    .filter((r) => String(r[6]).toLowerCase() === "approved")
-    .map((r) => ({ name: r[1], test: r[3], rating: Number(r[4]), feedback: r[5] }));
-}
-
-// परवानगी (authorization) पूर्ण झाली आहे का हे तपासण्यासाठी — Run ड्रॉपडाऊनमधून
-// निवडून एकदा चालवायचं फंक्शन. यशस्वी झाल्यास ईमेल येईल.
-function testAuth() {
-  getSheet_().getSheets();
-  DriveApp.getRootFolder();
-  PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD");
-  MailApp.sendEmail(LAB_OWNER_EMAIL, "Test successful - Kalyan Pathlab", "Backend is working correctly!");
+  return rows.filter(r => String(r[6]).toLowerCase() === "approved").map(r => ({ name: r[1], test: r[3], rating: Number(r[4]), feedback: r[5] }));
 }

@@ -252,9 +252,11 @@ function sendToBackend(payload) {
 }
 
 /* ---------- जुना पेशंट ओळखणे (फोन नंबरवरून आधीची माहिती) ---------- */
+let lookedUpPatient = null; // सबमिट करताना WhatsApp मेसेज/कन्फर्मेशनमध्ये वापरण्यासाठी
 document.getElementById("phone").addEventListener("blur", () => {
   const phone = document.getElementById("phone").value.trim();
   const note = document.getElementById("returningPatientNote");
+  lookedUpPatient = null;
   if (!/^[0-9]{10}$/.test(phone)) {
     note.hidden = true;
     return;
@@ -268,9 +270,10 @@ document.getElementById("phone").addEventListener("blur", () => {
         note.hidden = true;
         return;
       }
+      lookedUpPatient = info;
       note.hidden = false;
       note.innerHTML = `
-        👋 ${t("welcome_back")}, <strong>${escapeHtml(info.fullName)}</strong>!
+        👋 ${t("welcome_back")}, <strong>${escapeHtml(info.fullName)}</strong>! (ID: <strong>${escapeHtml(info.patientId || "-")}</strong>)
         ${t("visits_count_prefix")} ${info.visitCount}. ${t("last_test_prefix")}: ${escapeHtml(info.lastTests || "-")}.
         <button type="button" id="autofillBtn" class="link-btn">${t("autofill_btn")}</button>
       `;
@@ -330,6 +333,7 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
   const waMsg =
     `✅ *नवीन बुकिंग - Kalyan Pathlab* ✅\n` +
     `━━━━━━━━━━━━━━\n` +
+    (lookedUpPatient ? `🆔 *Patient ID:* ${lookedUpPatient.patientId} (Returning)\n` : "") +
     `👤 *नाव:* ${fullName}\n` +
     `📞 *मोबाईल:* ${phone}\n` +
     `📍 *पत्ता:* ${address}, ${city}\n` +
@@ -339,6 +343,7 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
     `👨‍⚕️ *डॉक्टर रेफरन्स:* ${doctor}\n` +
     `📄 *रिपोर्ट हवा:* ${reportMode}` +
     (capturedLocation ? `\n📍 *लोकेशन:* ${capturedLocation}` : "") +
+    (lookedUpPatient && lookedUpPatient.lastTests ? `\n🕓 *मागील टेस्ट:* ${lookedUpPatient.lastTests}` : "") +
     `\n━━━━━━━━━━━━━━\n` +
     `_संस्कार फाउंडेशन संचलित · Care For Quality_`;
 
@@ -354,6 +359,7 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
   box.hidden = false;
   box.innerHTML = `
     <strong>${t("confirm_box_title")}</strong>
+    ${lookedUpPatient ? `<p>🆔 ${t("your_patient_id") || "Patient ID"}: <strong>${lookedUpPatient.patientId}</strong></p>` : `<p style="font-size:0.85rem;color:var(--muted);">${t("new_patient_id_note") || "तुमचा Patient ID पुढच्या बुकिंगपासून दिसेल."}</p>`}
     <p>${t("confirm_box_text")}</p>
     <a href="${waLink}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block">${t("confirm_box_wa_btn")}</a>
     <p style="margin-top:10px;">${t("confirm_box_or_call")} <a href="tel:+919870020674">98700 20674</a></p>
@@ -361,6 +367,7 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
   box.scrollIntoView({ behavior: "smooth", block: "center" });
 
   e.target.reset();
+  lookedUpPatient = null;
   selectedTests = [];
   renderSelected();
   updateCartBar();
