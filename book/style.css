@@ -172,6 +172,17 @@ textarea{min-height:74px; resize:vertical;}
 
 /* ===== Payment ===== */
 .qr-box{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px; text-align:center; box-shadow:var(--shadow);}
+.upi-pay-box{background:#fdf3f3; border:1.5px dashed #f2b9b9; border-radius:14px; padding:16px; text-align:center;}
+.upi-pay-box img{width:140px; height:140px; object-fit:contain; margin:0 auto 12px; border-radius:10px; background:#fff; padding:6px;}
+.upi-id-text{font-size:0.85rem; color:var(--muted); margin-top:8px;}
+.status-check-box{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; box-shadow:var(--shadow); margin-top:18px;}
+.status-result-card{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px; margin-top:12px;}
+.status-pill{display:inline-block; padding:4px 12px; border-radius:999px; font-size:0.78rem; font-weight:700; margin-bottom:6px;}
+.status-pill.pending{background:#fff3cd; color:#8a6800;}
+.status-pill.confirmed{background:#d4eaff; color:#0a5aa8;}
+.status-pill.completed{background:#d4f5e0; color:#137a3f;}
+.status-pill.cancelled{background:#fde0e0; color:#a12424;}
+.confirm-banner{background:linear-gradient(135deg,#d4f5e0,#eafaf0); border:1.5px solid #8fdcae; border-radius:14px; padding:14px 16px; margin-bottom:16px; font-size:0.92rem; color:#0d5c31; font-weight:600;}
 .qr-box img{width:100%; max-width:260px; border-radius:10px;}
 .qr-box p{margin-top:12px; font-size:0.92rem; color:var(--muted);}
 

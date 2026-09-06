@@ -53,6 +53,8 @@
   </span>
 </nav>
 
+<div id="notifBanner" class="confirm-banner" hidden></div>
+
 <!-- ===== HOME ===== -->
 <div class="page-section" id="section-home">
 
@@ -186,14 +188,25 @@
 
       <label data-i18n="label_report_mode">रिपोर्ट कसा हवा? *</label>
       <div class="radio-row">
-        <label class="radio-pill"><input type="radio" name="reportMode" value="Hard Copy" checked /> <span data-i18n="report_hardcopy">हार्ड कॉपी (घरी)</span></label>
-        <label class="radio-pill"><input type="radio" name="reportMode" value="WhatsApp" /> <span data-i18n="report_whatsapp">WhatsApp</span></label>
-        <label class="radio-pill"><input type="radio" name="reportMode" value="Email" /> <span data-i18n="report_email">ईमेल</span></label>
+        <label class="radio-pill"><input type="checkbox" name="reportMode" value="Hard Copy" /> <span data-i18n="report_hardcopy">हार्ड कॉपी (घरी)</span></label>
+        <label class="radio-pill"><input type="checkbox" name="reportMode" value="WhatsApp" checked /> <span data-i18n="report_whatsapp">WhatsApp</span></label>
+        <label class="radio-pill"><input type="checkbox" name="reportMode" value="Email" /> <span data-i18n="report_email">ईमेल</span></label>
       </div>
 
       <label id="emailFieldWrap" hidden><span data-i18n="label_email">ईमेल आयडी</span>
         <input type="email" id="email" placeholder="report@example.com" />
       </label>
+
+      <label data-i18n="label_payment">पेमेंट पद्धत *</label>
+      <div class="radio-row">
+        <label class="radio-pill"><input type="radio" name="paymentMethod" value="Cash" checked /> <span data-i18n="payment_cash">कॅश (सॅम्पल कलेक्शनच्या वेळी)</span></label>
+        <label class="radio-pill"><input type="radio" name="paymentMethod" value="UPI" /> <span data-i18n="payment_upi">UPI</span></label>
+      </div>
+      <div id="upiPayBox" class="upi-pay-box" hidden>
+        <img id="upiQrImg" src="./icons/qr.png" alt="UPI QR" />
+        <a id="upiPayLink" href="#" class="btn btn-whatsapp btn-block" data-i18n="pay_via_upi">UPI अ‍ॅपने पे करा →</a>
+        <p class="upi-id-text">UPI ID: <span id="upiIdText">enterprises60658@nyes</span></p>
+      </div>
 
       <label><span data-i18n="label_prescription">डॉक्टरचे प्रिस्क्रिप्शन (असल्यास, ऐच्छिक)</span>
         <input type="file" id="prescription" accept="image/*,.pdf" />
@@ -218,8 +231,16 @@
     <h2 data-i18n="payment_heading">ऑनलाइन पेमेंट (ऐच्छिक)</h2>
     <p class="section-sub" data-i18n="payment_sub">सॅम्पल कलेक्शनच्या वेळी कॅश किंवा खालील QR कोड स्कॅन करून UPI ने पेमेंट करू शकता.</p>
     <div class="qr-box">
-      <img src="./icons/qr.png" alt="UPI Payment QR - Kalyan Pathlab" />
-      <p>UPI ID: <strong>enterprises60658@nyes</strong></p>
+      <img id="mainQrImg" src="./icons/qr.png" alt="UPI Payment QR - Kalyan Pathlab" />
+      <p>UPI ID: <strong id="mainUpiIdText">enterprises60658@nyes</strong></p>
+    </div>
+
+    <div class="status-check-box">
+      <h3 data-i18n="status_check_heading">माझी बुकिंग स्थिती / रिपोर्ट पहा</h3>
+      <p class="section-sub" data-i18n="status_check_sub">बुकिंगच्या वेळी दिलेला मोबाईल नंबर टाका.</p>
+      <input type="tel" id="statusPhoneInput" placeholder="10 अंकी मोबाईल नंबर" pattern="[0-9]{10}" data-i18n-placeholder="placeholder_phone" />
+      <button type="button" id="statusCheckBtn" class="btn btn-primary btn-block" style="margin-top:10px;" data-i18n="status_check_btn">स्थिती तपासा</button>
+      <div id="statusResultWrap"></div>
     </div>
   </section>
 </div>

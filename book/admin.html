@@ -23,6 +23,7 @@
     <option value="mr">मर</option>
     <option value="hi">हि</option>
   </select>
+  <button type="button" id="notifBellBtn" class="icon-btn notif-bell" aria-label="Notifications">🔔<span id="notifCount" class="notif-count" hidden>0</span></button>
   <button type="button" id="shareCustomerLinkBtn" class="icon-btn" aria-label="Share customer app link">📤</button>
   <button type="button" id="refreshBtn" class="icon-btn" aria-label="Refresh">🔄</button>
 </header>
@@ -32,12 +33,20 @@
   <button type="button" class="admin-tab" data-tab="reviews" data-i18n="tab_reviews">⭐ Reviews</button>
   <button type="button" class="admin-tab" data-tab="tests" data-i18n="tab_tests">🧪 Tests</button>
   <button type="button" class="admin-tab" data-tab="patients" data-i18n="tab_patients">🔍 Find Patient</button>
+  <button type="button" class="admin-tab" data-tab="settings" data-i18n="tab_settings">⚙️ Settings</button>
 </nav>
 
 <div class="stat-row" id="statRow"></div>
 
 <section id="tab-bookings" class="admin-section">
   <input type="search" id="bookingSearch" class="admin-search" placeholder="Search by name, phone, or test…" data-i18n-placeholder="search_bookings" />
+  <div class="review-filter">
+    <button type="button" class="filter-chip active" data-bstatus="all" data-i18n="filter_all">All</button>
+    <button type="button" class="filter-chip" data-bstatus="Pending Confirmation" data-i18n="status_pending">Pending</button>
+    <button type="button" class="filter-chip" data-bstatus="Confirmed" data-i18n="status_confirmed">Confirmed</button>
+    <button type="button" class="filter-chip" data-bstatus="Completed" data-i18n="status_completed">Completed</button>
+    <button type="button" class="filter-chip" data-bstatus="Cancelled" data-i18n="status_cancelled">Cancelled</button>
+  </div>
   <div id="bookingList" class="admin-list"></div>
 </section>
 
@@ -72,6 +81,25 @@
   <input type="tel" id="patientPhoneSearch" class="admin-search" placeholder="Enter 10-digit phone number…" data-i18n-placeholder="ph_phone_search" />
   <button type="button" id="patientSearchBtn" class="btn btn-primary btn-block" style="margin-top:10px" data-i18n="search_btn">Search</button>
   <div id="patientResult" style="margin-top:16px"></div>
+</section>
+
+<section id="tab-settings" class="admin-section" hidden>
+  <div class="settings-card">
+    <h3 data-i18n="settings_links_heading">Quick Access</h3>
+    <a id="openSheetLink" href="#" target="_blank" rel="noopener" class="btn btn-outline-admin btn-block" data-i18n="open_sheet">📊 Open Google Sheet (View/Edit All Data)</a>
+    <a id="openDriveLink" href="#" target="_blank" rel="noopener" class="btn btn-outline-admin btn-block" data-i18n="open_drive">📁 Open Reports Folder (Google Drive)</a>
+    <a id="shareCustomerLink2" href="#" target="_blank" rel="noopener" class="btn btn-outline-admin btn-block" data-i18n="open_customer_app">🌐 Open Customer App</a>
+  </div>
+
+  <div class="settings-card">
+    <h3 data-i18n="settings_upi_heading">UPI Payment Settings</h3>
+    <p class="section-sub-admin" data-i18n="settings_upi_sub">Update the UPI ID and QR code shown to customers at booking time.</p>
+    <input type="text" id="settingsUpiId" placeholder="UPI ID" data-i18n-placeholder="ph_upi_id" />
+    <label class="upload-label" data-i18n="settings_qr_upload">Upload New QR Code (optional)</label>
+    <input type="file" id="settingsQrFile" accept="image/*" />
+    <img id="settingsQrPreview" class="qr-preview" hidden />
+    <button type="button" id="saveSettingsBtn" class="btn btn-primary btn-block" style="margin-top:12px" data-i18n="save_settings">Save Settings</button>
+  </div>
 </section>
 
 <div id="toast" class="toast" hidden></div>

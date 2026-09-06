@@ -8,11 +8,16 @@ const TRANSLATIONS = {
   tab_reviews: { en: "⭐ Reviews", mr: "⭐ रिव्ह्यूज", hi: "⭐ रिव्यू" },
   tab_tests: { en: "🧪 Tests", mr: "🧪 टेस्ट", hi: "🧪 टेस्ट" },
   tab_patients: { en: "🔍 Find Patient", mr: "🔍 पेशंट शोधा", hi: "🔍 मरीज़ खोजें" },
+  tab_settings: { en: "⚙️ Settings", mr: "⚙️ सेटिंग्ज", hi: "⚙️ सेटिंग्स" },
   search_bookings: { en: "Search by name, phone, or test…", mr: "नाव, फोन किंवा टेस्टने शोधा…", hi: "नाम, फोन या टेस्ट से खोजें…" },
   filter_all: { en: "All", mr: "सर्व", hi: "सभी" },
   filter_pending: { en: "Pending", mr: "प्रलंबित", hi: "लंबित" },
   filter_approved: { en: "Approved", mr: "मंजूर", hi: "स्वीकृत" },
   filter_rejected: { en: "Rejected", mr: "नाकारलेले", hi: "अस्वीकृत" },
+  status_pending: { en: "Pending", mr: "प्रलंबित", hi: "लंबित" },
+  status_confirmed: { en: "Confirmed", mr: "कन्फर्म", hi: "पुष्टि" },
+  status_completed: { en: "Completed", mr: "पूर्ण", hi: "पूर्ण" },
+  status_cancelled: { en: "Cancelled", mr: "रद्द", hi: "रद्द" },
   add_new_test: { en: "+ Add New Test", mr: "+ नवीन टेस्ट जोडा", hi: "+ नई टेस्ट जोड़ें" },
   ph_category: { en: "Category (e.g. Diabetes Profile)", mr: "कॅटेगरी (उदा. Diabetes Profile)", hi: "श्रेणी (उदा. Diabetes Profile)" },
   ph_test_name: { en: "Test Name (e.g. HbA1c)", mr: "टेस्टचं नाव (उदा. HbA1c)", hi: "टेस्ट का नाम (उदा. HbA1c)" },
@@ -31,6 +36,11 @@ const TRANSLATIONS = {
   no_reviews: { en: "No reviews found.", mr: "कुठलाही रिव्ह्यू सापडला नाही.", hi: "कोई रिव्यू नहीं मिला।" },
   no_tests: { en: 'No tests found. Tap "+ Add New Test" to create the price list.', mr: 'कुठलीही टेस्ट सापडली नाही. "+ नवीन टेस्ट जोडा" दाबून किंमत यादी तयार करा.', hi: 'कोई टेस्ट नहीं मिली। "+ नई टेस्ट जोड़ें" दबाकर मूल्य सूची बनाएं।' },
   view_prescription: { en: "📎 View Prescription", mr: "📎 प्रिस्क्रिप्शन पहा", hi: "📎 प्रिस्क्रिप्शन देखें" },
+  view_report: { en: "📄 View Report", mr: "📄 रिपोर्ट पहा", hi: "📄 रिपोर्ट देखें" },
+  upload_report: { en: "📤 Upload Report", mr: "📤 रिपोर्ट अपलोड करा", hi: "📤 रिपोर्ट अपलोड करें" },
+  btn_confirm_booking: { en: "✓ Confirm Booking", mr: "✓ बुकिंग कन्फर्म करा", hi: "✓ बुकिंग पुष्टि करें" },
+  btn_mark_completed: { en: "✔ Mark Completed", mr: "✔ पूर्ण झाली म्हणून चिन्हांकित करा", hi: "✔ पूर्ण के रूप में चिह्नित करें" },
+  btn_cancel_booking: { en: "✕ Cancel Booking", mr: "✕ बुकिंग रद्द करा", hi: "✕ बुकिंग रद्द करें" },
   btn_approve: { en: "✓ Approve", mr: "✓ मंजूर करा", hi: "✓ स्वीकृत करें" },
   btn_reject: { en: "✕ Reject", mr: "✕ नाकारा", hi: "✕ अस्वीकृत करें" },
   btn_delete: { en: "🗑 Delete", mr: "🗑 डिलीट करा", hi: "🗑 डिलीट करें" },
@@ -46,7 +56,19 @@ const TRANSLATIONS = {
   no_prev_bookings: { en: "No previous bookings found for this number.", mr: "या नंबरसाठी आधीची बुकिंग सापडली नाही.", hi: "इस नंबर के लिए कोई पिछली बुकिंग नहीं मिली।" },
   prev_bookings_found: { en: "previous booking(s) found:", mr: "आधीच्या बुकिंग्ज सापडल्या:", hi: "पिछली बुकिंग मिलीं:" },
   share_customer_title: { en: "Kalyan Pathlab — Book a Test", mr: "Kalyan Pathlab — टेस्ट बुक करा", hi: "Kalyan Pathlab — टेस्ट बुक करें" },
-  share_customer_text: { en: "Book your blood test at Kalyan Pathlab — 30% to 70% off, free home sample collection!", mr: "Kalyan Pathlab वर टेस्ट बुक करा — 30% ते 70% सवलत, मोफत होम सॅम्पल कलेक्शन!", hi: "Kalyan Pathlab पर टेस्ट बुक करें — 30% से 70% छूट, मुफ्त होम सैंपल कलेक्शन!" }
+  share_customer_text: { en: "Book your blood test at Kalyan Pathlab — 30% to 70% off, free home sample collection!", mr: "Kalyan Pathlab वर टेस्ट बुक करा — 30% ते 70% सवलत, मोफत होम सॅम्पल कलेक्शन!", hi: "Kalyan Pathlab पर टेस्ट बुक करें — 30% से 70% छूट, मुफ्त होम सैंपल कलेक्शन!" },
+  settings_links_heading: { en: "Quick Access", mr: "जलद प्रवेश", hi: "त्वरित पहुंच" },
+  open_sheet: { en: "📊 Open Google Sheet (View/Edit All Data)", mr: "📊 Google Sheet उघडा (सगळा डेटा पहा/बदला)", hi: "📊 Google Sheet खोलें (सारा डेटा देखें/बदलें)" },
+  open_drive: { en: "📁 Open Reports Folder (Google Drive)", mr: "📁 Reports फोल्डर उघडा (Google Drive)", hi: "📁 Reports फोल्डर खोलें (Google Drive)" },
+  open_customer_app: { en: "🌐 Open Customer App", mr: "🌐 Customer अ‍ॅप उघडा", hi: "🌐 Customer ऐप खोलें" },
+  settings_upi_heading: { en: "UPI Payment Settings", mr: "UPI पेमेंट सेटिंग्ज", hi: "UPI भुगतान सेटिंग्स" },
+  settings_upi_sub: { en: "Update the UPI ID and QR code shown to customers at booking time.", mr: "बुकिंगच्या वेळी ग्राहकांना दिसणारा UPI ID व QR कोड बदला.", hi: "बुकिंग के समय ग्राहकों को दिखने वाला UPI ID और QR कोड बदलें।" },
+  ph_upi_id: { en: "UPI ID", mr: "UPI ID", hi: "UPI ID" },
+  settings_qr_upload: { en: "Upload New QR Code (optional)", mr: "नवीन QR कोड अपलोड करा (ऐच्छिक)", hi: "नया QR कोड अपलोड करें (वैकल्पिक)" },
+  save_settings: { en: "Save Settings", mr: "सेटिंग्ज सेव्ह करा", hi: "सेटिंग्स सेव करें" },
+  settings_saved: { en: "Settings saved ✓", mr: "सेटिंग्ज सेव्ह झाल्या ✓", hi: "सेटिंग्स सेव हो गईं ✓" },
+  report_upload_done: { en: "Report uploaded ✓", mr: "रिपोर्ट अपलोड झाली ✓", hi: "रिपोर्ट अपलोड हो गई ✓" },
+  pay: { en: "Payment", mr: "पेमेंट", hi: "भुगतान" }
 };
 let currentLang = localStorage.getItem("kp_admin_lang") || "en";
 function t(key) {
@@ -63,8 +85,9 @@ function applyLanguage(lang) {
 }
 document.getElementById("adminLangSelect").addEventListener("change", e => applyLanguage(e.target.value));
 
-let ALL_DATA = { bookings: [], reviews: [], tests: [] };
+let ALL_DATA = { bookings: [], reviews: [], tests: [], settings: {} };
 let currentReviewFilter = "all";
+let currentBookingFilter = "all";
 let editingTestRowNum = null;
 
 function showToast(msg) {
@@ -77,6 +100,15 @@ function showToast(msg) {
 
 function escapeHtml(str) {
   return String(str == null ? "" : str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 function fetchWithRetry(url, tries = 3, delayMs = 1200) {
@@ -98,20 +130,25 @@ document.getElementById("refreshBtn").addEventListener("click", () => {
   loadData();
 });
 
-document.getElementById("shareCustomerLinkBtn").addEventListener("click", async () => {
+document.getElementById("notifBellBtn").addEventListener("click", () => {
+  document.querySelector('.admin-tab[data-tab="bookings"]').click();
+});
+
+[document.getElementById("shareCustomerLinkBtn")].forEach(btn => btn.addEventListener("click", shareCustomerLink));
+async function shareCustomerLink() {
   const shareData = { title: t("share_customer_title"), text: t("share_customer_text"), url: CUSTOMER_APP_URL };
   if (navigator.share) {
     try { await navigator.share(shareData); } catch (err) {}
   } else {
     window.open(`https://wa.me/?text=${encodeURIComponent(shareData.text + "\n" + shareData.url)}`, "_blank");
   }
-});
+}
 
 document.querySelectorAll(".admin-tab").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".admin-tab").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    ["bookings", "reviews", "tests", "patients"].forEach(name => {
+    ["bookings", "reviews", "tests", "patients", "settings"].forEach(name => {
       document.getElementById(`tab-${name}`).hidden = name !== btn.dataset.tab;
     });
   });
@@ -123,34 +160,81 @@ function renderAll() {
   renderBookings();
   renderReviews();
   renderTests();
+  renderSettingsLinks();
 }
 
 function renderStats() {
   const today = new Date().toLocaleDateString("en-IN");
   const todayCount = ALL_DATA.bookings.filter(b => { const d = new Date(b.timestamp); return !isNaN(d) && d.toLocaleDateString("en-IN") === today; }).length;
   const pendingReviews = ALL_DATA.reviews.filter(r => r.status === "Pending").length;
+  const pendingBookings = ALL_DATA.bookings.filter(b => b.status === "Pending Confirmation").length;
   document.getElementById("statRow").innerHTML = `
     <div class="stat-box"><strong>${ALL_DATA.bookings.length}</strong><span>${t("stat_total_bookings")}</span></div>
     <div class="stat-box"><strong>${todayCount}</strong><span>${t("stat_today")}</span></div>
     <div class="stat-box"><strong>${ALL_DATA.reviews.length}</strong><span>${t("stat_total_reviews")}</span></div>
     <div class="stat-box"><strong>${pendingReviews}</strong><span>${t("stat_pending_reviews")}</span></div>`;
+  const totalNotif = pendingBookings + pendingReviews;
+  const badge = document.getElementById("notifCount");
+  if (totalNotif > 0) { badge.hidden = false; badge.textContent = totalNotif > 99 ? "99+" : totalNotif; }
+  else badge.hidden = true;
 }
+
+const STATUS_CLASS = { "Pending Confirmation": "pending", "Confirmed": "approved", "Completed": "completed", "Cancelled": "rejected" };
 
 function renderBookings(filterText = "") {
   const wrap = document.getElementById("bookingList");
   const term = filterText.trim().toLowerCase();
-  const rows = ALL_DATA.bookings.filter(b => !term || String(b.fullName).toLowerCase().includes(term) || String(b.phone).includes(term) || String(b.tests).toLowerCase().includes(term));
+  const rows = ALL_DATA.bookings.filter(b =>
+    (currentBookingFilter === "all" || b.status === currentBookingFilter) &&
+    (!term || String(b.fullName).toLowerCase().includes(term) || String(b.phone).includes(term) || String(b.tests).toLowerCase().includes(term))
+  );
   if (rows.length === 0) { wrap.innerHTML = `<p class="empty-msg">${t("no_bookings")}</p>`; return; }
-  wrap.innerHTML = rows.map(b => `
+  wrap.innerHTML = rows.map(b => {
+    const statusCls = STATUS_CLASS[b.status] || "pending";
+    return `
     <div class="booking-card">
-      <div class="booking-card-top"><strong>${escapeHtml(b.fullName)}</strong><span class="amount">₹${b.amount || 0}</span></div>
+      <div class="booking-card-top">
+        <strong>${escapeHtml(b.fullName)}</strong>
+        <span class="status-badge status-${statusCls}">${escapeHtml(b.status)}</span>
+      </div>
       <div class="booking-meta">${b.patientId ? `🆔 <strong>${escapeHtml(b.patientId)}</strong> · ` : ""}📞 ${escapeHtml(String(b.phone))} · 📍 ${escapeHtml(b.city || "")}</div>
-      <div class="booking-meta">🧪 ${escapeHtml(b.tests || "-")}</div>
-      <div class="booking-meta">📅 ${escapeHtml(String(b.date || ""))} ${escapeHtml(String(b.time || ""))} · 🕒 ${escapeHtml(String(b.timestamp || ""))}</div>
-      ${b.prescription ? `<a href="${b.prescription}" target="_blank" rel="noopener" class="link-btn">${t("view_prescription")}</a>` : ""}
-    </div>`).join("");
+      <div class="booking-meta">🧪 ${escapeHtml(b.tests || "-")} · ₹${b.amount || 0}</div>
+      <div class="booking-meta">📅 ${escapeHtml(String(b.date || ""))} ${escapeHtml(String(b.time || ""))} · 💳 ${escapeHtml(b.paymentMethod || "-")}</div>
+      <div class="booking-meta">🕒 ${escapeHtml(String(b.timestamp || ""))}</div>
+      <div class="booking-links">
+        ${b.prescription ? `<a href="${b.prescription}" target="_blank" rel="noopener" class="link-btn">${t("view_prescription")}</a>` : ""}
+        ${b.reportLink ? `<a href="${b.reportLink}" target="_blank" rel="noopener" class="link-btn">${t("view_report")}</a>` : ""}
+      </div>
+      <div class="review-actions">
+        ${b.status === "Pending Confirmation" ? `<button type="button" class="mini-btn approve" data-row="${b.rowNum}" data-bstatus="Confirmed">${t("btn_confirm_booking")}</button>` : ""}
+        ${b.status !== "Completed" && b.status !== "Cancelled" ? `<button type="button" class="mini-btn approve" data-row="${b.rowNum}" data-bstatus="Completed">${t("btn_mark_completed")}</button>` : ""}
+        ${b.status !== "Cancelled" && b.status !== "Completed" ? `<button type="button" class="mini-btn reject" data-row="${b.rowNum}" data-bstatus="Cancelled">${t("btn_cancel_booking")}</button>` : ""}
+      </div>
+      <label class="report-upload-row">
+        <span class="mini-btn approve">${t("upload_report")}</span>
+        <input type="file" accept="image/*,.pdf" class="report-upload-input" data-row="${b.rowNum}" hidden />
+      </label>
+    </div>`;
+  }).join("");
+
+  wrap.querySelectorAll("[data-bstatus]").forEach(b => b.addEventListener("click", () => {
+    postAdminAction({ action: "updateBookingStatus", rowNum: Number(b.dataset.row), status: b.dataset.bstatus });
+  }));
+  wrap.querySelectorAll(".report-upload-input").forEach(input => input.addEventListener("change", async () => {
+    const file = input.files[0];
+    if (!file) return;
+    showToast(t("refreshing"));
+    const base64 = await fileToBase64(file);
+    postAdminAction({ action: "uploadReport", rowNum: Number(input.dataset.row), reportBase64: base64, reportName: file.name, reportType: file.type }, t("report_upload_done"));
+  }));
 }
 document.getElementById("bookingSearch").addEventListener("input", e => renderBookings(e.target.value));
+document.querySelectorAll('#tab-bookings .filter-chip').forEach(chip => chip.addEventListener("click", () => {
+  document.querySelectorAll('#tab-bookings .filter-chip').forEach(c => c.classList.remove("active"));
+  chip.classList.add("active");
+  currentBookingFilter = chip.dataset.bstatus;
+  renderBookings(document.getElementById("bookingSearch").value);
+}));
 
 function renderReviews() {
   const wrap = document.getElementById("reviewList");
@@ -172,8 +256,8 @@ function renderReviews() {
     postAdminAction({ action: b.dataset.act, rowNum: Number(b.dataset.row) });
   }));
 }
-document.querySelectorAll(".filter-chip").forEach(chip => chip.addEventListener("click", () => {
-  document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+document.querySelectorAll('#tab-reviews .filter-chip').forEach(chip => chip.addEventListener("click", () => {
+  document.querySelectorAll('#tab-reviews .filter-chip').forEach(c => c.classList.remove("active"));
   chip.classList.add("active");
   currentReviewFilter = chip.dataset.status;
   renderReviews();
@@ -238,9 +322,9 @@ document.getElementById("saveTestBtn").addEventListener("click", () => {
   document.getElementById("addTestForm").hidden = true;
 });
 
-function postAdminAction(extra) {
+function postAdminAction(extra, successMsg) {
   fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "adminAction", ...extra }) })
-    .then(() => { showToast(t("saved_refreshing")); setTimeout(loadData, 900); });
+    .then(() => { showToast(successMsg || t("saved_refreshing")); setTimeout(loadData, 900); });
 }
 
 document.getElementById("patientSearchBtn").addEventListener("click", () => {
@@ -257,6 +341,42 @@ document.getElementById("patientSearchBtn").addEventListener("click", () => {
       <div class="booking-meta">🧪 ${escapeHtml(b.tests || "-")}</div>
       <div class="booking-meta">📅 ${escapeHtml(String(b.date || ""))} · 🕒 ${escapeHtml(String(b.timestamp || ""))}</div>
     </div>`).join("");
+});
+
+/* ---------- Settings tab ---------- */
+function renderSettingsLinks() {
+  document.getElementById("openSheetLink").href = ALL_DATA.sheetUrl || "#";
+  document.getElementById("openDriveLink").href = ALL_DATA.driveUrl || "#";
+  document.getElementById("shareCustomerLink2").href = CUSTOMER_APP_URL;
+  if (ALL_DATA.settings) {
+    document.getElementById("settingsUpiId").value = ALL_DATA.settings.upiId || "";
+    if (ALL_DATA.settings.qrUrl) {
+      document.getElementById("settingsQrPreview").src = ALL_DATA.settings.qrUrl;
+      document.getElementById("settingsQrPreview").hidden = false;
+    }
+  }
+}
+document.getElementById("shareCustomerLink2").addEventListener("click", e => { e.preventDefault(); shareCustomerLink(); });
+document.getElementById("settingsQrFile").addEventListener("change", () => {
+  const file = document.getElementById("settingsQrFile").files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const preview = document.getElementById("settingsQrPreview");
+    preview.src = reader.result;
+    preview.hidden = false;
+  };
+  reader.readAsDataURL(file);
+});
+document.getElementById("saveSettingsBtn").addEventListener("click", async () => {
+  const upiId = document.getElementById("settingsUpiId").value.trim();
+  const file = document.getElementById("settingsQrFile").files[0];
+  const payload = { action: "updateSettings", upiId };
+  if (file) {
+    payload.qrBase64 = await fileToBase64(file);
+    payload.qrType = file.type;
+  }
+  postAdminAction(payload, t("settings_saved"));
 });
 
 document.getElementById("adminLangSelect").value = currentLang;

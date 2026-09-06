@@ -18,6 +18,39 @@ const DEFAULT_REVIEWS = [
 ];
 
 let selectedTests = []; // {name, price}
+let liveSettings = { upiId: "enterprises60658@nyes", qrUrl: "" };
+
+/* ---------- Payment method (Cash/UPI) ---------- */
+function fetchSettings() {
+  if (!CONFIG.appsScriptUrl || CONFIG.appsScriptUrl.startsWith("PASTE_")) return;
+  fetch(`${CONFIG.appsScriptUrl}?action=settings`)
+    .then((res) => res.json())
+    .then((s) => {
+      liveSettings = s;
+      document.getElementById("upiIdText").textContent = s.upiId;
+      document.getElementById("mainUpiIdText").textContent = s.upiId;
+      if (s.qrUrl) {
+        document.getElementById("upiQrImg").src = s.qrUrl;
+        document.getElementById("mainQrImg").src = s.qrUrl;
+      }
+      updateUpiLink();
+    })
+    .catch(() => {});
+}
+
+function updateUpiLink() {
+  const total = selectedTests.reduce((sum, t) => sum + t.price, 0);
+  const params = new URLSearchParams({ pa: liveSettings.upiId, pn: "Kalyan Pathlab", cu: "INR" });
+  if (total > 0) params.set("am", total);
+  document.getElementById("upiPayLink").href = `upi://pay?${params.toString()}`;
+}
+
+document.querySelectorAll('input[name="paymentMethod"]').forEach((r) => {
+  r.addEventListener("change", (e) => {
+    document.getElementById("upiPayBox").hidden = e.target.value !== "UPI";
+    if (e.target.value === "UPI") updateUpiLink();
+  });
+});
 
 /* ---------- Share button (मोबाईलचा native share sheet उघडतो) ---------- */
 async function shareApp() {
@@ -152,6 +185,7 @@ function toggleTest(name, price) {
   if (idx >= 0) selectedTests.splice(idx, 1);
   else selectedTests.push({ name, price });
   updateCartBar();
+  updateUpiLink();
 }
 
 function renderSelected() {
@@ -195,10 +229,11 @@ document.getElementById("testSearch").addEventListener("input", (e) => {
   renderTestList(e.target.value, activeCat);
 });
 
-/* ---------- Report mode -> show email field ---------- */
+/* ---------- Report mode (multi-select) -> show email field if Email checked ---------- */
 document.querySelectorAll('input[name="reportMode"]').forEach((r) => {
-  r.addEventListener("change", (e) => {
-    document.getElementById("emailFieldWrap").hidden = e.target.value !== "Email";
+  r.addEventListener("change", () => {
+    const anyEmail = Array.from(document.querySelectorAll('input[name="reportMode"]:checked')).some((c) => c.value === "Email");
+    document.getElementById("emailFieldWrap").hidden = !anyEmail;
   });
 });
 
@@ -302,7 +337,9 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
   const doctor = document.getElementById("doctor").value.trim() || "स्वतः";
   const date = document.getElementById("collectionDate").value;
   const time = document.getElementById("collectionTime").value;
-  const reportMode = document.querySelector('input[name="reportMode"]:checked').value;
+  const reportModeArr = Array.from(document.querySelectorAll('input[name="reportMode"]:checked')).map((c) => c.value);
+  const reportMode = reportModeArr.join(", ") || "WhatsApp";
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
   const email = document.getElementById("email").value.trim();
   const prescriptionFile = document.getElementById("prescription").files[0];
 
@@ -312,6 +349,10 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
   }
   if (!city) {
     showToast(t("toast_select_city"));
+    return;
+  }
+  if (reportModeArr.length === 0) {
+    showToast(t("toast_select_report_mode"));
     return;
   }
 
@@ -324,7 +365,7 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
     timestamp: new Date().toLocaleString("en-IN"),
     fullName, phone, altPhone, address, city,
     location: capturedLocation,
-    doctor, date, time, reportMode, email,
+    doctor, date, time, reportMode, email, paymentMethod,
     tests: testNames.join(", "),
     estimatedTotal: total
   };
@@ -355,6 +396,10 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
   // म्हणून टेस्ट/प्रिस्क्रिप्शनच्या प्रोसेसिंगच्या आधीच हे केलं आहे.
   window.open(waLink, "_blank");
 
+  localStorage.setItem("kp_phone", phone);
+  localStorage.setItem("kp_last_status", "Pending Confirmation");
+
+  const appUrl = window.location.href.split("?")[0].split("#")[0];
   const box = document.getElementById("confirmBox");
   box.hidden = false;
   box.innerHTML = `
@@ -363,8 +408,13 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
     <p>${t("confirm_box_text")}</p>
     <a href="${waLink}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block">${t("confirm_box_wa_btn")}</a>
     <p style="margin-top:10px;">${t("confirm_box_or_call")} <a href="tel:+919870020674">98700 20674</a></p>
+    <p class="form-note" style="margin-top:12px;">${t("app_link_note")}<br /><a href="${appUrl}">${appUrl}</a></p>
+    <button type="button" id="newBookingBtn" class="link-btn" style="display:block; margin:14px auto 0;">${t("new_booking_btn")}</button>
   `;
   box.scrollIntoView({ behavior: "smooth", block: "center" });
+  document.getElementById("newBookingBtn").addEventListener("click", () => location.reload());
+  // पेशंटला WhatsApp बटण दाबायला पुरेसा वेळ मिळावा म्हणून थोडा वेळ थांबून अ‍ॅप आपोआप रिफ्रेश होतं
+  setTimeout(() => location.reload(), 14000);
 
   e.target.reset();
   lookedUpPatient = null;
@@ -556,3 +606,70 @@ renderCategoryTabs();
 renderTestList();
 renderSelected();
 fetchLiveTests();
+fetchSettings();
+checkForStatusUpdate();
+
+/* ---------- बुकिंग स्थिती / रिपोर्ट तपासणे ---------- */
+const STATUS_LABELS = {
+  "Pending Confirmation": { cls: "pending", mr: "पडताळणी प्रलंबित", hi: "पुष्टि लंबित", en: "Pending Confirmation" },
+  "Confirmed": { cls: "confirmed", mr: "कन्फर्म झाली", hi: "पुष्टि हो गई", en: "Confirmed" },
+  "Completed": { cls: "completed", mr: "पूर्ण झाली", hi: "पूर्ण हुई", en: "Completed" },
+  "Cancelled": { cls: "cancelled", mr: "रद्द झाली", hi: "रद्द हुई", en: "Cancelled" }
+};
+function statusLabel(status) {
+  const s = STATUS_LABELS[status] || STATUS_LABELS["Pending Confirmation"];
+  return { cls: s.cls, text: s[currentLang] || s.en };
+}
+
+function renderStatusResults(bookings) {
+  const wrap = document.getElementById("statusResultWrap");
+  if (!bookings || bookings.length === 0) {
+    wrap.innerHTML = `<p class="empty-msg" style="text-align:center;color:var(--muted);padding:14px 0;">${t("no_booking_found")}</p>`;
+    return;
+  }
+  wrap.innerHTML = bookings
+    .map((b) => {
+      const s = statusLabel(b.status);
+      return `<div class="status-result-card">
+        <span class="status-pill ${s.cls}">${s.text}</span>
+        <div class="booking-meta">🧪 ${escapeHtml(b.tests || "-")}</div>
+        <div class="booking-meta">📅 ${escapeHtml(String(b.date || ""))} ${escapeHtml(String(b.time || ""))}</div>
+        ${b.reportLink ? `<a href="${b.reportLink}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block" style="margin-top:10px;">${t("download_report")}</a>` : ""}
+      </div>`;
+    })
+    .join("");
+}
+
+document.getElementById("statusCheckBtn").addEventListener("click", () => {
+  const phone = document.getElementById("statusPhoneInput").value.trim();
+  if (!/^[0-9]{10}$/.test(phone)) {
+    showToast(t("toast_invalid_phone"));
+    return;
+  }
+  if (!CONFIG.appsScriptUrl || CONFIG.appsScriptUrl.startsWith("PASTE_")) return;
+  fetch(`${CONFIG.appsScriptUrl}?action=bookingStatus&phone=${phone}`)
+    .then((res) => res.json())
+    .then((data) => renderStatusResults(data.bookings))
+    .catch(() => showToast(t("network_weak")));
+});
+
+// अ‍ॅप उघडल्यावर स्वतःहून तपासतं — आधीच्या बुकिंगचं स्टेटस "Confirmed"/"Completed" झालं असेल तर वरती बॅनर दाखवतं
+function checkForStatusUpdate() {
+  const phone = localStorage.getItem("kp_phone");
+  if (!phone || !CONFIG.appsScriptUrl || CONFIG.appsScriptUrl.startsWith("PASTE_")) return;
+  fetch(`${CONFIG.appsScriptUrl}?action=bookingStatus&phone=${phone}`)
+    .then((res) => res.json())
+    .then((data) => {
+      if (!data.bookings || data.bookings.length === 0) return;
+      const latest = data.bookings[0];
+      const lastSeen = localStorage.getItem("kp_last_status");
+      if (latest.status !== lastSeen && (latest.status === "Confirmed" || latest.status === "Completed")) {
+        const s = statusLabel(latest.status);
+        const banner = document.getElementById("notifBanner");
+        banner.hidden = false;
+        banner.innerHTML = `✅ ${t("notif_status_prefix")} <strong>${s.text}</strong>! ${latest.reportLink ? `<a href="${latest.reportLink}" target="_blank" rel="noopener">${t("download_report")}</a>` : ""}`;
+      }
+      localStorage.setItem("kp_last_status", latest.status);
+    })
+    .catch(() => {});
+}

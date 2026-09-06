@@ -187,7 +187,22 @@ const TRANSLATIONS = {
   autofill_btn: { mr: "माहिती भरा", hi: "जानकारी भरें", en: "Fill my details" },
   autofill_done: { mr: "माहिती भरली ✓", hi: "जानकारी भर दी ✓", en: "Details filled ✓" },
   your_patient_id: { mr: "तुमचा Patient ID", hi: "आपका Patient ID", en: "Your Patient ID" },
-  new_patient_id_note: { mr: "तुमचा Patient ID पुढच्या बुकिंगपासून दिसेल.", hi: "आपका Patient ID अगली बुकिंग से दिखेगा।", en: "Your Patient ID will appear from your next booking." }
+  new_patient_id_note: { mr: "तुमचा Patient ID पुढच्या बुकिंगपासून दिसेल.", hi: "आपका Patient ID अगली बुकिंग से दिखेगा।", en: "Your Patient ID will appear from your next booking." },
+
+  label_payment: { mr: "पेमेंट पद्धत *", hi: "भुगतान तरीका *", en: "Payment Method *" },
+  payment_cash: { mr: "कॅश (सॅम्पल कलेक्शनच्या वेळी)", hi: "कैश (सैंपल कलेक्शन के समय)", en: "Cash (at sample collection)" },
+  payment_upi: { mr: "UPI", hi: "UPI", en: "UPI" },
+  pay_via_upi: { mr: "UPI अ‍ॅपने पे करा →", hi: "UPI ऐप से पे करें →", en: "Pay via UPI App →" },
+  toast_select_report_mode: { mr: "कृपया किमान एक रिपोर्ट पद्धत निवडा.", hi: "कृपया कम से कम एक रिपोर्ट तरीका चुनें।", en: "Please select at least one report delivery method." },
+  status_check_heading: { mr: "माझी बुकिंग स्थिती / रिपोर्ट पहा", hi: "मेरी बुकिंग स्थिति / रिपोर्ट देखें", en: "Check My Booking Status / Report" },
+  status_check_sub: { mr: "बुकिंगच्या वेळी दिलेला मोबाईल नंबर टाका.", hi: "बुकिंग के समय दिया गया मोबाइल नंबर डालें।", en: "Enter the mobile number used at booking." },
+  status_check_btn: { mr: "स्थिती तपासा", hi: "स्थिति जांचें", en: "Check Status" },
+  no_booking_found: { mr: "या नंबरसाठी बुकिंग सापडली नाही.", hi: "इस नंबर के लिए बुकिंग नहीं मिली।", en: "No booking found for this number." },
+  download_report: { mr: "📄 रिपोर्ट डाउनलोड करा", hi: "📄 रिपोर्ट डाउनलोड करें", en: "📄 Download Report" },
+  toast_invalid_phone: { mr: "योग्य 10 अंकी मोबाईल नंबर टाका.", hi: "सही 10 अंकों का मोबाइल नंबर डालें।", en: "Enter a valid 10-digit mobile number." },
+  notif_status_prefix: { mr: "तुमची बुकिंग आता", hi: "आपकी बुकिंग अब", en: "Your booking is now" },
+  app_link_note: { mr: "पुन्हा भेट देण्यासाठी ही लिंक सेव्ह करा:", hi: "फिर से आने के लिए यह लिंक सेव करें:", en: "Save this link to visit again:" },
+  new_booking_btn: { mr: "🔄 नवीन बुकिंग करा", hi: "🔄 नई बुकिंग करें", en: "🔄 Start a New Booking" }
 };
 
 // ठराविक शहरांची नावं भाषेनुसार दाखवण्यासाठी (पाठवला जाणारा खरा डेटा नेहमी मराठीतच राहतो,

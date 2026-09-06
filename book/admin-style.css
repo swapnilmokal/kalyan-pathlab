@@ -48,3 +48,16 @@ body{margin:0;font-family:'Noto Sans Devanagari','Poppins','Segoe UI',system-ui,
 .add-test-form input{padding:12px 13px;border-radius:10px;border:1.5px solid var(--line);font-size:0.95rem;width:100%}
 .two-col-inline{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 22px;border-radius:999px;font-size:0.9rem;z-index:200;box-shadow:0 6px 20px rgba(0,0,0,0.3)}
+
+.notif-bell{position:relative}
+.notif-count{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:0.62rem;font-weight:800;min-width:16px;height:16px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 3px;border:1.5px solid var(--navy)}
+.booking-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.report-upload-row{display:flex;margin-top:8px}
+.report-upload-row .mini-btn{cursor:pointer}
+.settings-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(11,20,64,0.05)}
+.settings-card h3{margin:0 0 10px;font-size:1rem;color:var(--navy);font-family:'Poppins',sans-serif}
+.section-sub-admin{font-size:0.82rem;color:var(--muted);margin:-4px 0 12px}
+.btn-outline-admin{background:var(--bg);color:var(--navy);border:1.5px solid var(--line);margin-bottom:10px;text-decoration:none}
+.settings-card input[type=text]{width:100%;padding:12px 13px;border-radius:10px;border:1.5px solid var(--line);font-size:0.95rem;margin-bottom:10px}
+.upload-label{display:block;font-size:0.85rem;font-weight:600;color:var(--navy);margin-bottom:8px}
+.qr-preview{width:120px;height:120px;object-fit:contain;border-radius:10px;border:1px solid var(--line);margin-top:10px;background:#fff;padding:6px}
