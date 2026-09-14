@@ -90,3 +90,15 @@ body{margin:0;font-family:'Noto Sans Devanagari','Poppins','Segoe UI',system-ui,
 .mini-btn.whatsapp{background:#d4f5e0;color:#137a3f}
 .mini-btn.email{background:var(--bg);color:var(--navy);border:1.5px solid var(--line)}
 @media(min-width:480px){.bill-line-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* ---------- PIN Lock screen ---------- */
+.pin-lock-screen{position:fixed;inset:0;z-index:999;background:linear-gradient(160deg,var(--navy) 0%,#152a6b 100%);display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px 28px;text-align:center}
+.pin-lock-logo{width:84px;height:84px;border-radius:50%;object-fit:cover;background:#fff;margin-bottom:16px;box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.pin-lock-screen h2{color:#fff;font-size:1.3rem;margin:0 0 4px}
+.pin-lock-sub{color:#c7cff0;font-size:0.9rem;margin:0 0 20px}
+.pin-input{width:100%;max-width:220px;padding:14px;text-align:center;font-size:1.5rem;letter-spacing:8px;border-radius:12px;border:none;margin-bottom:14px}
+.pin-lock-screen .btn{max-width:220px}
+.pin-error{color:#ffb3c1;font-size:0.85rem;margin-top:12px}
+
+/* ---------- Category color badge ---------- */
+.cat-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;font-size:0.85rem;margin-right:8px;flex-shrink:0}

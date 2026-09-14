@@ -15,6 +15,15 @@
 </head>
 <body>
 
+<div id="pinLockScreen" class="pin-lock-screen">
+  <img src="./icons/admin-logo.png" alt="Kalyan Pathlab Admin" class="pin-lock-logo" />
+  <h2>Kalyan Pathlab — Admin</h2>
+  <p class="pin-lock-sub" data-i18n="pin_enter">Enter PIN to continue</p>
+  <input type="password" id="pinInput" inputmode="numeric" maxlength="6" placeholder="••••" class="pin-input" autocomplete="off" />
+  <button type="button" id="pinSubmitBtn" class="btn btn-primary btn-block" data-i18n="pin_unlock">Unlock</button>
+  <p id="pinError" class="pin-error" hidden data-i18n="pin_wrong">Wrong PIN, try again.</p>
+</div>
+
 <header class="admin-topbar">
   <img src="./icons/admin-logo.png" alt="Kalyan Pathlab Admin" class="admin-logo" />
   <div class="admin-title"><strong>Kalyan Pathlab — Admin</strong><span id="lastUpdated">Loading…</span></div>
@@ -168,6 +177,15 @@
     <input type="file" id="settingsQrFile" accept="image/*" />
     <img id="settingsQrPreview" class="qr-preview" hidden />
     <button type="button" id="saveSettingsBtn" class="btn btn-primary btn-block" style="margin-top:12px" data-i18n="save_settings">Save Settings</button>
+  </div>
+
+  <div class="settings-card">
+    <h3 data-i18n="pin_security_heading">Admin PIN (App Lock)</h3>
+    <p class="section-sub-admin" data-i18n="pin_security_sub">Change the PIN needed to open this admin panel. Keep it safe — anyone with this PIN can view and edit bookings, tests and bills.</p>
+    <input type="password" id="newPinField" inputmode="numeric" maxlength="6" placeholder="New PIN (4–6 digits)" data-i18n-placeholder="pin_new_ph" />
+    <input type="password" id="confirmPinField" inputmode="numeric" maxlength="6" placeholder="Confirm New PIN" data-i18n-placeholder="pin_confirm_ph" style="margin-top:8px" />
+    <button type="button" id="changePinBtn" class="btn btn-outline-admin btn-block" style="margin-top:10px" data-i18n="pin_change_btn">Change PIN</button>
+    <button type="button" id="lockNowBtn" class="btn btn-block" style="margin-top:10px;background:#fde8e8;color:#a1235a" data-i18n="pin_lock_now">🔒 Lock Now</button>
   </div>
 </section>
 

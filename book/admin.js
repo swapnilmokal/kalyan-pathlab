@@ -117,7 +117,21 @@ const TRANSLATIONS = {
   bill_updated: { en: "Bill updated ✓", mr: "बिल अपडेट झालं ✓", hi: "बिल अपडेट हुआ ✓" },
   whatsapp_share: { en: "WhatsApp", mr: "WhatsApp", hi: "WhatsApp" },
   email_share: { en: "Email", mr: "Email", hi: "Email" },
-  edit_bill_btn: { en: "✏️ Edit", mr: "✏️ एडिट करा", hi: "✏️ एडिट करें" }
+  edit_bill_btn: { en: "✏️ Edit", mr: "✏️ एडिट करा", hi: "✏️ एडिट करें" },
+
+  /* ---------- PIN Lock ---------- */
+  pin_enter: { en: "Enter PIN to continue", mr: "पुढे जाण्यासाठी PIN टाका", hi: "आगे बढ़ने के लिए PIN डालें" },
+  pin_unlock: { en: "Unlock", mr: "अनलॉक करा", hi: "अनलॉक करें" },
+  pin_wrong: { en: "Wrong PIN, try again.", mr: "चुकीचा PIN, परत प्रयत्न करा.", hi: "गलत PIN, फिर कोशिश करें।" },
+  pin_security_heading: { en: "Admin PIN (App Lock)", mr: "Admin PIN (App Lock)", hi: "Admin PIN (App Lock)" },
+  pin_security_sub: { en: "Change the PIN needed to open this admin panel. Keep it safe — anyone with this PIN can view and edit bookings, tests and bills.", mr: "हा admin panel उघडण्यासाठी लागणारा PIN बदला. तो सुरक्षित ठेवा — हा PIN असलेली कुणीही व्यक्ती bookings, tests आणि bills बघू/बदलू शकते.", hi: "इस admin panel को खोलने वाला PIN बदलें। इसे सुरक्षित रखें — यह PIN रखने वाला कोई भी bookings, tests और bills देख/बदल सकता है।" },
+  pin_new_ph: { en: "New PIN (4–6 digits)", mr: "नवीन PIN (4–6 अंकी)", hi: "नया PIN (4–6 अंक)" },
+  pin_confirm_ph: { en: "Confirm New PIN", mr: "नवीन PIN पुन्हा टाका", hi: "नया PIN फिर से डालें" },
+  pin_change_btn: { en: "Change PIN", mr: "PIN बदला", hi: "PIN बदलें" },
+  pin_lock_now: { en: "🔒 Lock Now", mr: "🔒 आत्ताच लॉक करा", hi: "🔒 अभी लॉक करें" },
+  pin_invalid: { en: "PIN must be 4–6 digits.", mr: "PIN 4 ते 6 अंकी असावा.", hi: "PIN 4 से 6 अंकों का होना चाहिए।" },
+  pin_mismatch: { en: "Both PINs don't match.", mr: "दोन्ही PIN जुळत नाहीत.", hi: "दोनों PIN मेल नहीं खाते।" },
+  pin_changed: { en: "PIN changed ✓", mr: "PIN बदलला ✓", hi: "PIN बदल गया ✓" }
 };
 let currentLang = localStorage.getItem("kp_admin_lang") || "en";
 function t(key) {
@@ -329,7 +343,7 @@ function renderTests(filterText = "") {
   if (tests.length === 0) { wrap.innerHTML = `<p class="empty-msg">${t("no_tests")}</p>`; return; }
   wrap.innerHTML = tests.map(x => `
     <div class="booking-card">
-      <div class="booking-card-top"><strong>${escapeHtml(x.name)}</strong><span class="amount">₹${x.price}</span></div>
+      <div class="booking-card-top"><span class="cat-badge" style="${catBadgeStyle(x.category)}">🧪</span><strong>${escapeHtml(x.name)}</strong><span class="amount">₹${x.price}</span></div>
       <div class="booking-meta">${escapeHtml(x.category)} · <s>₹${x.mrp}</s> MRP · B2B ₹${x.b2b || 0}</div>
       <div class="review-actions">
         <button type="button" class="mini-btn approve edit-test" data-row="${x.rowNum}">${t("btn_edit")}</button>
@@ -704,3 +718,64 @@ function renderProfitAnalysis() {
   const margin = b2c > 0 ? ((profit / b2c) * 100).toFixed(1) : "0.0";
   document.getElementById("profitMarginText").textContent = "Profit Margin: " + margin + "% of B2C collection";
 }
+
+/* =========================================================
+   CATEGORY COLOR BADGES (visual only — deterministic per category)
+   ========================================================= */
+const CATEGORY_BG = ["#e8f0ff", "#fde8ec", "#fff4e0", "#e8f8ef", "#f3e8ff", "#e8f7fb"];
+const CATEGORY_FG = ["#0b4ea2", "#a1235a", "#a35d00", "#137a3f", "#6b21a8", "#0e7490"];
+function catBadgeStyle(category) {
+  let h = 0;
+  const s = String(category || "");
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  const idx = h % CATEGORY_BG.length;
+  return `background:${CATEGORY_BG[idx]};color:${CATEGORY_FG[idx]}`;
+}
+
+/* =========================================================
+   PIN LOCK (basic app-lock — deterrent, not bank-grade security)
+   ========================================================= */
+const PIN_KEY = "kpAdminPin";
+const PIN_UNLOCK_KEY = "kpAdminUnlocked";
+const DEFAULT_PIN = "1234";
+
+function getStoredPin() { return localStorage.getItem(PIN_KEY) || DEFAULT_PIN; }
+
+function showLockScreen() {
+  document.getElementById("pinLockScreen").style.display = "flex";
+  document.getElementById("pinInput").value = "";
+  document.getElementById("pinError").hidden = true;
+  setTimeout(() => document.getElementById("pinInput").focus(), 100);
+}
+function hideLockScreen() { document.getElementById("pinLockScreen").style.display = "none"; }
+
+function tryUnlock() {
+  const entered = document.getElementById("pinInput").value.trim();
+  if (entered === getStoredPin()) {
+    sessionStorage.setItem(PIN_UNLOCK_KEY, "1");
+    hideLockScreen();
+  } else {
+    document.getElementById("pinError").hidden = false;
+    document.getElementById("pinInput").value = "";
+    document.getElementById("pinInput").focus();
+  }
+}
+document.getElementById("pinSubmitBtn").addEventListener("click", tryUnlock);
+document.getElementById("pinInput").addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+
+document.getElementById("changePinBtn").addEventListener("click", () => {
+  const p1 = document.getElementById("newPinField").value.trim();
+  const p2 = document.getElementById("confirmPinField").value.trim();
+  if (p1.length < 4 || p1.length > 6 || !/^\d+$/.test(p1)) { showToast(t("pin_invalid")); return; }
+  if (p1 !== p2) { showToast(t("pin_mismatch")); return; }
+  localStorage.setItem(PIN_KEY, p1);
+  document.getElementById("newPinField").value = "";
+  document.getElementById("confirmPinField").value = "";
+  showToast(t("pin_changed"));
+});
+document.getElementById("lockNowBtn").addEventListener("click", () => {
+  sessionStorage.removeItem(PIN_UNLOCK_KEY);
+  showLockScreen();
+});
+
+if (sessionStorage.getItem(PIN_UNLOCK_KEY) === "1") { hideLockScreen(); } else { showLockScreen(); }
