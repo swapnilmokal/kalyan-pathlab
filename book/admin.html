@@ -32,6 +32,7 @@
   <button type="button" class="admin-tab active" data-tab="bookings" data-i18n="tab_bookings">📅 Bookings</button>
   <button type="button" class="admin-tab" data-tab="reviews" data-i18n="tab_reviews">⭐ Reviews</button>
   <button type="button" class="admin-tab" data-tab="tests" data-i18n="tab_tests">🧪 Tests</button>
+  <button type="button" class="admin-tab" data-tab="billing" data-i18n="tab_billing">🧾 Billing</button>
   <button type="button" class="admin-tab" data-tab="patients" data-i18n="tab_patients">🔍 Find Patient</button>
   <button type="button" class="admin-tab" data-tab="settings" data-i18n="tab_settings">⚙️ Settings</button>
 </nav>
@@ -68,13 +69,81 @@
     <input type="text" id="testName" placeholder="Test Name (e.g. HbA1c)" data-i18n-placeholder="ph_test_name" />
     <div class="two-col-inline">
       <input type="number" id="testMrp" placeholder="MRP ₹" data-i18n-placeholder="ph_mrp" />
-      <input type="number" id="testPrice" placeholder="Discount Price ₹" data-i18n-placeholder="ph_price" />
+      <input type="number" id="testPrice" placeholder="Discount Price ₹ (B2C)" data-i18n-placeholder="ph_price" />
     </div>
+    <input type="number" id="testB2B" placeholder="B2B ₹ (your cost — not shown to customers)" data-i18n-placeholder="ph_b2b" />
     <button type="button" id="saveTestBtn" class="btn btn-primary btn-block" data-i18n="save_test">Save Test</button>
     <button type="button" id="cancelTestBtn" class="link-btn" style="display:block;text-align:center;margin-top:8px" data-i18n="cancel">Cancel</button>
   </div>
   <input type="search" id="testSearchAdmin" class="admin-search" placeholder="Search tests…" style="margin-top:14px" data-i18n-placeholder="search_tests" />
   <div id="testListAdmin" class="admin-list"></div>
+</section>
+
+<section id="tab-billing" class="admin-section" hidden>
+  <div class="review-filter billing-subtabs">
+    <button type="button" class="filter-chip active" data-billtab="dashboard" data-i18n="billing_tab_dashboard">🏠 Dashboard</button>
+    <button type="button" class="filter-chip" data-billtab="bills" data-i18n="billing_tab_bills">📄 Bills</button>
+    <button type="button" class="filter-chip" data-billtab="profit" data-i18n="billing_tab_profit">📊 Profit</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="billing-dashboard" class="billing-pane">
+    <div class="stat-row" id="billStatRow"></div>
+    <div class="settings-card">
+      <h3 data-i18n="billing_monthly_summary">Monthly Summary</h3>
+      <div id="billMonthlySummary" class="stat-mini-list"></div>
+    </div>
+  </div>
+
+  <!-- Bills list -->
+  <div id="billing-bills" class="billing-pane" hidden>
+    <button type="button" id="showAddBillBtn" class="btn btn-primary btn-block" data-i18n="add_new_bill">+ New Bill</button>
+
+    <div id="billForm" class="add-test-form" hidden>
+      <div class="two-col-inline">
+        <input type="text" id="billNoField" readonly data-i18n-placeholder="ph_bill_no" placeholder="Bill No." />
+        <input type="date" id="billDateField" />
+      </div>
+      <input type="text" id="billPatientField" placeholder="Patient Name *" data-i18n-placeholder="ph_patient_name" />
+      <div class="suggest-wrap">
+        <input type="text" id="billTestSearch" placeholder="Type test name to add…" data-i18n-placeholder="ph_add_test" autocomplete="off" />
+        <div id="billTestSuggest" class="suggest-box" hidden></div>
+      </div>
+      <div id="billTestLines"></div>
+      <p id="billNoTests" class="empty-msg" data-i18n="no_tests_in_bill">No tests added yet.</p>
+      <div class="stat-mini-list" id="billTotalsBox"></div>
+      <div class="profit-box"><span data-i18n="final_profit_label">Final Profit</span><strong id="billFinalProfit">₹0</strong></div>
+      <button type="button" id="saveBillBtn" class="btn btn-primary btn-block" data-i18n="save_bill">Save Bill</button>
+      <button type="button" id="cancelBillBtn" class="link-btn" style="display:block;text-align:center;margin-top:8px" data-i18n="cancel">Cancel</button>
+    </div>
+
+    <input type="search" id="billSearchAdmin" class="admin-search" placeholder="Search by patient or bill no…" style="margin-top:14px" data-i18n-placeholder="search_bills" />
+    <div id="billListAdmin" class="admin-list"></div>
+  </div>
+
+  <!-- Profit analysis -->
+  <div id="billing-profit" class="billing-pane" hidden>
+    <div class="review-filter">
+      <button type="button" class="filter-chip active" data-ptab="today" data-i18n="p_today">Today</button>
+      <button type="button" class="filter-chip" data-ptab="month" data-i18n="p_month">This Month</button>
+      <button type="button" class="filter-chip" data-ptab="all" data-i18n="p_all">All Time</button>
+      <button type="button" class="filter-chip" data-ptab="custom" data-i18n="p_custom">Custom</button>
+    </div>
+    <div class="two-col-inline" id="profitCustomRange" hidden>
+      <input type="date" id="profitFrom" />
+      <input type="date" id="profitTo" />
+    </div>
+    <div class="settings-card formula-box">
+      <h3 data-i18n="formula_heading">Calculation Formula</h3>
+      <p data-i18n="formula_text">Discount = Total MRP − Total B2C · Profit = Total B2C − Total B2B − Collection − Report Charges (per test line, then summed for the bill).</p>
+    </div>
+    <div class="settings-card">
+      <h3 data-i18n="billing_breakdown">Breakdown</h3>
+      <div class="stat-mini-list" id="profitBreakdown"></div>
+      <div class="profit-box"><span data-i18n="net_profit_label">Net Profit</span><strong id="profitNetBig">₹0</strong></div>
+      <p class="section-sub-admin" id="profitMarginText"></p>
+    </div>
+  </div>
 </section>
 
 <section id="tab-patients" class="admin-section" hidden>

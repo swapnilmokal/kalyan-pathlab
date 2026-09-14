@@ -2,6 +2,8 @@
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4gojco-gBKb6L9OzJs3_O1v9XI3qSI011FykeysgtheaGuLRYo888fkjdBvUCzeIPOg/exec";
 const CUSTOMER_APP_URL = "https://swapnilmokal.github.io/kalyan-pathlab/book/";
+const LAB_WHATSAPP = "919870020674";
+const LAB_EMAIL = "kalyan.pathlab.21@gmail.com";
 
 const TRANSLATIONS = {
   tab_bookings: { en: "📅 Bookings", mr: "📅 बुकिंग्ज", hi: "📅 बुकिंग" },
@@ -68,7 +70,54 @@ const TRANSLATIONS = {
   save_settings: { en: "Save Settings", mr: "सेटिंग्ज सेव्ह करा", hi: "सेटिंग्स सेव करें" },
   settings_saved: { en: "Settings saved ✓", mr: "सेटिंग्ज सेव्ह झाल्या ✓", hi: "सेटिंग्स सेव हो गईं ✓" },
   report_upload_done: { en: "Report uploaded ✓", mr: "रिपोर्ट अपलोड झाली ✓", hi: "रिपोर्ट अपलोड हो गई ✓" },
-  pay: { en: "Payment", mr: "पेमेंट", hi: "भुगतान" }
+  pay: { en: "Payment", mr: "पेमेंट", hi: "भुगतान" },
+
+  /* ---------- Billing (Business App merge) ---------- */
+  tab_billing: { en: "🧾 Billing", mr: "🧾 बिलिंग", hi: "🧾 बिलिंग" },
+  billing_tab_dashboard: { en: "🏠 Dashboard", mr: "🏠 डॅशबोर्ड", hi: "🏠 डैशबोर्ड" },
+  billing_tab_bills: { en: "📄 Bills", mr: "📄 बिल्स", hi: "📄 बिल्स" },
+  billing_tab_profit: { en: "📊 Profit", mr: "📊 प्रॉफिट", hi: "📊 प्रॉफिट" },
+  billing_monthly_summary: { en: "Monthly Summary", mr: "मासिक सारांश", hi: "मासिक सारांश" },
+  add_new_bill: { en: "+ New Bill", mr: "+ नवीन बिल", hi: "+ नया बिल" },
+  ph_bill_no: { en: "Bill No.", mr: "बिल क्र.", hi: "बिल नं." },
+  ph_patient_name: { en: "Patient Name *", mr: "पेशंटचं नाव *", hi: "मरीज़ का नाम *" },
+  ph_add_test: { en: "Type test name to add…", mr: "टेस्टचं नाव टाइप करा…", hi: "टेस्ट का नाम टाइप करें…" },
+  ph_b2b: { en: "B2B ₹ (your cost — not shown to customers)", mr: "B2B ₹ (तुमचा खर्च — कस्टमरला दिसत नाही)", hi: "B2B ₹ (आपकी लागत — ग्राहक को नहीं दिखती)" },
+  no_tests_in_bill: { en: "No tests added yet. Search and add tests above — add as many as you like, one after another.", mr: "अजून टेस्ट जोडलेली नाही. वरती शोधून टेस्ट जोडा — हव्या तितक्या एकामागून एक जोडू शकता.", hi: "अभी कोई टेस्ट नहीं जोड़ी। ऊपर खोजकर टेस्ट जोड़ें — जितनी चाहें उतनी जोड़ सकते हैं।" },
+  final_profit_label: { en: "Final Profit = Total B2C − Total B2B − Collection − Report", mr: "फायनल प्रॉफिट = Total B2C − Total B2B − Collection − Report", hi: "फाइनल प्रॉफिट = Total B2C − Total B2B − Collection − Report" },
+  save_bill: { en: "Save Bill", mr: "बिल सेव्ह करा", hi: "बिल सेव करें" },
+  update_bill_btn: { en: "Update Bill", mr: "बिल अपडेट करा", hi: "बिल अपडेट करें" },
+  search_bills: { en: "Search by patient or bill no…", mr: "पेशंट किंवा बिल क्रमांकाने शोधा…", hi: "मरीज़ या बिल नंबर से खोजें…" },
+  p_today: { en: "Today", mr: "आज", hi: "आज" },
+  p_month: { en: "This Month", mr: "हा महिना", hi: "इस महीने" },
+  p_all: { en: "All Time", mr: "सर्व वेळ", hi: "सभी समय" },
+  p_custom: { en: "Custom", mr: "कस्टम", hi: "कस्टम" },
+  formula_heading: { en: "Calculation Formula", mr: "कॅल्क्युलेशन फॉर्म्युला", hi: "गणना फॉर्मूला" },
+  formula_text: { en: "Discount = Total MRP − Total B2C · Profit = Total B2C − Total B2B − Collection − Report Charges (per test line, then summed for the bill).", mr: "Discount = Total MRP − Total B2C · Profit = Total B2C − Total B2B − Collection − Report Charges (प्रत्येक टेस्टसाठी, मग बिलासाठी बेरीज).", hi: "Discount = Total MRP − Total B2C · Profit = Total B2C − Total B2B − Collection − Report Charges (हर टेस्ट के लिए, फिर बिल के लिए जोड़)." },
+  billing_breakdown: { en: "Breakdown", mr: "तपशील", hi: "विवरण" },
+  net_profit_label: { en: "Net Profit", mr: "निव्वळ प्रॉफिट", hi: "शुद्ध प्रॉफिट" },
+  stat_today_bills: { en: "Today's Bills", mr: "आजची बिल्स", hi: "आज के बिल" },
+  stat_today_b2c: { en: "Today's B2C", mr: "आजचा B2C", hi: "आज का B2C" },
+  stat_today_b2b: { en: "Today's B2B", mr: "आजचा B2B", hi: "आज का B2B" },
+  stat_today_profit: { en: "Today's Profit", mr: "आजचा प्रॉफिट", hi: "आज का प्रॉफिट" },
+  col_bills: { en: "Bills", mr: "बिल्स", hi: "बिल" },
+  col_mrp: { en: "Total MRP", mr: "एकूण MRP", hi: "कुल MRP" },
+  col_b2c_collection: { en: "Total B2C Collection", mr: "एकूण B2C कलेक्शन", hi: "कुल B2C कलेक्शन" },
+  col_b2b_cost: { en: "Total B2B Cost", mr: "एकूण B2B खर्च", hi: "कुल B2B लागत" },
+  col_collection_charges: { en: "Collection Charges", mr: "कलेक्शन चार्जेस", hi: "कलेक्शन चार्जेस" },
+  col_report_charges: { en: "Report Charges", mr: "रिपोर्ट चार्जेस", hi: "रिपोर्ट चार्जेस" },
+  col_monthly_profit: { en: "Monthly Profit", mr: "मासिक प्रॉफिट", hi: "मासिक प्रॉफिट" },
+  col_discount: { en: "Total Discount", mr: "एकूण डिस्काउंट", hi: "कुल डिस्काउंट" },
+  no_bills: { en: "No bills found.", mr: "कुठलंही बिल सापडलं नाही.", hi: "कोई बिल नहीं मिला।" },
+  confirm_delete_bill: { en: "Delete this bill permanently?", mr: "हे बिल कायमचं डिलीट करायचं?", hi: "यह बिल हमेशा के लिए डिलीट करें?" },
+  test_already_in_bill: { en: "This test is already added to the bill.", mr: "ही टेस्ट आधीच बिलात जोडली आहे.", hi: "यह टेस्ट पहले से बिल में जुड़ी है।" },
+  fill_patient_name: { en: "Patient Name is required.", mr: "पेशंटचं नाव भरणं आवश्यक आहे.", hi: "मरीज़ का नाम भरना ज़रूरी है।" },
+  add_atleast_one_test: { en: "Add at least one test.", mr: "किमान एक टेस्ट जोडा.", hi: "कम से कम एक टेस्ट जोड़ें।" },
+  bill_saved: { en: "Bill saved ✓", mr: "बिल सेव्ह झालं ✓", hi: "बिल सेव हुआ ✓" },
+  bill_updated: { en: "Bill updated ✓", mr: "बिल अपडेट झालं ✓", hi: "बिल अपडेट हुआ ✓" },
+  whatsapp_share: { en: "WhatsApp", mr: "WhatsApp", hi: "WhatsApp" },
+  email_share: { en: "Email", mr: "Email", hi: "Email" },
+  edit_bill_btn: { en: "✏️ Edit", mr: "✏️ एडिट करा", hi: "✏️ एडिट करें" }
 };
 let currentLang = localStorage.getItem("kp_admin_lang") || "en";
 function t(key) {
@@ -85,10 +134,15 @@ function applyLanguage(lang) {
 }
 document.getElementById("adminLangSelect").addEventListener("change", e => applyLanguage(e.target.value));
 
-let ALL_DATA = { bookings: [], reviews: [], tests: [], settings: {} };
+let ALL_DATA = { bookings: [], reviews: [], tests: [], bills: [], settings: {} };
 let currentReviewFilter = "all";
 let currentBookingFilter = "all";
 let editingTestRowNum = null;
+let currentBillingSubtab = "dashboard";
+let currentProfitTab = "today";
+let currentBillTests = [];
+let editingBillRowNum = null;
+let editingBillNo = null;
 
 function showToast(msg) {
   const el = document.getElementById("toast");
@@ -148,7 +202,7 @@ document.querySelectorAll(".admin-tab").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".admin-tab").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    ["bookings", "reviews", "tests", "patients", "settings"].forEach(name => {
+    ["bookings", "reviews", "tests", "patients", "settings", "billing"].forEach(name => {
       document.getElementById(`tab-${name}`).hidden = name !== btn.dataset.tab;
     });
   });
@@ -161,6 +215,9 @@ function renderAll() {
   renderReviews();
   renderTests();
   renderSettingsLinks();
+  renderBillingDashboard();
+  renderBillsList();
+  renderProfitAnalysis();
 }
 
 function renderStats() {
@@ -273,7 +330,7 @@ function renderTests(filterText = "") {
   wrap.innerHTML = tests.map(x => `
     <div class="booking-card">
       <div class="booking-card-top"><strong>${escapeHtml(x.name)}</strong><span class="amount">₹${x.price}</span></div>
-      <div class="booking-meta">${escapeHtml(x.category)} · <s>₹${x.mrp}</s> MRP</div>
+      <div class="booking-meta">${escapeHtml(x.category)} · <s>₹${x.mrp}</s> MRP · B2B ₹${x.b2b || 0}</div>
       <div class="review-actions">
         <button type="button" class="mini-btn approve edit-test" data-row="${x.rowNum}">${t("btn_edit")}</button>
         <button type="button" class="mini-btn delete delete-test" data-row="${x.rowNum}">${t("btn_delete")}</button>
@@ -287,6 +344,7 @@ function renderTests(filterText = "") {
     document.getElementById("testName").value = x.name;
     document.getElementById("testMrp").value = x.mrp;
     document.getElementById("testPrice").value = x.price;
+    document.getElementById("testB2B").value = x.b2b || 0;
     document.getElementById("saveTestBtn").textContent = t("update_test");
     document.getElementById("addTestForm").hidden = false;
     document.getElementById("addTestForm").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -304,6 +362,7 @@ document.getElementById("showAddTestBtn").addEventListener("click", () => {
   document.getElementById("testName").value = "";
   document.getElementById("testMrp").value = "";
   document.getElementById("testPrice").value = "";
+  document.getElementById("testB2B").value = "";
   document.getElementById("saveTestBtn").textContent = t("save_test");
   document.getElementById("addTestForm").hidden = false;
 });
@@ -314,10 +373,11 @@ document.getElementById("saveTestBtn").addEventListener("click", () => {
   const name = document.getElementById("testName").value.trim();
   const mrp = document.getElementById("testMrp").value;
   const price = document.getElementById("testPrice").value;
+  const b2b = document.getElementById("testB2B").value || 0;
   if (!category || !name || !mrp || !price) { showToast(t("fill_all_fields")); return; }
   const payload = editingTestRowNum
-    ? { action: "updateTest", rowNum: editingTestRowNum, category, name, mrp, price }
-    : { action: "addTest", category, name, mrp, price };
+    ? { action: "updateTest", rowNum: editingTestRowNum, category, name, mrp, price, b2b }
+    : { action: "addTest", category, name, mrp, price, b2b };
   postAdminAction(payload);
   document.getElementById("addTestForm").hidden = true;
 });
@@ -381,3 +441,266 @@ document.getElementById("saveSettingsBtn").addEventListener("click", async () =>
 
 document.getElementById("adminLangSelect").value = currentLang;
 loadData();
+
+/* =========================================================
+   BILLING (Business App merged in — Dashboard / Bills / Profit)
+   ========================================================= */
+function money(n) { return "₹" + Number(n || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 }); }
+function todayStr() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function monthKey(dateStr) { return String(dateStr || "").slice(0, 7); }
+function monthLabelStr(ym) { const p = ym.split("-"); if (p.length < 2) return ym; return new Date(Number(p[0]), Number(p[1]) - 1, 1).toLocaleString("en-IN", { month: "long", year: "numeric" }); }
+function lineProfit(t) { return (Number(t.b2c) || 0) - (Number(t.b2b) || 0) - (Number(t.collection) || 0) - (Number(t.report) || 0); }
+function statMiniRow(label, value, hl) { return `<div class="stat-mini-row${hl ? " hl" : ""}"><span>${label}</span><b>${value}</b></div>`; }
+
+/* ---- billing sub-tabs (Dashboard / Bills / Profit) ---- */
+document.querySelectorAll(".billing-subtabs .filter-chip").forEach(chip => chip.addEventListener("click", () => {
+  document.querySelectorAll(".billing-subtabs .filter-chip").forEach(c => c.classList.remove("active"));
+  chip.classList.add("active");
+  currentBillingSubtab = chip.dataset.billtab;
+  ["dashboard", "bills", "profit"].forEach(name => {
+    document.getElementById(`billing-${name}`).hidden = name !== currentBillingSubtab;
+  });
+}));
+
+/* ---- Dashboard ---- */
+function renderBillingDashboard() {
+  const bills = ALL_DATA.bills || [];
+  const today = todayStr();
+  const todayBills = bills.filter(b => b.date === today);
+  const sum = (arr, k) => arr.reduce((a, b) => a + (Number(b[k]) || 0), 0);
+  document.getElementById("billStatRow").innerHTML = `
+    <div class="stat-box"><strong>${todayBills.length}</strong><span>${t("stat_today_bills")}</span></div>
+    <div class="stat-box"><strong>${money(sum(todayBills, "b2c"))}</strong><span>${t("stat_today_b2c")}</span></div>
+    <div class="stat-box"><strong>${money(sum(todayBills, "b2b"))}</strong><span>${t("stat_today_b2b")}</span></div>
+    <div class="stat-box"><strong>${money(sum(todayBills, "profit"))}</strong><span>${t("stat_today_profit")}</span></div>`;
+  const ym = today.slice(0, 7);
+  const monthBills = bills.filter(b => monthKey(b.date) === ym);
+  document.getElementById("billMonthlySummary").innerHTML =
+    statMiniRow(t("col_bills"), monthBills.length)
+    + statMiniRow(t("col_mrp"), money(sum(monthBills, "mrp")))
+    + statMiniRow(t("col_b2c_collection"), money(sum(monthBills, "b2c")))
+    + statMiniRow(t("col_b2b_cost"), money(sum(monthBills, "b2b")))
+    + statMiniRow(t("col_collection_charges"), money(sum(monthBills, "collection")))
+    + statMiniRow(t("col_report_charges"), money(sum(monthBills, "report")))
+    + statMiniRow(t("col_monthly_profit"), money(sum(monthBills, "profit")), true);
+}
+
+/* ---- Bill form: test line editor ---- */
+function billLineHTML(x, i) {
+  return `<div class="bill-line" data-i="${i}">
+    <div class="bill-line-head"><strong>${escapeHtml(x.name)}</strong><button type="button" class="bill-line-remove" data-i="${i}">×</button></div>
+    <div class="bill-line-grid">
+      <div class="bill-line-field"><label>MRP</label><input type="number" min="0" class="bl-in" data-i="${i}" data-k="mrp" value="${x.mrp}"></div>
+      <div class="bill-line-field"><label>B2C</label><input type="number" min="0" class="bl-in" data-i="${i}" data-k="b2c" value="${x.b2c}"></div>
+      <div class="bill-line-field"><label>B2B</label><input type="number" min="0" class="bl-in" data-i="${i}" data-k="b2b" value="${x.b2b}"></div>
+      <div class="bill-line-field"><label>Collection</label><input type="number" min="0" class="bl-in" data-i="${i}" data-k="collection" value="${x.collection}"></div>
+      <div class="bill-line-field"><label>Report</label><input type="number" min="0" class="bl-in" data-i="${i}" data-k="report" value="${x.report}"></div>
+    </div>
+    <div class="bill-line-profit">Profit:<b>${money(lineProfit(x))}</b></div>
+  </div>`;
+}
+function renderBillLines() {
+  document.getElementById("billTestLines").innerHTML = currentBillTests.map((x, i) => billLineHTML(x, i)).join("");
+  document.getElementById("billNoTests").hidden = currentBillTests.length > 0;
+}
+function calcBillTotals() {
+  const sum = k => currentBillTests.reduce((a, x) => a + (Number(x[k]) || 0), 0);
+  const mrp = sum("mrp"), b2c = sum("b2c"), b2b = sum("b2b"), cc = sum("collection"), rc = sum("report");
+  document.getElementById("billTotalsBox").innerHTML =
+    statMiniRow("Total MRP", money(mrp)) + statMiniRow("Total B2C", money(b2c)) + statMiniRow("Total B2B", money(b2b))
+    + statMiniRow(t("col_collection_charges"), money(cc)) + statMiniRow(t("col_report_charges"), money(rc))
+    + statMiniRow(t("col_discount"), money(mrp - b2c));
+  document.getElementById("billFinalProfit").textContent = money(b2c - b2b - cc - rc);
+}
+document.getElementById("billTestLines").addEventListener("input", e => {
+  const inp = e.target.closest(".bl-in"); if (!inp) return;
+  const i = Number(inp.dataset.i), k = inp.dataset.k;
+  currentBillTests[i][k] = Number(inp.value) || 0;
+  inp.closest(".bill-line").querySelector(".bill-line-profit b").textContent = money(lineProfit(currentBillTests[i]));
+  calcBillTotals();
+});
+document.getElementById("billTestLines").addEventListener("click", e => {
+  const rm = e.target.closest(".bill-line-remove"); if (!rm) return;
+  currentBillTests.splice(Number(rm.dataset.i), 1);
+  renderBillLines(); calcBillTotals();
+});
+
+function addBillTest(test) {
+  if (!test) return;
+  if (currentBillTests.some(x => x.name.toLowerCase() === test.name.toLowerCase())) {
+    showToast(t("test_already_in_bill"));
+    document.getElementById("billTestSearch").value = ""; document.getElementById("billTestSuggest").hidden = true;
+    return;
+  }
+  currentBillTests.push({ name: test.name, mrp: Number(test.mrp) || 0, b2c: Number(test.price) || 0, b2b: Number(test.b2b) || 0, collection: 0, report: 0 });
+  document.getElementById("billTestSearch").value = ""; document.getElementById("billTestSuggest").hidden = true;
+  renderBillLines(); calcBillTotals();
+}
+document.getElementById("billTestSearch").addEventListener("input", e => {
+  const q = e.target.value.trim().toLowerCase();
+  const box = document.getElementById("billTestSuggest");
+  if (!q) { box.hidden = true; box.innerHTML = ""; return; }
+  const matches = (ALL_DATA.tests || []).filter(x => x.name.toLowerCase().includes(q)).slice(0, 15);
+  box.innerHTML = matches.map(x => `<div data-name="${escapeHtml(x.name)}"><strong>${escapeHtml(x.name)}</strong><br><span style="color:var(--muted);font-size:0.8rem">B2C ₹${x.price} · B2B ₹${x.b2b || 0}</span></div>`).join("");
+  box.hidden = matches.length === 0;
+  box.querySelectorAll("[data-name]").forEach(el => el.addEventListener("click", () => {
+    const x = ALL_DATA.tests.find(y => y.name === el.dataset.name);
+    addBillTest(x);
+  }));
+});
+document.addEventListener("click", e => {
+  if (!e.target.closest(".suggest-wrap")) { const b = document.getElementById("billTestSuggest"); if (b) b.hidden = true; }
+});
+
+function generateBillNo() {
+  const d = todayStr().replaceAll("-", "");
+  const prefix = "BILL-" + d + "-";
+  let max = 0;
+  (ALL_DATA.bills || []).forEach(b => {
+    const m = String(b.billNo || "").match(new RegExp("^" + prefix + "(\\d+)$"));
+    if (m) max = Math.max(max, Number(m[1]));
+  });
+  return prefix + String(max + 1).padStart(3, "0");
+}
+
+function resetBillForm() {
+  editingBillRowNum = null; editingBillNo = null;
+  currentBillTests = [];
+  document.getElementById("billNoField").value = generateBillNo();
+  document.getElementById("billDateField").value = todayStr();
+  document.getElementById("billPatientField").value = "";
+  document.getElementById("billTestSearch").value = "";
+  document.getElementById("saveBillBtn").textContent = t("save_bill");
+  renderBillLines(); calcBillTotals();
+}
+document.getElementById("showAddBillBtn").addEventListener("click", () => {
+  resetBillForm();
+  document.getElementById("billForm").hidden = false;
+  document.getElementById("billForm").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+document.getElementById("cancelBillBtn").addEventListener("click", () => { document.getElementById("billForm").hidden = true; });
+
+document.getElementById("saveBillBtn").addEventListener("click", () => {
+  const patient = document.getElementById("billPatientField").value.trim();
+  if (!patient) { showToast(t("fill_patient_name")); return; }
+  if (currentBillTests.length === 0) { showToast(t("add_atleast_one_test")); return; }
+  const sum = k => currentBillTests.reduce((a, x) => a + (Number(x[k]) || 0), 0);
+  const mrp = sum("mrp"), b2c = sum("b2c"), b2b = sum("b2b"), cc = sum("collection"), rc = sum("report");
+  const payload = {
+    billNo: document.getElementById("billNoField").value,
+    date: document.getElementById("billDateField").value,
+    patient, tests: currentBillTests,
+    mrp, b2c, b2b, collection: cc, report: rc, discount: mrp - b2c, profit: b2c - b2b - cc - rc
+  };
+  if (editingBillRowNum) {
+    postAdminAction({ action: "updateBill", rowNum: editingBillRowNum, ...payload }, t("bill_updated"));
+  } else {
+    postAdminAction({ action: "addBill", ...payload }, t("bill_saved"));
+  }
+  document.getElementById("billForm").hidden = true;
+});
+
+/* ---- Bills list ---- */
+function renderBillsList(filterText) {
+  const wrap = document.getElementById("billListAdmin");
+  const term = (filterText !== undefined ? filterText : (document.getElementById("billSearchAdmin").value || "")).trim().toLowerCase();
+  const bills = (ALL_DATA.bills || []).filter(b => !term || String(b.patient).toLowerCase().includes(term) || String(b.billNo).toLowerCase().includes(term));
+  if (bills.length === 0) { wrap.innerHTML = `<p class="empty-msg">${t("no_bills")}</p>`; return; }
+  wrap.innerHTML = bills.map(b => `
+    <div class="booking-card">
+      <div class="booking-card-top"><strong>${escapeHtml(b.patient)}</strong><span class="amount">${money(b.b2c)}</span></div>
+      <div class="booking-meta">${escapeHtml(b.billNo)} · ${escapeHtml(String(b.date || ""))} · ${(b.tests || []).length} test(s)</div>
+      <div class="booking-meta">Profit: <strong style="color:#137a3f">${money(b.profit)}</strong></div>
+      <div class="review-actions">
+        <button type="button" class="mini-btn approve edit-bill" data-row="${b.rowNum}">${t("edit_bill_btn")}</button>
+        <button type="button" class="mini-btn delete delete-bill" data-row="${b.rowNum}">${t("btn_delete")}</button>
+      </div>
+      <div class="bill-card-actions">
+        <button type="button" class="mini-btn whatsapp share-wa" data-row="${b.rowNum}">💬 ${t("whatsapp_share")}</button>
+        <button type="button" class="mini-btn email share-email" data-row="${b.rowNum}">✉️ ${t("email_share")}</button>
+      </div>
+    </div>`).join("");
+  wrap.querySelectorAll(".edit-bill").forEach(el => el.addEventListener("click", () => {
+    const b = ALL_DATA.bills.find(x => x.rowNum === Number(el.dataset.row));
+    if (!b) return;
+    editingBillRowNum = b.rowNum; editingBillNo = b.billNo;
+    currentBillTests = (b.tests || []).map(x => ({ ...x }));
+    document.getElementById("billNoField").value = b.billNo;
+    document.getElementById("billDateField").value = b.date;
+    document.getElementById("billPatientField").value = b.patient;
+    document.getElementById("saveBillBtn").textContent = t("update_bill_btn");
+    renderBillLines(); calcBillTotals();
+    document.getElementById("billForm").hidden = false;
+    document.getElementById("billForm").scrollIntoView({ behavior: "smooth", block: "start" });
+  }));
+  wrap.querySelectorAll(".delete-bill").forEach(el => el.addEventListener("click", () => {
+    if (!confirm(t("confirm_delete_bill"))) return;
+    postAdminAction({ action: "deleteBill", rowNum: Number(el.dataset.row) });
+  }));
+  wrap.querySelectorAll(".share-wa").forEach(el => el.addEventListener("click", () => {
+    const b = ALL_DATA.bills.find(x => x.rowNum === Number(el.dataset.row));
+    if (b) shareBillWhatsApp(b);
+  }));
+  wrap.querySelectorAll(".share-email").forEach(el => el.addEventListener("click", () => {
+    const b = ALL_DATA.bills.find(x => x.rowNum === Number(el.dataset.row));
+    if (b) shareBillEmail(b);
+  }));
+}
+document.getElementById("billSearchAdmin").addEventListener("input", e => renderBillsList(e.target.value));
+
+function buildBillMessage(b) {
+  const lines = [];
+  lines.push("Kalyan Pathlab");
+  lines.push("Bill No: " + b.billNo);
+  lines.push("Date: " + b.date);
+  lines.push("Patient: " + b.patient);
+  lines.push("");
+  lines.push("Tests:");
+  (b.tests || []).forEach(x => lines.push("- " + x.name + " : " + money(x.b2c)));
+  lines.push("");
+  lines.push("Total Payable: " + money(b.b2c));
+  lines.push("");
+  lines.push("Thank you for choosing Kalyan Pathlab!");
+  lines.push("For queries: WhatsApp +91 98700 20674 | Email " + LAB_EMAIL);
+  return lines.join("\n");
+}
+function shareBillWhatsApp(b) { window.open("https://wa.me/?text=" + encodeURIComponent(buildBillMessage(b)), "_blank"); }
+function shareBillEmail(b) {
+  const subject = "Kalyan Pathlab - Bill " + b.billNo;
+  window.location.href = "mailto:?cc=" + encodeURIComponent(LAB_EMAIL) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(buildBillMessage(b));
+}
+
+/* ---- Profit Analysis ---- */
+document.querySelectorAll('#billing-profit .review-filter .filter-chip').forEach(chip => chip.addEventListener("click", () => {
+  document.querySelectorAll('#billing-profit .review-filter .filter-chip').forEach(c => c.classList.remove("active"));
+  chip.classList.add("active");
+  currentProfitTab = chip.dataset.ptab;
+  document.getElementById("profitCustomRange").hidden = currentProfitTab !== "custom";
+  renderProfitAnalysis();
+}));
+document.getElementById("profitFrom").addEventListener("change", renderProfitAnalysis);
+document.getElementById("profitTo").addEventListener("change", renderProfitAnalysis);
+
+function profitFilteredBills() {
+  const bills = ALL_DATA.bills || [];
+  const today = todayStr(), ym = today.slice(0, 7);
+  if (currentProfitTab === "today") return bills.filter(b => b.date === today);
+  if (currentProfitTab === "month") return bills.filter(b => monthKey(b.date) === ym);
+  if (currentProfitTab === "custom") {
+    const f = document.getElementById("profitFrom").value, to = document.getElementById("profitTo").value;
+    return bills.filter(b => (!f || String(b.date) >= f) && (!to || String(b.date) <= to));
+  }
+  return bills;
+}
+function renderProfitAnalysis() {
+  const bills = profitFilteredBills();
+  const sum = k => bills.reduce((a, b) => a + (Number(b[k]) || 0), 0);
+  const mrp = sum("mrp"), b2c = sum("b2c"), b2b = sum("b2b"), cc = sum("collection"), rc = sum("report"), disc = sum("discount"), profit = sum("profit");
+  document.getElementById("profitBreakdown").innerHTML =
+    statMiniRow(t("col_bills"), bills.length) + statMiniRow(t("col_mrp"), money(mrp)) + statMiniRow("Total B2C", money(b2c))
+    + statMiniRow("Total B2B", money(b2b)) + statMiniRow(t("col_collection_charges"), money(cc))
+    + statMiniRow(t("col_report_charges"), money(rc)) + statMiniRow(t("col_discount"), money(disc));
+  document.getElementById("profitNetBig").textContent = money(profit);
+  const margin = b2c > 0 ? ((profit / b2c) * 100).toFixed(1) : "0.0";
+  document.getElementById("profitMarginText").textContent = "Profit Margin: " + margin + "% of B2C collection";
+}

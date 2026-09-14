@@ -61,3 +61,32 @@ body{margin:0;font-family:'Noto Sans Devanagari','Poppins','Segoe UI',system-ui,
 .settings-card input[type=text]{width:100%;padding:12px 13px;border-radius:10px;border:1.5px solid var(--line);font-size:0.95rem;margin-bottom:10px}
 .upload-label{display:block;font-size:0.85rem;font-weight:600;color:var(--navy);margin-bottom:8px}
 .qr-preview{width:120px;height:120px;object-fit:contain;border-radius:10px;border:1px solid var(--line);margin-top:10px;background:#fff;padding:6px}
+
+/* ---------- Billing (Business App merge) ---------- */
+.stat-mini-list{margin-top:2px}
+.stat-mini-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:0.9rem}
+.stat-mini-row:last-child{border-bottom:0}
+.stat-mini-row b{color:var(--text);font-size:0.95rem}
+.stat-mini-row.hl{padding-top:12px}
+.stat-mini-row.hl b{color:#137a3f;font-size:1.15rem}
+.profit-box{background:#e9f8ee;border-radius:14px;padding:14px;margin-top:12px;display:flex;flex-direction:column;gap:4px}
+.profit-box span{font-size:0.82rem;color:var(--muted);font-weight:600}
+.profit-box strong{font-size:1.6rem;color:#137a3f;font-family:'Poppins',sans-serif}
+.formula-box p{font-size:0.85rem;color:var(--muted);line-height:1.6;margin:0}
+.suggest-wrap{position:relative}
+.suggest-box{position:absolute;left:0;right:0;top:100%;z-index:30;background:#fff;border:1.5px solid var(--line);border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.12);max-height:230px;overflow:auto}
+.suggest-box div{padding:10px 13px;border-bottom:1px solid #f0f0f0;font-size:0.9rem}
+.suggest-box div:active{background:#f4f5fa}
+.bill-line{background:#f9f9fd;border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
+.bill-line-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.bill-line-head strong{font-size:0.92rem}
+.bill-line-remove{border:none;background:#fde0e0;color:#a12424;width:26px;height:26px;border-radius:8px;font-weight:900;font-size:15px;line-height:1;cursor:pointer}
+.bill-line-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bill-line-field label{display:block;font-size:0.68rem;color:var(--muted);margin-bottom:3px;font-weight:700}
+.bill-line-field input{width:100%;padding:8px 9px;border-radius:8px;border:1.5px solid var(--line);font-size:0.85rem}
+.bill-line-profit{margin-top:8px;text-align:right;font-size:0.78rem;color:var(--muted)}
+.bill-line-profit b{color:#137a3f;font-size:0.92rem;margin-left:4px}
+.bill-card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.mini-btn.whatsapp{background:#d4f5e0;color:#137a3f}
+.mini-btn.email{background:var(--bg);color:var(--navy);border:1.5px solid var(--line)}
+@media(min-width:480px){.bill-line-grid{grid-template-columns:repeat(3,1fr)}}
