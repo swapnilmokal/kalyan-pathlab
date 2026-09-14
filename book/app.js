@@ -6,7 +6,7 @@ const CONFIG = {
   labWhatsApp: "919870020674",          // बुकिंग/रिपोर्ट साठी लॅबचा WhatsApp नंबर
   labEmail: "kalyan.pathlab.21@gmail.com",
   // खाली Google Apps Script Web App डिप्लॉय केल्यावर मिळणारी लिंक टाका (README.md पहा)
-  appsScriptUrl: "https://script.google.com/macros/s/AKfycbx4gojco-gBKb6L9OzJs3_O1v9XI3qSI011FykeysgtheaGuLRYo888fkjdBvUCzeIPOg/exec",
+  appsScriptUrl: "https://script.google.com/macros/s/AKfycbzLz9yim3gKfD98p574l1kB8yENS1cJgspb5Ewt6HYRM-XetF4awiaGya5diEAE1Na81A/exec",
   cities: ["कल्याण", "डोंबिवली", "अंबरनाथ", "बदलापूर", "उल्हासनगर", "ठाणे", "मुंबई", "नवी मुंबई"]
 };
 

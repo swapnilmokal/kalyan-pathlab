@@ -1,6 +1,6 @@
 /* Kalyan Pathlab - Admin Panel (no login — keep this page's link private) */
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4gojco-gBKb6L9OzJs3_O1v9XI3qSI011FykeysgtheaGuLRYo888fkjdBvUCzeIPOg/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzLz9yim3gKfD98p574l1kB8yENS1cJgspb5Ewt6HYRM-XetF4awiaGya5diEAE1Na81A/exec";
 const CUSTOMER_APP_URL = "https://swapnilmokal.github.io/kalyan-pathlab/book/";
 const LAB_WHATSAPP = "919870020674";
 const LAB_EMAIL = "kalyan.pathlab.21@gmail.com";
