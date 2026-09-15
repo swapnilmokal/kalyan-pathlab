@@ -222,7 +222,12 @@ const TRANSLATIONS = {
   profile_city_label: { mr: "शहर", hi: "शहर", en: "City" },
   profile_save_btn: { mr: "प्रोफाईल सेव्ह करा", hi: "प्रोफाइल सेव करें", en: "Save Profile" },
   profile_saved_toast: { mr: "प्रोफाईल सेव्ह झाली ✓", hi: "प्रोफाइल सेव हुई ✓", en: "Profile saved ✓" },
-  placeholder_city: { mr: "शहराचं नाव", hi: "शहर का नाम", en: "City name" }
+  placeholder_city: { mr: "शहराचं नाव", hi: "शहर का नाम", en: "City name" },
+  profile_offline_copy: { mr: "📴 Offline — या डिव्हाइसवर सेव्ह केलेली कॉपी दाखवत आहे", hi: "📴 Offline — इस डिवाइस पर सेव की गई कॉपी दिखा रहे हैं", en: "📴 Offline — showing the copy saved on this device" },
+  profile_synced_status: { mr: "✅ Online सेव्ह झालं (synced)", hi: "✅ Online सेव हो गया (synced)", en: "✅ Saved online (synced)" },
+  profile_saved_offline_toast: { mr: "या डिव्हाइसवर सेव्ह झालं — इंटरनेट आल्यावर आपोआप sync होईल", hi: "इस डिवाइस पर सेव हुआ — इंटरनेट आने पर अपने आप sync होगा", en: "Saved on this device — will sync automatically once you're online" },
+  profile_sync_done_toast: { mr: "प्रोफाईल आता online sync झाली ✓", hi: "प्रोफाइल अब online sync हो गई ✓", en: "Profile is now synced online ✓" },
+  profile_history_heading: { mr: "📋 माझा टेस्ट इतिहास", hi: "📋 मेरा टेस्ट इतिहास", en: "📋 My Test History" }
 };
 
 // ठराविक शहरांची नावं भाषेनुसार दाखवण्यासाठी (पाठवला जाणारा खरा डेटा नेहमी मराठीतच राहतो,

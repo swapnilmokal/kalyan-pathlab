@@ -308,6 +308,7 @@
     <div class="status-check-box">
       <input type="tel" id="profilePhoneInput" placeholder="10 अंकी मोबाईल नंबर" pattern="[0-9]{10}" data-i18n-placeholder="placeholder_phone" />
       <button type="button" id="profileLoadBtn" class="btn btn-primary btn-block" style="margin-top:10px;" data-i18n="profile_load_btn">प्रोफाईल पहा</button>
+      <p id="profileSyncStatus" class="section-sub" style="margin-top:8px"></p>
 
       <div id="profileFormWrap" hidden style="margin-top:18px">
         <p id="profileIdLine" class="section-sub"></p>
@@ -332,6 +333,11 @@
           <input type="text" id="profileCityField" data-i18n-placeholder="placeholder_city" />
         </label>
         <button type="button" id="profileSaveBtn" class="btn btn-primary btn-block" style="margin-top:14px" data-i18n="profile_save_btn">प्रोफाईल सेव्ह करा</button>
+      </div>
+
+      <div id="profileHistorySection" style="margin-top:22px">
+        <h3 data-i18n="profile_history_heading">📋 माझा टेस्ट इतिहास</h3>
+        <div id="profileHistoryList"></div>
       </div>
     </div>
   </section>

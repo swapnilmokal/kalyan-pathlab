@@ -176,6 +176,9 @@ textarea{min-height:74px; resize:vertical;}
 .upi-pay-box img{width:140px; height:140px; object-fit:contain; margin:0 auto 12px; border-radius:10px; background:#fff; padding:6px;}
 .upi-id-text{font-size:0.85rem; color:var(--muted); margin-top:8px;}
 .status-check-box{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; box-shadow:var(--shadow); margin-top:18px;}
+.history-row{padding:10px 0; border-bottom:1px solid var(--line);}
+.history-row:last-child{border-bottom:none;}
+.history-row strong{display:block; font-size:0.95rem; color:var(--navy);}
 .status-result-card{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px; margin-top:12px;}
 .status-pill{display:inline-block; padding:4px 12px; border-radius:999px; font-size:0.78rem; font-weight:700; margin-bottom:6px;}
 .status-pill.pending{background:#fff3cd; color:#8a6800;}

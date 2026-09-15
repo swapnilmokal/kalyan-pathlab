@@ -675,12 +675,47 @@ function checkForStatusUpdate() {
 }
 
 /* =========================================================
-   MY PROFILE (view/create/edit patient profile by phone)
+   MY PROFILE — offline-first: saves to this device instantly (works
+   without internet), syncs to the server in the background, and
+   auto-loads next time the app opens (no need to re-enter phone).
    ========================================================= */
-document.getElementById("profileLoadBtn").addEventListener("click", () => {
-  const phone = document.getElementById("profilePhoneInput").value.trim();
-  if (!/^[0-9]{10}$/.test(phone)) { showToast(t("toast_invalid_phone")); return; }
-  if (!CONFIG.appsScriptUrl || CONFIG.appsScriptUrl.startsWith("PASTE_")) return;
+const PROFILE_CACHE_KEY = "kp_profile_cache";
+const PROFILE_PENDING_KEY = "kp_profile_pending";
+
+function cacheProfileLocally(phone, profile) {
+  localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify({ phone, profile, savedAt: Date.now() }));
+  localStorage.setItem("kp_phone", phone);
+}
+function getCachedProfile(phone) {
+  try {
+    const raw = localStorage.getItem(PROFILE_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed.phone === phone ? parsed.profile : null;
+  } catch (e) { return null; }
+}
+function fillProfileForm(p) {
+  document.getElementById("profileFormWrap").hidden = false;
+  document.getElementById("profileNameField").value = p.name || "";
+  document.getElementById("profileAgeField").value = p.age || "";
+  document.getElementById("profileGenderField").value = p.gender || "";
+  document.getElementById("profileAddressField").value = p.address || "";
+  document.getElementById("profileCityField").value = p.city || "";
+}
+function setSyncStatus(msg) {
+  const el = document.getElementById("profileSyncStatus");
+  if (el) el.textContent = msg || "";
+}
+
+function loadProfileForPhone(phone, silent) {
+  const cached = getCachedProfile(phone);
+  if (cached) {
+    fillProfileForm(cached);
+    document.getElementById("profileIdLine").textContent = cached.patientId ? `${t("profile_found_line")} ${cached.patientId}` : t("profile_new_line");
+    setSyncStatus(t("profile_offline_copy"));
+  }
+  const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
+  if (!canReachServer) { if (!cached && !silent) showToast(t("network_weak")); return; }
   fetch(`${CONFIG.appsScriptUrl}?action=profile&phone=${phone}`)
     .then(res => res.json())
     .then(data => {
@@ -688,35 +723,100 @@ document.getElementById("profileLoadBtn").addEventListener("click", () => {
       const idLine = document.getElementById("profileIdLine");
       if (data.found) {
         idLine.textContent = `${t("profile_found_line")} ${data.patientId}`;
-        document.getElementById("profileNameField").value = data.name || "";
-        document.getElementById("profileAgeField").value = data.age || "";
-        document.getElementById("profileGenderField").value = data.gender || "";
-        document.getElementById("profileAddressField").value = data.address || "";
-        document.getElementById("profileCityField").value = data.city || "";
-      } else {
+        fillProfileForm(data);
+        cacheProfileLocally(phone, data);
+        setSyncStatus(t("profile_synced_status"));
+      } else if (!cached) {
         idLine.textContent = t("profile_new_line");
-        document.getElementById("profileNameField").value = "";
-        document.getElementById("profileAgeField").value = "";
-        document.getElementById("profileGenderField").value = "";
-        document.getElementById("profileAddressField").value = "";
-        document.getElementById("profileCityField").value = "";
+        fillProfileForm({});
+        setSyncStatus("");
       }
+      loadHealthHistory(phone);
     })
-    .catch(() => showToast(t("network_weak")));
+    .catch(() => { if (!cached && !silent) showToast(t("network_weak")); });
+}
+
+document.getElementById("profileLoadBtn").addEventListener("click", () => {
+  const phone = document.getElementById("profilePhoneInput").value.trim();
+  if (!/^[0-9]{10}$/.test(phone)) { showToast(t("toast_invalid_phone")); return; }
+  loadProfileForPhone(phone, false);
 });
 
 document.getElementById("profileSaveBtn").addEventListener("click", () => {
   const phone = document.getElementById("profilePhoneInput").value.trim();
   if (!/^[0-9]{10}$/.test(phone)) { showToast(t("toast_invalid_phone")); return; }
-  const payload = {
-    type: "profile",
-    phone,
+  const profile = {
     name: document.getElementById("profileNameField").value.trim(),
     age: document.getElementById("profileAgeField").value,
     gender: document.getElementById("profileGenderField").value,
     address: document.getElementById("profileAddressField").value.trim(),
     city: document.getElementById("profileCityField").value.trim()
   };
+  cacheProfileLocally(phone, profile); /* saved on this device immediately — never lost, works offline */
+  const payload = { type: "profile", phone, ...profile };
+  const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
+  if (!canReachServer) {
+    localStorage.setItem(PROFILE_PENDING_KEY, JSON.stringify(payload));
+    showToast(t("profile_saved_offline_toast"));
+    setSyncStatus(t("profile_offline_copy"));
+    return;
+  }
   fetch(CONFIG.appsScriptUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) })
-    .then(() => showToast(t("profile_saved_toast")));
+    .then(() => {
+      showToast(t("profile_saved_toast"));
+      setSyncStatus(t("profile_synced_status"));
+      localStorage.removeItem(PROFILE_PENDING_KEY);
+    })
+    .catch(() => {
+      localStorage.setItem(PROFILE_PENDING_KEY, JSON.stringify(payload));
+      showToast(t("profile_saved_offline_toast"));
+      setSyncStatus(t("profile_offline_copy"));
+    });
 });
+
+function syncPendingProfile() {
+  const raw = localStorage.getItem(PROFILE_PENDING_KEY);
+  const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
+  if (!raw || !canReachServer) return;
+  fetch(CONFIG.appsScriptUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: raw })
+    .then(() => {
+      localStorage.removeItem(PROFILE_PENDING_KEY);
+      showToast(t("profile_sync_done_toast"));
+      setSyncStatus(t("profile_synced_status"));
+    })
+    .catch(() => {});
+}
+window.addEventListener("online", syncPendingProfile);
+
+/* ---- Simple, real "health record" = their own past bookings/tests, not fabricated data ---- */
+function loadHealthHistory(phone) {
+  const box = document.getElementById("profileHistoryList");
+  if (!box) return;
+  const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
+  if (!canReachServer) { box.innerHTML = `<p class="section-sub">${t("network_weak")}</p>`; return; }
+  fetch(`${CONFIG.appsScriptUrl}?action=bookingStatus&phone=${phone}`)
+    .then(res => res.json())
+    .then(data => {
+      const list = data.bookings || [];
+      if (list.length === 0) { box.innerHTML = `<p class="section-sub">${t("no_booking_found")}</p>`; return; }
+      box.innerHTML = list.map(b => `
+        <div class="history-row">
+          <strong>${escapeHtmlLocal(b.tests || "-")}</strong>
+          <div class="section-sub">📅 ${escapeHtmlLocal(String(b.date || ""))} · ${escapeHtmlLocal(b.status || "")}${b.amount ? " · ₹" + b.amount : ""}</div>
+        </div>`).join("");
+    })
+    .catch(() => { box.innerHTML = `<p class="section-sub">${t("network_weak")}</p>`; });
+}
+function escapeHtmlLocal(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+/* Auto-load remembered profile the moment the app opens — shown the
+   instant the person taps the Profile tab, no re-typing needed. */
+document.addEventListener("DOMContentLoaded", () => {
+  const savedPhone = localStorage.getItem("kp_phone");
+  if (savedPhone) {
+    document.getElementById("profilePhoneInput").value = savedPhone;
+    loadProfileForPhone(savedPhone, true);
+  }
+  syncPendingProfile();
+});
+
