@@ -102,3 +102,16 @@ body{margin:0;font-family:'Noto Sans Devanagari','Poppins','Segoe UI',system-ui,
 
 /* ---------- Category color badge ---------- */
 .cat-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;font-size:0.85rem;margin-right:8px;flex-shrink:0}
+.cat-group-header{font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin:18px 4px 8px;padding-bottom:4px;border-bottom:2px solid var(--line)}
+.cat-group-header:first-child{margin-top:4px}
+
+/* ---------- Patient list ---------- */
+.patient-card-top{display:flex;align-items:center;gap:12px}
+.avatar-circle{width:44px;height:44px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;flex-shrink:0}
+.patient-card-info strong{font-size:0.98rem}
+.patient-stats-row{display:flex;gap:10px;margin:12px 0}
+.patient-stats-row>div{flex:1;background:var(--bg);border-radius:10px;padding:8px 10px;text-align:center}
+.patient-stats-row strong{display:block;font-size:1.05rem;color:var(--navy)}
+.patient-stats-row span{font-size:0.72rem;color:var(--muted);font-weight:600}
+.patient-history{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.patient-history hr{border:none;border-top:1px dashed var(--line);margin:8px 0}

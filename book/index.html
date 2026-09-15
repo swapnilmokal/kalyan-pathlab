@@ -42,6 +42,7 @@
   <button type="button" class="nav-btn" data-section="booking" data-i18n="nav_booking">📅 बुकिंग</button>
   <button type="button" class="nav-btn" data-section="payment" data-i18n="nav_payment">💳 पेमेंट</button>
   <button type="button" class="nav-btn" data-section="reviews" data-i18n="nav_reviews">⭐ रिव्ह्यूज</button>
+  <button type="button" class="nav-btn" data-section="profile" data-i18n="nav_profile">👤 प्रोफाईल</button>
   <button type="button" class="nav-btn" data-section="contact" data-i18n="nav_contact">📞 संपर्क</button>
   <span class="nav-lang">
     <span class="nav-lang-icon">🌐</span>
@@ -294,6 +295,44 @@
         <p class="form-note" data-i18n="review_form_note">रिव्ह्यू आमच्या टीमकडून तपासल्यानंतर पेजवर दिसेल.</p>
       </form>
       <div id="reviewThanks" class="confirm-box" hidden></div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== MY PROFILE ===== -->
+<div class="page-section" id="section-profile" hidden>
+  <section class="payment">
+    <h2 data-i18n="profile_heading">माझी प्रोफाईल</h2>
+    <p class="section-sub" data-i18n="profile_sub">तुमचा मोबाईल नंबर टाका — प्रोफाईल असेल तर दिसेल, नसेल तर नवीन तयार करा.</p>
+
+    <div class="status-check-box">
+      <input type="tel" id="profilePhoneInput" placeholder="10 अंकी मोबाईल नंबर" pattern="[0-9]{10}" data-i18n-placeholder="placeholder_phone" />
+      <button type="button" id="profileLoadBtn" class="btn btn-primary btn-block" style="margin-top:10px;" data-i18n="profile_load_btn">प्रोफाईल पहा</button>
+
+      <div id="profileFormWrap" hidden style="margin-top:18px">
+        <p id="profileIdLine" class="section-sub"></p>
+        <label><span data-i18n="profile_name_label">पूर्ण नाव</span>
+          <input type="text" id="profileNameField" data-i18n-placeholder="placeholder_fullname" />
+        </label>
+        <label><span data-i18n="profile_age_label">वय</span>
+          <input type="number" id="profileAgeField" min="0" max="120" />
+        </label>
+        <label><span data-i18n="profile_gender_label">लिंग</span>
+          <select id="profileGenderField">
+            <option value="" data-i18n="profile_gender_select">निवडा</option>
+            <option value="Male" data-i18n="profile_gender_male">पुरुष</option>
+            <option value="Female" data-i18n="profile_gender_female">स्त्री</option>
+            <option value="Other" data-i18n="profile_gender_other">इतर</option>
+          </select>
+        </label>
+        <label><span data-i18n="profile_address_label">पत्ता</span>
+          <input type="text" id="profileAddressField" data-i18n-placeholder="placeholder_address" />
+        </label>
+        <label><span data-i18n="profile_city_label">शहर</span>
+          <input type="text" id="profileCityField" data-i18n-placeholder="placeholder_city" />
+        </label>
+        <button type="button" id="profileSaveBtn" class="btn btn-primary btn-block" style="margin-top:14px" data-i18n="profile_save_btn">प्रोफाईल सेव्ह करा</button>
+      </div>
     </div>
   </section>
 </div>

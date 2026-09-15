@@ -202,7 +202,27 @@ const TRANSLATIONS = {
   toast_invalid_phone: { mr: "योग्य 10 अंकी मोबाईल नंबर टाका.", hi: "सही 10 अंकों का मोबाइल नंबर डालें।", en: "Enter a valid 10-digit mobile number." },
   notif_status_prefix: { mr: "तुमची बुकिंग आता", hi: "आपकी बुकिंग अब", en: "Your booking is now" },
   app_link_note: { mr: "पुन्हा भेट देण्यासाठी ही लिंक सेव्ह करा:", hi: "फिर से आने के लिए यह लिंक सेव करें:", en: "Save this link to visit again:" },
-  new_booking_btn: { mr: "🔄 नवीन बुकिंग करा", hi: "🔄 नई बुकिंग करें", en: "🔄 Start a New Booking" }
+  new_booking_btn: { mr: "🔄 नवीन बुकिंग करा", hi: "🔄 नई बुकिंग करें", en: "🔄 Start a New Booking" },
+
+  /* ---------- My Profile ---------- */
+  nav_profile: { mr: "👤 प्रोफाईल", hi: "👤 प्रोफाइल", en: "👤 Profile" },
+  profile_heading: { mr: "माझी प्रोफाईल", hi: "मेरी प्रोफाइल", en: "My Profile" },
+  profile_sub: { mr: "तुमचा मोबाईल नंबर टाका — प्रोफाईल असेल तर दिसेल, नसेल तर नवीन तयार करा.", hi: "अपना मोबाइल नंबर डालें — प्रोफाइल होगी तो दिखेगी, नहीं तो नई बनाएं।", en: "Enter your mobile number — if a profile exists it'll load, otherwise you can create one." },
+  profile_load_btn: { mr: "प्रोफाईल पहा", hi: "प्रोफाइल देखें", en: "Load Profile" },
+  profile_found_line: { mr: "प्रोफाईल सापडली — Patient ID:", hi: "प्रोफाइल मिली — Patient ID:", en: "Profile found — Patient ID:" },
+  profile_new_line: { mr: "या नंबरवर प्रोफाईल नाही — खाली माहिती भरून नवीन तयार करा.", hi: "इस नंबर पर प्रोफाइल नहीं है — नीचे जानकारी भरकर नई बनाएं।", en: "No profile on this number yet — fill in the details below to create one." },
+  profile_name_label: { mr: "पूर्ण नाव", hi: "पूरा नाम", en: "Full Name" },
+  profile_age_label: { mr: "वय", hi: "उम्र", en: "Age" },
+  profile_gender_label: { mr: "लिंग", hi: "लिंग", en: "Gender" },
+  profile_gender_select: { mr: "निवडा", hi: "चुनें", en: "Select" },
+  profile_gender_male: { mr: "पुरुष", hi: "पुरुष", en: "Male" },
+  profile_gender_female: { mr: "स्त्री", hi: "महिला", en: "Female" },
+  profile_gender_other: { mr: "इतर", hi: "अन्य", en: "Other" },
+  profile_address_label: { mr: "पत्ता", hi: "पता", en: "Address" },
+  profile_city_label: { mr: "शहर", hi: "शहर", en: "City" },
+  profile_save_btn: { mr: "प्रोफाईल सेव्ह करा", hi: "प्रोफाइल सेव करें", en: "Save Profile" },
+  profile_saved_toast: { mr: "प्रोफाईल सेव्ह झाली ✓", hi: "प्रोफाइल सेव हुई ✓", en: "Profile saved ✓" },
+  placeholder_city: { mr: "शहराचं नाव", hi: "शहर का नाम", en: "City name" }
 };
 
 // ठराविक शहरांची नावं भाषेनुसार दाखवण्यासाठी (पाठवला जाणारा खरा डेटा नेहमी मराठीतच राहतो,

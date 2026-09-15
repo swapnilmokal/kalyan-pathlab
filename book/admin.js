@@ -131,7 +131,13 @@ const TRANSLATIONS = {
   pin_lock_now: { en: "🔒 Lock Now", mr: "🔒 आत्ताच लॉक करा", hi: "🔒 अभी लॉक करें" },
   pin_invalid: { en: "PIN must be 4–6 digits.", mr: "PIN 4 ते 6 अंकी असावा.", hi: "PIN 4 से 6 अंकों का होना चाहिए।" },
   pin_mismatch: { en: "Both PINs don't match.", mr: "दोन्ही PIN जुळत नाहीत.", hi: "दोनों PIN मेल नहीं खाते।" },
-  pin_changed: { en: "PIN changed ✓", mr: "PIN बदलला ✓", hi: "PIN बदल गया ✓" }
+  pin_changed: { en: "PIN changed ✓", mr: "PIN बदलला ✓", hi: "PIN बदल गया ✓" },
+
+  /* ---------- Patient list ---------- */
+  patients_found: { en: "patient(s) found", mr: "पेशंट सापडले", hi: "मरीज़ मिले" },
+  total_visits: { en: "Visits", mr: "भेटी", hi: "विज़िट" },
+  total_paid: { en: "Total Paid", mr: "एकूण पेमेंट", hi: "कुल भुगतान" },
+  view_history_btn: { en: "📜 View History", mr: "📜 History बघा", hi: "📜 History देखें" }
 };
 let currentLang = localStorage.getItem("kp_admin_lang") || "en";
 function t(key) {
@@ -232,6 +238,7 @@ function renderAll() {
   renderBillingDashboard();
   renderBillsList();
   renderProfitAnalysis();
+  renderPatients();
 }
 
 function renderStats() {
@@ -337,19 +344,34 @@ document.querySelectorAll('#tab-reviews .filter-chip').forEach(chip => chip.addE
 function renderTests(filterText = "") {
   const wrap = document.getElementById("testListAdmin");
   const term = filterText.trim().toLowerCase();
-  const tests = (ALL_DATA.tests || []).filter(x => !term || String(x.name).toLowerCase().includes(term) || String(x.category).toLowerCase().includes(term));
+  let tests = (ALL_DATA.tests || []).filter(x => !term || String(x.name).toLowerCase().includes(term) || String(x.category).toLowerCase().includes(term));
   const categories = [...new Set((ALL_DATA.tests || []).map(x => x.category))];
   document.getElementById("categoryList").innerHTML = categories.map(c => `<option value="${escapeHtml(c)}">`).join("");
   if (tests.length === 0) { wrap.innerHTML = `<p class="empty-msg">${t("no_tests")}</p>`; return; }
-  wrap.innerHTML = tests.map(x => `
+  /* group by category, categories sorted alphabetically, tests within a category sorted alphabetically */
+  tests = tests.slice().sort((a, b) => {
+    const c = String(a.category || "").localeCompare(String(b.category || ""));
+    return c !== 0 ? c : String(a.name || "").localeCompare(String(b.name || ""));
+  });
+  let html = "";
+  let lastCategory = null;
+  tests.forEach(x => {
+    if (x.category !== lastCategory) {
+      html += `<div class="cat-group-header">${escapeHtml(x.category)}</div>`;
+      lastCategory = x.category;
+    }
+    const v = testVisual(x.category, x.name);
+    html += `
     <div class="booking-card">
-      <div class="booking-card-top"><span class="cat-badge" style="${catBadgeStyle(x.category)}">🧪</span><strong>${escapeHtml(x.name)}</strong><span class="amount">₹${x.price}</span></div>
+      <div class="booking-card-top"><span class="cat-badge" style="background:${v.bg};color:${v.fg}">${TEST_ICONS[v.icon]}</span><strong>${escapeHtml(x.name)}</strong><span class="amount">₹${x.price}</span></div>
       <div class="booking-meta">${escapeHtml(x.category)} · <s>₹${x.mrp}</s> MRP · B2B ₹${x.b2b || 0}</div>
       <div class="review-actions">
         <button type="button" class="mini-btn approve edit-test" data-row="${x.rowNum}">${t("btn_edit")}</button>
         <button type="button" class="mini-btn delete delete-test" data-row="${x.rowNum}">${t("btn_delete")}</button>
       </div>
-    </div>`).join("");
+    </div>`;
+  });
+  wrap.innerHTML = html;
   wrap.querySelectorAll(".edit-test").forEach(b => b.addEventListener("click", () => {
     const x = ALL_DATA.tests.find(y => y.rowNum === Number(b.dataset.row));
     if (!x) return;
@@ -401,21 +423,61 @@ function postAdminAction(extra, successMsg) {
     .then(() => { showToast(successMsg || t("saved_refreshing")); setTimeout(loadData, 900); });
 }
 
-document.getElementById("patientSearchBtn").addEventListener("click", () => {
-  const phone = document.getElementById("patientPhoneSearch").value.trim();
-  const result = document.getElementById("patientResult");
-  if (!/^[0-9]{10}$/.test(phone)) { result.innerHTML = `<p class="empty-msg">${t("invalid_phone")}</p>`; return; }
-  const matches = ALL_DATA.bookings.filter(b => String(b.phone).trim() === phone);
-  if (matches.length === 0) { result.innerHTML = `<p class="empty-msg">${t("no_prev_bookings")}</p>`; return; }
-  result.innerHTML = `<p class="empty-msg">${matches.length} ${t("prev_bookings_found")}</p>` + matches.map(b => `
-    <div class="booking-card">
-      <div class="booking-card-top"><strong>${escapeHtml(b.fullName)}</strong><span class="amount">₹${b.amount || 0}</span></div>
-      <div class="booking-meta">${b.patientId ? `🆔 <strong>${escapeHtml(b.patientId)}</strong>` : ""}</div>
-      <div class="booking-meta">📍 ${escapeHtml(b.address || "")}, ${escapeHtml(b.city || "")}</div>
-      <div class="booking-meta">🧪 ${escapeHtml(b.tests || "-")}</div>
-      <div class="booking-meta">📅 ${escapeHtml(String(b.date || ""))} · 🕒 ${escapeHtml(String(b.timestamp || ""))}</div>
+function aggregatePatients() {
+  const map = {};
+  (ALL_DATA.bookings || []).forEach(b => {
+    const phone = String(b.phone || "").trim();
+    if (!phone) return;
+    if (!map[phone]) map[phone] = { phone, name: b.fullName, patientId: b.patientId || "", visits: 0, total: 0, bookings: [] };
+    map[phone].visits++;
+    map[phone].total += Number(b.amount) || 0;
+    map[phone].bookings.push(b);
+    if (!map[phone].patientId && b.patientId) map[phone].patientId = b.patientId;
+  });
+  return Object.values(map).sort((a, b) => b.visits - a.visits || a.name.localeCompare(b.name));
+}
+function initials(name) { const s = String(name || "?").trim(); return s ? s.charAt(0).toUpperCase() : "?"; }
+const AVATAR_COLORS = ["#0b4ea2", "#a1235a", "#a35d00", "#137a3f", "#6b21a8", "#0e7490", "#b1560f"];
+function avatarStyle(name) {
+  let h = 0; const s = String(name || "");
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return `background:${AVATAR_COLORS[h % AVATAR_COLORS.length]}`;
+}
+function renderPatients(filterText) {
+  const wrap = document.getElementById("patientResult");
+  const term = (filterText !== undefined ? filterText : document.getElementById("patientPhoneSearch").value).trim().toLowerCase();
+  let patients = aggregatePatients();
+  if (term) patients = patients.filter(p => String(p.name).toLowerCase().includes(term) || p.phone.includes(term) || String(p.patientId).toLowerCase().includes(term));
+  if (patients.length === 0) { wrap.innerHTML = `<p class="empty-msg">${t("no_prev_bookings")}</p>`; return; }
+  wrap.innerHTML = `<p class="empty-msg">${patients.length} ${t("patients_found")}</p>` + patients.map(p => `
+    <div class="booking-card patient-card">
+      <div class="patient-card-top">
+        <div class="avatar-circle" style="${avatarStyle(p.name)}">${escapeHtml(initials(p.name))}</div>
+        <div class="patient-card-info">
+          <strong>${escapeHtml(p.name)}</strong>
+          <div class="booking-meta">${p.patientId ? `🆔 ${escapeHtml(p.patientId)} · ` : ""}📞 ${escapeHtml(p.phone)}</div>
+        </div>
+      </div>
+      <div class="patient-stats-row">
+        <div><strong>${p.visits}</strong><span>${t("total_visits")}</span></div>
+        <div><strong>₹${p.total}</strong><span>${t("total_paid")}</span></div>
+      </div>
+      <button type="button" class="mini-btn approve view-history" data-phone="${escapeHtml(p.phone)}">${t("view_history_btn")}</button>
+      <div class="patient-history" id="hist-${escapeHtml(p.phone)}" hidden></div>
     </div>`).join("");
-});
+  wrap.querySelectorAll(".view-history").forEach(btn => btn.addEventListener("click", () => {
+    const phone = btn.dataset.phone;
+    const box = document.getElementById(`hist-${phone}`);
+    if (!box.hidden) { box.hidden = true; return; }
+    const p = patients.find(x => x.phone === phone);
+    box.innerHTML = (p ? p.bookings : []).map(b => `
+      <div class="booking-meta">🧪 ${escapeHtml(b.tests || "-")}</div>
+      <div class="booking-meta">📅 ${escapeHtml(String(b.date || ""))} · ₹${b.amount || 0}</div>`).join("<hr>");
+    box.hidden = false;
+  }));
+}
+document.getElementById("patientSearchBtn").addEventListener("click", () => renderPatients());
+document.getElementById("patientPhoneSearch").addEventListener("input", e => renderPatients(e.target.value));
 
 /* ---------- Settings tab ---------- */
 function renderSettingsLinks() {
@@ -720,16 +782,41 @@ function renderProfitAnalysis() {
 }
 
 /* =========================================================
-   CATEGORY COLOR BADGES (visual only — deterministic per category)
+   DYNAMIC TEST ICONS — original hand-drawn SVGs, chosen per
+   test/category keyword (kidney, liver, thyroid, urine, heart,
+   blood, vitamins, fever, hormone) with a generic test-tube default.
    ========================================================= */
-const CATEGORY_BG = ["#e8f0ff", "#fde8ec", "#fff4e0", "#e8f8ef", "#f3e8ff", "#e8f7fb"];
-const CATEGORY_FG = ["#0b4ea2", "#a1235a", "#a35d00", "#137a3f", "#6b21a8", "#0e7490"];
-function catBadgeStyle(category) {
-  let h = 0;
-  const s = String(category || "");
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  const idx = h % CATEGORY_BG.length;
-  return `background:${CATEGORY_BG[idx]};color:${CATEGORY_FG[idx]}`;
+const TEST_ICONS = {
+  kidney: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3C6 3 4 6.3 4 10.2c0 3 1.3 4 1.3 6 0 2.6 1.7 4.8 4.4 4.8 2 0 3.3-1.4 3.3-3.3 0-1.6-1.1-2.1-1.1-3.7s1.4-2 1.4-3.9C13.3 6.7 12.3 3 9.5 3Z"/></svg>',
+  liver: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9c0-3 2.5-5 6-5h5c3 0 5.5 2.7 5.5 6.2 0 4.3-3.3 7.8-7.5 7.8H9c-3 0-5-2.2-5-5V9Z"/></svg>',
+  thyroid: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="4"/><circle cx="16.5" cy="12" r="4"/><path d="M11.3 10.5h1.4M11.3 13.5h1.4"/></svg>',
+  droplet: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6.5 7.4 6.5 12a6.5 6.5 0 1 1-13 0C5.5 10.4 12 3 12 3Z"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7.2-4.5-9.7-9.2A5.4 5.4 0 0 1 12 6.3a5.4 5.4 0 0 1 9.7 5.5C19.2 16.5 12 21 12 21Z"/></svg>',
+  glucose: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 7 6 11.5a6 6 0 1 1-12 0C6 10 12 3 12 3Z"/><path d="M12 12v5M9.5 14.5h5"/></svg>',
+  lipid: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 7 6 11.5a6 6 0 1 1-12 0C6 10 12 3 12 3Z"/><path d="M9 13.5h6M9 16h6" stroke-width="1.3"/></svg>',
+  capsule: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="10" width="17" height="4" rx="2"/><path d="M12 10v4"/></svg>',
+  thermo: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14.2V5a1.5 1.5 0 1 1 3 0v9.2a3.5 3.5 0 1 1-3 0Z"/></svg>',
+  hormone: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6.5" r="2.3"/><circle cx="18" cy="6.5" r="2.3"/><circle cx="12" cy="18" r="2.3"/><path d="M7.7 8.2 10.5 16M16.3 8.2 13.5 16"/></svg>',
+  blood: '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" stroke="none"><path d="M12 2.5s7 8.3 7 13.3a7 7 0 1 1-14 0c0-5 7-13.3 7-13.3Z"/></svg>',
+  tube: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v7l-4.3 8a2 2 0 0 0 1.8 2.9h9a2 2 0 0 0 1.8-2.9L14 10V3"/></svg>'
+};
+const TEST_ICON_RULES = [
+  { kw: ["kidney"], icon: "kidney", bg: "#f4ead9", fg: "#8a5a1f" },
+  { kw: ["liver"], icon: "liver", bg: "#ffe8d6", fg: "#b1560f" },
+  { kw: ["thyroid"], icon: "thyroid", bg: "#f3e8ff", fg: "#6b21a8" },
+  { kw: ["urine", "bladder", "cue"], icon: "droplet", bg: "#fff6d9", fg: "#a3790a" },
+  { kw: ["cardiac", "heart", "ecg", "troponin", "aso"], icon: "heart", bg: "#ffe1e6", fg: "#b3123f" },
+  { kw: ["diabetes", "sugar", "glucose", "hba1c", "insulin", "fbs", "ppbs", "rbs"], icon: "glucose", bg: "#ffe9d6", fg: "#b1560f" },
+  { kw: ["lipid", "cholesterol", "triglyceride", "hdl", "ldl"], icon: "lipid", bg: "#e6ecff", fg: "#3346c9" },
+  { kw: ["vitamin", "mineral", "b12", "iron", "calcium", "magnesium", "tibc", "ferritin"], icon: "capsule", bg: "#e3f7ea", fg: "#12793f" },
+  { kw: ["fever", "infection", "widal", "dengue", "malaria", "covid", "crp", "typhoid"], icon: "thermo", bg: "#ffe1e1", fg: "#c21f1f" },
+  { kw: ["hormone", "fertility", "pregnancy", "hcg", "prolactin", "testosterone", "fsh", "lh"], icon: "hormone", bg: "#ffe3f0", fg: "#b3126e" },
+  { kw: ["blood", "cbc", "hemoglobin", "anemia", "platelet", "esr", "grouping", "smear"], icon: "blood", bg: "#ffe1e6", fg: "#c21f1f" }
+];
+function testVisual(category, name) {
+  const s = (String(category || "") + " " + String(name || "")).toLowerCase();
+  for (const rule of TEST_ICON_RULES) { if (rule.kw.some(k => s.includes(k))) return rule; }
+  return { icon: "tube", bg: "#e8f0ff", fg: "#0b4ea2" };
 }
 
 /* =========================================================

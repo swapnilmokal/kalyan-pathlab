@@ -77,7 +77,7 @@ async function shareApp() {
 });
 
 /* ---------- Tab navigation (एका वेळी एकच सेक्शन दिसतं) ---------- */
-const SECTION_IDS = ["home", "tests", "booking", "payment", "reviews", "contact"];
+const SECTION_IDS = ["home", "tests", "booking", "payment", "reviews", "profile", "contact"];
 function showSection(name) {
   SECTION_IDS.forEach((id) => {
     const el = document.getElementById(`section-${id}`);
@@ -673,3 +673,50 @@ function checkForStatusUpdate() {
     })
     .catch(() => {});
 }
+
+/* =========================================================
+   MY PROFILE (view/create/edit patient profile by phone)
+   ========================================================= */
+document.getElementById("profileLoadBtn").addEventListener("click", () => {
+  const phone = document.getElementById("profilePhoneInput").value.trim();
+  if (!/^[0-9]{10}$/.test(phone)) { showToast(t("toast_invalid_phone")); return; }
+  if (!CONFIG.appsScriptUrl || CONFIG.appsScriptUrl.startsWith("PASTE_")) return;
+  fetch(`${CONFIG.appsScriptUrl}?action=profile&phone=${phone}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("profileFormWrap").hidden = false;
+      const idLine = document.getElementById("profileIdLine");
+      if (data.found) {
+        idLine.textContent = `${t("profile_found_line")} ${data.patientId}`;
+        document.getElementById("profileNameField").value = data.name || "";
+        document.getElementById("profileAgeField").value = data.age || "";
+        document.getElementById("profileGenderField").value = data.gender || "";
+        document.getElementById("profileAddressField").value = data.address || "";
+        document.getElementById("profileCityField").value = data.city || "";
+      } else {
+        idLine.textContent = t("profile_new_line");
+        document.getElementById("profileNameField").value = "";
+        document.getElementById("profileAgeField").value = "";
+        document.getElementById("profileGenderField").value = "";
+        document.getElementById("profileAddressField").value = "";
+        document.getElementById("profileCityField").value = "";
+      }
+    })
+    .catch(() => showToast(t("network_weak")));
+});
+
+document.getElementById("profileSaveBtn").addEventListener("click", () => {
+  const phone = document.getElementById("profilePhoneInput").value.trim();
+  if (!/^[0-9]{10}$/.test(phone)) { showToast(t("toast_invalid_phone")); return; }
+  const payload = {
+    type: "profile",
+    phone,
+    name: document.getElementById("profileNameField").value.trim(),
+    age: document.getElementById("profileAgeField").value,
+    gender: document.getElementById("profileGenderField").value,
+    address: document.getElementById("profileAddressField").value.trim(),
+    city: document.getElementById("profileCityField").value.trim()
+  };
+  fetch(CONFIG.appsScriptUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) })
+    .then(() => showToast(t("profile_saved_toast")));
+});
