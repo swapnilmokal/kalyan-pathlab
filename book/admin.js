@@ -154,7 +154,7 @@ function applyLanguage(lang) {
 }
 document.getElementById("adminLangSelect").addEventListener("change", e => applyLanguage(e.target.value));
 
-let ALL_DATA = { bookings: [], reviews: [], tests: [], bills: [], settings: {} };
+let ALL_DATA = { bookings: [], reviews: [], tests: [], bills: [], patientProfiles: [], settings: {} };
 let currentReviewFilter = "all";
 let currentBookingFilter = "all";
 let editingTestRowNum = null;
@@ -428,11 +428,19 @@ function aggregatePatients() {
   (ALL_DATA.bookings || []).forEach(b => {
     const phone = String(b.phone || "").trim();
     if (!phone) return;
-    if (!map[phone]) map[phone] = { phone, name: b.fullName, patientId: b.patientId || "", visits: 0, total: 0, bookings: [] };
+    if (!map[phone]) map[phone] = { phone, name: b.fullName, patientId: b.patientId || "", photo: "", visits: 0, total: 0, bookings: [] };
     map[phone].visits++;
     map[phone].total += Number(b.amount) || 0;
     map[phone].bookings.push(b);
     if (!map[phone].patientId && b.patientId) map[phone].patientId = b.patientId;
+  });
+  (ALL_DATA.patientProfiles || []).forEach(p => {
+    const phone = String(p.phone || "").trim();
+    if (!phone) return;
+    if (!map[phone]) map[phone] = { phone, name: p.name, patientId: p.patientId || "", photo: p.photo || "", visits: 0, total: 0, bookings: [] };
+    if (p.name) map[phone].name = p.name;
+    if (p.photo) map[phone].photo = p.photo;
+    if (p.patientId) map[phone].patientId = p.patientId;
   });
   return Object.values(map).sort((a, b) => b.visits - a.visits || a.name.localeCompare(b.name));
 }
@@ -452,7 +460,7 @@ function renderPatients(filterText) {
   wrap.innerHTML = `<p class="empty-msg">${patients.length} ${t("patients_found")}</p>` + patients.map(p => `
     <div class="booking-card patient-card">
       <div class="patient-card-top">
-        <div class="avatar-circle" style="${avatarStyle(p.name)}">${escapeHtml(initials(p.name))}</div>
+        ${p.photo ? `<img src="${escapeHtml(p.photo)}" class="avatar-circle" style="object-fit:cover" alt="">` : `<div class="avatar-circle" style="${avatarStyle(p.name)}">${escapeHtml(initials(p.name))}</div>`}
         <div class="patient-card-info">
           <strong>${escapeHtml(p.name)}</strong>
           <div class="booking-meta">${p.patientId ? `🆔 ${escapeHtml(p.patientId)} · ` : ""}📞 ${escapeHtml(p.phone)}</div>

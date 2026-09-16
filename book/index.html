@@ -29,6 +29,9 @@
     </div>
     <a class="topbar-call" href="tel:+919870020674" aria-label="कॉल करा">☎</a>
     <button type="button" class="topbar-share" id="shareBtn" aria-label="शेअर करा">🔗</button>
+    <button type="button" class="topbar-profile-badge" id="topProfileBadge" aria-label="Profile" data-section="profile">
+      <span id="topProfileAvatarWrap" class="topbar-avatar">👤</span>
+    </button>
   </div>
   <div class="ecg-line" aria-hidden="true">
     <svg viewBox="0 0 600 40" preserveAspectRatio="none"><polyline points="0,20 60,20 80,5 100,35 120,20 180,20 200,8 215,32 230,20 300,20 320,5 340,35 360,20 420,20 440,8 455,32 470,20 600,20"/></svg>
@@ -305,13 +308,30 @@
     <h2 data-i18n="profile_heading">माझी प्रोफाईल</h2>
     <p class="section-sub" data-i18n="profile_sub">तुमचा मोबाईल नंबर टाका — प्रोफाईल असेल तर दिसेल, नसेल तर नवीन तयार करा.</p>
 
-    <div class="status-check-box">
+    <div id="familyProfilesBox" class="status-check-box" hidden>
+      <h3 data-i18n="family_heading">👪 या डिव्हाइसवरील प्रोफाईल्स</h3>
+      <div id="familyProfilesList"></div>
+      <button type="button" id="addFamilyBtn" class="btn btn-outline btn-block" style="margin-top:10px" data-i18n="family_add_btn">+ नवीन व्यक्ती जोडा</button>
+    </div>
+
+    <div class="status-check-box" id="profileLoginBox">
       <input type="tel" id="profilePhoneInput" placeholder="10 अंकी मोबाईल नंबर" pattern="[0-9]{10}" data-i18n-placeholder="placeholder_phone" />
-      <button type="button" id="profileLoadBtn" class="btn btn-primary btn-block" style="margin-top:10px;" data-i18n="profile_load_btn">प्रोफाईल पहा</button>
+      <button type="button" id="profileLoadBtn" class="btn btn-primary btn-block" style="margin-top:10px;" data-i18n="profile_load_btn">प्रोफाईल पहा (Login)</button>
+      <button type="button" id="guestModeBtn" class="link-btn" style="display:block;text-align:center;margin-top:10px" data-i18n="guest_mode_btn">Guest म्हणून पुढे जा →</button>
       <p id="profileSyncStatus" class="section-sub" style="margin-top:8px"></p>
 
       <div id="profileFormWrap" hidden style="margin-top:18px">
         <p id="profileIdLine" class="section-sub"></p>
+
+        <div class="profile-photo-row">
+          <div class="profile-photo-preview" id="profilePhotoPreviewWrap">
+            <img id="profilePhotoPreview" src="" alt="" hidden />
+            <span id="profilePhotoPlaceholder">👤</span>
+          </div>
+          <label class="btn btn-outline" for="profilePhotoInput" data-i18n="profile_photo_choose">📷 फोटो निवडा</label>
+          <input type="file" id="profilePhotoInput" accept="image/*" hidden />
+        </div>
+
         <label><span data-i18n="profile_name_label">पूर्ण नाव</span>
           <input type="text" id="profileNameField" data-i18n-placeholder="placeholder_fullname" />
         </label>
@@ -333,6 +353,7 @@
           <input type="text" id="profileCityField" data-i18n-placeholder="placeholder_city" />
         </label>
         <button type="button" id="profileSaveBtn" class="btn btn-primary btn-block" style="margin-top:14px" data-i18n="profile_save_btn">प्रोफाईल सेव्ह करा</button>
+        <button type="button" id="switchProfileBtn" class="link-btn" style="display:block;text-align:center;margin-top:10px" data-i18n="switch_profile_btn">← दुसरी प्रोफाईल / नवीन व्यक्ती</button>
       </div>
 
       <div id="profileHistorySection" style="margin-top:22px">

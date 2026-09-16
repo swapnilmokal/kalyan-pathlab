@@ -227,7 +227,14 @@ const TRANSLATIONS = {
   profile_synced_status: { mr: "✅ Online सेव्ह झालं (synced)", hi: "✅ Online सेव हो गया (synced)", en: "✅ Saved online (synced)" },
   profile_saved_offline_toast: { mr: "या डिव्हाइसवर सेव्ह झालं — इंटरनेट आल्यावर आपोआप sync होईल", hi: "इस डिवाइस पर सेव हुआ — इंटरनेट आने पर अपने आप sync होगा", en: "Saved on this device — will sync automatically once you're online" },
   profile_sync_done_toast: { mr: "प्रोफाईल आता online sync झाली ✓", hi: "प्रोफाइल अब online sync हो गई ✓", en: "Profile is now synced online ✓" },
-  profile_history_heading: { mr: "📋 माझा टेस्ट इतिहास", hi: "📋 मेरा टेस्ट इतिहास", en: "📋 My Test History" }
+  profile_history_heading: { mr: "📋 माझा टेस्ट इतिहास", hi: "📋 मेरा टेस्ट इतिहास", en: "📋 My Test History" },
+  family_heading: { mr: "👪 या डिव्हाइसवरील प्रोफाईल्स", hi: "👪 इस डिवाइस पर प्रोफाइल", en: "👪 Profiles on this device" },
+  family_add_btn: { mr: "+ नवीन व्यक्ती जोडा", hi: "+ नया व्यक्ति जोड़ें", en: "+ Add New Person" },
+  guest_mode_btn: { mr: "Guest म्हणून पुढे जा →", hi: "Guest के रूप में आगे बढ़ें →", en: "Continue as Guest →" },
+  guest_mode_toast: { mr: "Guest म्हणून सुरू आहात — बुकिंग करता येईल, पण history सेव्ह होणार नाही.", hi: "Guest के तौर पर चल रहे हैं — बुकिंग कर सकते हैं, पर history सेव नहीं होगी।", en: "Continuing as Guest — you can still book, but history won't be saved." },
+  profile_photo_choose: { mr: "📷 फोटो निवडा", hi: "📷 फोटो चुनें", en: "📷 Choose Photo" },
+  switch_profile_btn: { mr: "← दुसरी प्रोफाईल / नवीन व्यक्ती", hi: "← दूसरी प्रोफाइल / नया व्यक्ति", en: "← Switch Profile / Add Person" },
+  photo_too_large: { mr: "फोटो 3MB पेक्षा लहान असावा.", hi: "फोटो 3MB से छोटी होनी चाहिए।", en: "Photo must be under 3MB." }
 };
 
 // ठराविक शहरांची नावं भाषेनुसार दाखवण्यासाठी (पाठवला जाणारा खरा डेटा नेहमी मराठीतच राहतो,

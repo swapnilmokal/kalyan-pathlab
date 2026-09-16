@@ -674,17 +674,66 @@ function checkForStatusUpdate() {
     .catch(() => {});
 }
 
+
 /* =========================================================
-   MY PROFILE — offline-first: saves to this device instantly (works
-   without internet), syncs to the server in the background, and
-   auto-loads next time the app opens (no need to re-enter phone).
+   MY PROFILE / LOGIN — phone-number login, offline-first cache,
+   background sync, photo upload, and multi-profile (family member)
+   switching so more than one person can use the same device.
    ========================================================= */
-const PROFILE_CACHE_KEY = "kp_profile_cache";
-const PROFILE_PENDING_KEY = "kp_profile_pending";
+const PROFILE_CACHE_KEY = "kp_profile_cache";      // last-loaded profile for the CURRENT active phone
+const PROFILE_PENDING_KEY = "kp_profile_pending";  // queued save, waiting for internet
+const FAMILY_KEY = "kp_family_profiles";           // [{phone,name,photo}] remembered on this device
+const ACTIVE_PHONE_KEY = "kp_phone";               // which family member is active right now
+let selectedPhotoBase64 = null;
+let selectedPhotoType = null;
+
+function getFamilyProfiles() {
+  try { return JSON.parse(localStorage.getItem(FAMILY_KEY) || "[]"); } catch (e) { return []; }
+}
+function saveFamilyProfiles(list) { localStorage.setItem(FAMILY_KEY, JSON.stringify(list)); }
+function upsertFamilyProfile(phone, name, photo) {
+  const list = getFamilyProfiles();
+  const i = list.findIndex(p => p.phone === phone);
+  const entry = { phone, name: name || "", photo: photo || "" };
+  if (i > -1) list[i] = { ...list[i], ...entry }; else list.push(entry);
+  saveFamilyProfiles(list);
+  renderFamilyChips();
+}
+
+function initials(name) { const s = String(name || "?").trim(); return s ? s.charAt(0).toUpperCase() : "?"; }
+
+function updateTopBadge(name, photo) {
+  const wrap = document.getElementById("topProfileAvatarWrap");
+  if (!wrap) return;
+  wrap.innerHTML = photo ? `<img src="${photo}" alt="">` : (name ? initials(name) : "👤");
+}
+
+function renderFamilyChips() {
+  const list = getFamilyProfiles();
+  const box = document.getElementById("familyProfilesBox");
+  const wrap = document.getElementById("familyProfilesList");
+  if (!box || !wrap) return;
+  if (list.length === 0) { box.hidden = true; return; }
+  box.hidden = false;
+  const activePhone = localStorage.getItem(ACTIVE_PHONE_KEY);
+  wrap.innerHTML = list.map(p => `
+    <div class="family-chip${p.phone === activePhone ? " active-chip" : ""}" data-phone="${p.phone}">
+      <div class="family-chip-avatar">${p.photo ? `<img src="${p.photo}" alt="">` : initials(p.name)}</div>
+      <div class="family-chip-info"><strong>${p.name || t("profile_new_line")}</strong><span>📞 ${p.phone}</span></div>
+    </div>`).join("");
+  wrap.querySelectorAll(".family-chip").forEach(chip => chip.addEventListener("click", () => {
+    const phone = chip.dataset.phone;
+    document.getElementById("profilePhoneInput").value = phone;
+    document.getElementById("profileLoginBox").hidden = false;
+    loadProfileForPhone(phone, false);
+  }));
+}
 
 function cacheProfileLocally(phone, profile) {
   localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify({ phone, profile, savedAt: Date.now() }));
-  localStorage.setItem("kp_phone", phone);
+  localStorage.setItem(ACTIVE_PHONE_KEY, phone);
+  upsertFamilyProfile(phone, profile.name, profile.photo);
+  updateTopBadge(profile.name, profile.photo);
 }
 function getCachedProfile(phone) {
   try {
@@ -701,6 +750,11 @@ function fillProfileForm(p) {
   document.getElementById("profileGenderField").value = p.gender || "";
   document.getElementById("profileAddressField").value = p.address || "";
   document.getElementById("profileCityField").value = p.city || "";
+  const img = document.getElementById("profilePhotoPreview");
+  const placeholder = document.getElementById("profilePhotoPlaceholder");
+  if (p.photo) { img.src = p.photo; img.hidden = false; placeholder.hidden = true; }
+  else { img.hidden = true; placeholder.hidden = false; }
+  selectedPhotoBase64 = null; selectedPhotoType = null; /* reset — only re-upload if user picks a NEW file */
 }
 function setSyncStatus(msg) {
   const el = document.getElementById("profileSyncStatus");
@@ -713,6 +767,7 @@ function loadProfileForPhone(phone, silent) {
     fillProfileForm(cached);
     document.getElementById("profileIdLine").textContent = cached.patientId ? `${t("profile_found_line")} ${cached.patientId}` : t("profile_new_line");
     setSyncStatus(t("profile_offline_copy"));
+    updateTopBadge(cached.name, cached.photo);
   }
   const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
   if (!canReachServer) { if (!cached && !silent) showToast(t("network_weak")); return; }
@@ -726,6 +781,7 @@ function loadProfileForPhone(phone, silent) {
         fillProfileForm(data);
         cacheProfileLocally(phone, data);
         setSyncStatus(t("profile_synced_status"));
+        updateTopBadge(data.name, data.photo);
       } else if (!cached) {
         idLine.textContent = t("profile_new_line");
         fillProfileForm({});
@@ -742,18 +798,55 @@ document.getElementById("profileLoadBtn").addEventListener("click", () => {
   loadProfileForPhone(phone, false);
 });
 
+document.getElementById("guestModeBtn").addEventListener("click", () => {
+  showSection("home");
+  showToast(t("guest_mode_toast"));
+});
+
+document.getElementById("switchProfileBtn").addEventListener("click", () => {
+  document.getElementById("profileFormWrap").hidden = true;
+  document.getElementById("profilePhoneInput").value = "";
+  document.getElementById("profileIdLine").textContent = "";
+  setSyncStatus("");
+  document.getElementById("profileHistoryList").innerHTML = "";
+  renderFamilyChips();
+});
+document.getElementById("addFamilyBtn").addEventListener("click", () => {
+  document.getElementById("profileFormWrap").hidden = true;
+  document.getElementById("profilePhoneInput").value = "";
+  document.getElementById("profilePhoneInput").focus();
+});
+
+/* ---- Photo picker ---- */
+document.getElementById("profilePhotoInput").addEventListener("change", async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const MAX_SIZE = 3 * 1024 * 1024; // 3MB
+  if (file.size > MAX_SIZE) { showToast(t("photo_too_large")); e.target.value = ""; return; }
+  selectedPhotoBase64 = await fileToBase64(file);
+  selectedPhotoType = file.type;
+  const img = document.getElementById("profilePhotoPreview");
+  const placeholder = document.getElementById("profilePhotoPlaceholder");
+  img.src = `data:${file.type};base64,${selectedPhotoBase64}`;
+  img.hidden = false;
+  placeholder.hidden = true;
+});
+
 document.getElementById("profileSaveBtn").addEventListener("click", () => {
   const phone = document.getElementById("profilePhoneInput").value.trim();
   if (!/^[0-9]{10}$/.test(phone)) { showToast(t("toast_invalid_phone")); return; }
+  const existingCached = getCachedProfile(phone) || {};
   const profile = {
     name: document.getElementById("profileNameField").value.trim(),
     age: document.getElementById("profileAgeField").value,
     gender: document.getElementById("profileGenderField").value,
     address: document.getElementById("profileAddressField").value.trim(),
-    city: document.getElementById("profileCityField").value.trim()
+    city: document.getElementById("profileCityField").value.trim(),
+    photo: selectedPhotoBase64 ? `data:${selectedPhotoType};base64,${selectedPhotoBase64}` : (existingCached.photo || "")
   };
   cacheProfileLocally(phone, profile); /* saved on this device immediately — never lost, works offline */
-  const payload = { type: "profile", phone, ...profile };
+  const payload = { type: "profile", phone, name: profile.name, age: profile.age, gender: profile.gender, address: profile.address, city: profile.city };
+  if (selectedPhotoBase64) { payload.photoBase64 = selectedPhotoBase64; payload.photoType = selectedPhotoType; }
   const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
   if (!canReachServer) {
     localStorage.setItem(PROFILE_PENDING_KEY, JSON.stringify(payload));
@@ -788,6 +881,9 @@ function syncPendingProfile() {
 }
 window.addEventListener("online", syncPendingProfile);
 
+/* ---- Top header badge → tap to jump to Profile tab ---- */
+document.getElementById("topProfileBadge").addEventListener("click", () => showSection("profile"));
+
 /* ---- Simple, real "health record" = their own past bookings/tests, not fabricated data ---- */
 function loadHealthHistory(phone) {
   const box = document.getElementById("profileHistoryList");
@@ -809,14 +905,15 @@ function loadHealthHistory(phone) {
 }
 function escapeHtmlLocal(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
-/* Auto-load remembered profile the moment the app opens — shown the
-   instant the person taps the Profile tab, no re-typing needed. */
+/* Auto-login: if a phone is remembered on this device, load that
+   profile right away (front-end shows name/photo without asking
+   again), and render the family-member switcher. */
 document.addEventListener("DOMContentLoaded", () => {
-  const savedPhone = localStorage.getItem("kp_phone");
+  renderFamilyChips();
+  const savedPhone = localStorage.getItem(ACTIVE_PHONE_KEY);
   if (savedPhone) {
     document.getElementById("profilePhoneInput").value = savedPhone;
     loadProfileForPhone(savedPhone, true);
   }
   syncPendingProfile();
 });
-

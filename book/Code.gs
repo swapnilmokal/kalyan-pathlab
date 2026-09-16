@@ -1,4 +1,4 @@
-﻿/* Kalyan Pathlab - Backend (Google Apps Script) */
+/* Kalyan Pathlab - Backend (Google Apps Script) */
 
 const LAB_OWNER_EMAIL = "kalyan.pathlab.21@gmail.com";
 const LAB_NAME = "Kalyan Pathlab";
@@ -193,7 +193,7 @@ function getAllAdminData(ss) {
       rowNum: i + 2, timestamp: r[0], name: r[1], phone: r[2], test: r[3], rating: r[4], feedback: r[5], status: r[6]
     })).reverse();
   }
-  return { bookings, reviews, tests: getTestsFromSheet(ss, true), bills: getBillsFromSheet(ss, true), settings: getSettings_(ss), sheetUrl: ss.getUrl(), driveUrl: getReportsFolderUrl_() };
+  return { bookings, reviews, tests: getTestsFromSheet(ss, true), bills: getBillsFromSheet(ss, true), patientProfiles: getAllPatientProfiles_(ss), settings: getSettings_(ss), sheetUrl: ss.getUrl(), driveUrl: getReportsFolderUrl_() };
 }
 
 function getReportsFolderUrl_() {
