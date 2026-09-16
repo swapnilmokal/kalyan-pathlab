@@ -86,6 +86,7 @@ function showSection(name) {
   document.querySelectorAll(".nav-btn").forEach((b) => {
     b.classList.toggle("active", b.dataset.section === name);
   });
+  if (name === "booking" && typeof prefillBookingFromProfile === "function") prefillBookingFromProfile();
   // सेक्शन बदलल्यावर तो नक्की वरती (sticky topbar/nav च्या खाली) दिसावा म्हणून
   // window.scrollTo ऐवजी त्याच सेक्शनला थेट scrollIntoView करतो — जुन्या स्क्रोल
   // पोझिशनमुळे नवीन सेक्शन अर्धवट/लपलेला दिसण्याची शक्यता यामुळे राहत नाही.
@@ -113,7 +114,7 @@ if ("serviceWorker" in navigator) {
 /* ---------- Cities ---------- */
 function renderCities() {
   const chips = document.getElementById("cityChips");
-  chips.innerHTML = CONFIG.cities.map((c) => `<span>${translateCityName(c)}</span>`).join("");
+  if (chips) chips.innerHTML = CONFIG.cities.map((c) => `<span>${translateCityName(c)}</span>`).join("");
   const select = document.getElementById("city");
   const prevValue = select.value;
   select.innerHTML =
@@ -917,3 +918,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   syncPendingProfile();
 });
+
+/* ---- Auto-fill the booking form from the active profile (no re-typing) ---- */
+function prefillBookingFromProfile() {
+  const phone = localStorage.getItem(ACTIVE_PHONE_KEY);
+  if (!phone) return;
+  const cached = getCachedProfile(phone);
+  if (!cached) return;
+  const phoneField = document.getElementById("phone");
+  const nameField = document.getElementById("fullName");
+  const addressField = document.getElementById("address");
+  const cityField = document.getElementById("city");
+  if (phoneField && !phoneField.value) phoneField.value = phone;
+  if (nameField && !nameField.value && cached.name) nameField.value = cached.name;
+  if (addressField && !addressField.value && cached.address) addressField.value = cached.address;
+  if (cityField && !cityField.value && cached.city) cityField.value = cached.city;
+}

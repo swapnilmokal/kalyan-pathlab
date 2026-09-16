@@ -73,6 +73,17 @@ section{padding:30px 18px; max-width:720px; margin:0 auto;}
 .hero-grid{display:flex; flex-direction:column-reverse; gap:26px;}
 .hero-copy{text-align:center; animation:fadeInUp .5s ease;}
 .discount-badge{display:inline-block; background:#fdeaea; color:var(--red-dark); font-weight:700; padding:8px 16px; border-radius:999px; font-size:0.95rem; margin-bottom:16px; border:1px solid #f7c6c6; animation:badgePulse 2.6s ease-in-out infinite;}
+
+/* ---------- Home = simple app-style menu (no long scroll) ---------- */
+.home-menu{padding:28px 16px 20px; max-width:520px; margin:0 auto;}
+.home-menu-top{text-align:center; margin-bottom:22px;}
+.home-menu-top h1{font-size:1.5rem; margin:6px 0 0; color:var(--navy);}
+.menu-tiles{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.menu-tile{background:var(--card); border:1.5px solid var(--line); border-radius:18px; padding:22px 10px; display:flex; flex-direction:column; align-items:center; gap:10px; cursor:pointer; box-shadow:var(--shadow); transition:transform .12s ease;}
+.menu-tile:active{transform:scale(0.95); background:var(--bg);}
+.menu-tile-icon{font-size:2.1rem;}
+.menu-tile-label{font-weight:700; font-size:0.98rem; color:var(--navy); text-align:center;}
+.menu-tile:nth-child(5){grid-column:1 / -1;}
 .hero h1{font-size:2.15rem; color:var(--navy); line-height:1.28;}
 .hero h1 span{color:var(--red);}
 .hero-sub{color:var(--muted); max-width:520px; margin:14px auto 22px; font-size:1.05rem;}

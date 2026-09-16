@@ -437,10 +437,14 @@ function aggregatePatients() {
   (ALL_DATA.patientProfiles || []).forEach(p => {
     const phone = String(p.phone || "").trim();
     if (!phone) return;
-    if (!map[phone]) map[phone] = { phone, name: p.name, patientId: p.patientId || "", photo: p.photo || "", visits: 0, total: 0, bookings: [] };
+    if (!map[phone]) map[phone] = { phone, name: p.name, patientId: p.patientId || "", photo: "", visits: 0, total: 0, bookings: [] };
     if (p.name) map[phone].name = p.name;
     if (p.photo) map[phone].photo = p.photo;
     if (p.patientId) map[phone].patientId = p.patientId;
+    map[phone].age = p.age || "";
+    map[phone].gender = p.gender || "";
+    map[phone].address = p.address || "";
+    map[phone].city = p.city || "";
   });
   return Object.values(map).sort((a, b) => b.visits - a.visits || a.name.localeCompare(b.name));
 }
@@ -470,6 +474,7 @@ function renderPatients(filterText) {
         <div><strong>${p.visits}</strong><span>${t("total_visits")}</span></div>
         <div><strong>₹${p.total}</strong><span>${t("total_paid")}</span></div>
       </div>
+      ${(p.age || p.gender || p.address || p.city) ? `<div class="booking-meta">${[p.age ? p.age + " yrs" : "", p.gender, p.city].filter(Boolean).join(" · ")}</div>${p.address ? `<div class="booking-meta">📍 ${escapeHtml(p.address)}</div>` : ""}` : ""}
       <button type="button" class="mini-btn approve view-history" data-phone="${escapeHtml(p.phone)}">${t("view_history_btn")}</button>
       <div class="patient-history" id="hist-${escapeHtml(p.phone)}" hidden></div>
     </div>`).join("");

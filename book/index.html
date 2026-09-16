@@ -40,12 +40,12 @@
 
 <!-- ===== MAIN NAV TABS + भाषा निवड (एकाच रांगेत) ===== -->
 <nav class="main-nav" id="mainNav">
-  <button type="button" class="nav-btn active" data-section="home" data-i18n="nav_home">🏠 मुख्यपृष्ठ</button>
+  <button type="button" class="nav-btn" data-section="home" data-i18n="nav_home">🏠 मुख्यपृष्ठ</button>
   <button type="button" class="nav-btn" data-section="tests" data-i18n="nav_tests">🧪 टेस्ट लिस्ट</button>
   <button type="button" class="nav-btn" data-section="booking" data-i18n="nav_booking">📅 बुकिंग</button>
   <button type="button" class="nav-btn" data-section="payment" data-i18n="nav_payment">💳 पेमेंट</button>
   <button type="button" class="nav-btn" data-section="reviews" data-i18n="nav_reviews">⭐ रिव्ह्यूज</button>
-  <button type="button" class="nav-btn" data-section="profile" data-i18n="nav_profile">👤 प्रोफाईल</button>
+  <button type="button" class="nav-btn active" data-section="profile" data-i18n="nav_profile">👤 प्रोफाईल</button>
   <button type="button" class="nav-btn" data-section="contact" data-i18n="nav_contact">📞 संपर्क</button>
   <span class="nav-lang">
     <span class="nav-lang-icon">🌐</span>
@@ -60,58 +60,38 @@
 <div id="notifBanner" class="confirm-banner" hidden></div>
 
 <!-- ===== HOME ===== -->
-<div class="page-section" id="section-home">
+<div class="page-section" id="section-home" hidden>
 
-  <section class="hero">
-    <div class="hero-grid">
-      <div class="hero-copy">
-        <div class="discount-badge" data-i18n="discount_badge">सर्व टेस्टवर 30% ते 70% सवलत</div>
-        <h1><span data-i18n="hero_title_line1">तुमची तपासणी,</span><br /><span data-i18n="hero_title_line2">घरबसल्या व विश्वासाने.</span></h1>
-        <p class="hero-sub" data-i18n="hero_sub">रक्त तपासणी, फुल बॉडी चेकअप — अचूक रिपोर्ट्स, वाजवी दरात. सॅम्पल कलेक्शनसाठी घरी येण्याची सेवा पूर्ण मोफत.</p>
-        <div class="hero-actions">
-          <button type="button" class="btn btn-primary jump-to" data-section="booking" data-i18n="btn_book_now">🩸 आत्ताच बुकिंग करा</button>
-          <a href="https://wa.me/919870020674?text=Namaskar%2C%20mala%20blood%20test%20booking%20baddal%20mahiti%20havi%20aahe" target="_blank" rel="noopener" class="btn btn-whatsapp" data-i18n="btn_whatsapp_ask">WhatsApp वर विचारा</a>
-          <button type="button" class="btn btn-outline" id="shareBtn2" data-i18n="btn_share_friend">👥 मित्राला पाठवा</button>
-        </div>
-        <div class="hero-stats">
-          <div><strong>50+</strong><span data-i18n="stat_tests">टेस्ट व प्रोफाइल्स</span></div>
-          <div><strong>8</strong><span data-i18n="stat_cities">शहरांत मोफत होम सर्विस</span></div>
-          <div><strong>2</strong><span data-i18n="stat_lines">डायरेक्ट फोन लाईन्स</span></div>
-        </div>
-      </div>
-      <div class="hero-photo">
-        <img src="https://swapnilmokal.github.io/kalyan-pathlab/equipment.jpg" alt="Kalyan Pathlab - आमची अत्याधुनिक टेस्टिंग मशीन्स" loading="eager" />
-      </div>
+  <section class="home-menu">
+    <div class="home-menu-top">
+      <div class="discount-badge" data-i18n="discount_badge">सर्व टेस्टवर 30% ते 70% सवलत</div>
+      <h1 data-i18n="home_menu_heading">काय करायचंय?</h1>
     </div>
-  </section>
 
-  <section class="cities">
-    <h2 data-i18n="cities_heading">मोफत होम सॅम्पल कलेक्शन — या शहरांत</h2>
-    <div class="chip-row" id="cityChips"></div>
-  </section>
+    <div class="menu-tiles">
+      <button type="button" class="menu-tile jump-to" data-section="profile">
+        <span class="menu-tile-icon">👤</span>
+        <span class="menu-tile-label" data-i18n="nav_profile_label">प्रोफाइल</span>
+      </button>
+      <button type="button" class="menu-tile jump-to" data-section="booking">
+        <span class="menu-tile-icon">🩸</span>
+        <span class="menu-tile-label" data-i18n="nav_book_label">टेस्ट बुक</span>
+      </button>
+      <button type="button" class="menu-tile jump-to" data-section="tests">
+        <span class="menu-tile-icon">💰</span>
+        <span class="menu-tile-label" data-i18n="nav_ratelist_label">टेस्ट रेट लिस्ट</span>
+      </button>
+      <button type="button" class="menu-tile jump-to" data-section="reviews">
+        <span class="menu-tile-icon">⭐</span>
+        <span class="menu-tile-label" data-i18n="nav_reviews_label">Review</span>
+      </button>
+      <button type="button" class="menu-tile jump-to" data-section="contact">
+        <span class="menu-tile-icon">📞</span>
+        <span class="menu-tile-label" data-i18n="nav_contact_label">Contact</span>
+      </button>
+    </div>
 
-  <section class="about">
-    <div class="about-photo">
-      <img src="https://swapnilmokal.github.io/kalyan-pathlab/lab-tech.jpg" alt="Kalyan Pathlab टेक्निशियन सॅम्पल तपासताना" loading="lazy" />
-    </div>
-    <div class="about-copy">
-      <h2 data-i18n="about_heading">स्थानिक, काळजीपूर्वक व सहज उपलब्ध.</h2>
-      <p data-i18n="about_para">Kalyan Pathlab ही कल्याण परिसरातील विश्वासार्ह डायग्नोस्टिक लॅब आहे, संस्कार फाउंडेशन अंतर्गत चालवली जाते. एक साधी ब्लड टेस्ट असो किंवा फुल बॉडी चेकअप — प्रत्येक सॅम्पल काळजीपूर्वक हाताळला जातो, अत्याधुनिक व स्वयंचलित मशीनवर तपासला जातो आणि रिपोर्ट पोहोचण्याआधी तपासला जातो.</p>
-      <div class="about-stats">
-        <div><strong>12+</strong><span data-i18n="about_stat_categories">टेस्ट कॅटेगरीज</span></div>
-        <div><strong>2</strong><span data-i18n="stat_lines">डायरेक्ट फोन लाईन्स</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="gallery">
-    <h2 data-i18n="gallery_heading">आमच्या लॅबमध्ये डोकावून पहा</h2>
-    <p class="section-sub" data-i18n="gallery_sub">आमची मशीन्स व टेस्टिंग प्रक्रिया.</p>
-    <div class="gallery-grid">
-      <figure><img src="https://swapnilmokal.github.io/kalyan-pathlab/equipment.jpg" alt="टेस्टिंग मशीन्स" loading="lazy" /></figure>
-      <figure><img src="https://swapnilmokal.github.io/kalyan-pathlab/lab-tech.jpg" alt="सॅम्पल तपासणी" loading="lazy" /></figure>
-      <figure><img src="https://swapnilmokal.github.io/kalyan-pathlab/covid-test.jpg" alt="COVID-19 टेस्टिंग" loading="lazy" /></figure>
-    </div>
+    <a href="https://wa.me/919870020674?text=Namaskar%2C%20mala%20blood%20test%20booking%20baddal%20mahiti%20havi%20aahe" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block" style="margin-top:18px" data-i18n="btn_whatsapp_ask">WhatsApp वर विचारा</a>
   </section>
 
 </div>
@@ -303,7 +283,7 @@
 </div>
 
 <!-- ===== MY PROFILE ===== -->
-<div class="page-section" id="section-profile" hidden>
+<div class="page-section" id="section-profile">
   <section class="payment">
     <h2 data-i18n="profile_heading">माझी प्रोफाईल</h2>
     <p class="section-sub" data-i18n="profile_sub">तुमचा मोबाईल नंबर टाका — प्रोफाईल असेल तर दिसेल, नसेल तर नवीन तयार करा.</p>
