@@ -315,17 +315,31 @@
         <label><span data-i18n="profile_name_label">पूर्ण नाव</span>
           <input type="text" id="profileNameField" data-i18n-placeholder="placeholder_fullname" />
         </label>
+
+        <span class="field-label" data-i18n="profile_gender_label">लिंग</span>
+        <div class="pill-row" id="genderPillRow">
+          <button type="button" class="pill-btn" data-gender="Female"><span>♀</span> <span data-i18n="profile_gender_female">स्त्री</span></button>
+          <button type="button" class="pill-btn" data-gender="Male"><span>♂</span> <span data-i18n="profile_gender_male">पुरुष</span></button>
+          <button type="button" class="pill-btn" data-gender="Other"><span>⚧</span> <span data-i18n="profile_gender_other">इतर</span></button>
+        </div>
+        <input type="hidden" id="profileGenderField" />
+
         <label><span data-i18n="profile_age_label">वय</span>
           <input type="number" id="profileAgeField" min="0" max="120" />
         </label>
-        <label><span data-i18n="profile_gender_label">लिंग</span>
-          <select id="profileGenderField">
-            <option value="" data-i18n="profile_gender_select">निवडा</option>
-            <option value="Male" data-i18n="profile_gender_male">पुरुष</option>
-            <option value="Female" data-i18n="profile_gender_female">स्त्री</option>
-            <option value="Other" data-i18n="profile_gender_other">इतर</option>
-          </select>
-        </label>
+
+        <span class="field-label" data-i18n="profile_relation_label">नातं (Self / कुटुंबातील व्यक्ती)</span>
+        <div class="pill-row" id="relationPillRow">
+          <button type="button" class="pill-btn active" data-relation="Self" data-i18n="relation_self">Self</button>
+          <button type="button" class="pill-btn" data-relation="Spouse" data-i18n="relation_spouse">Spouse</button>
+          <button type="button" class="pill-btn" data-relation="Mother" data-i18n="relation_mother">Mother</button>
+          <button type="button" class="pill-btn" data-relation="Father" data-i18n="relation_father">Father</button>
+          <button type="button" class="pill-btn" data-relation="Son" data-i18n="relation_son">Son</button>
+          <button type="button" class="pill-btn" data-relation="Daughter" data-i18n="relation_daughter">Daughter</button>
+          <button type="button" class="pill-btn" data-relation="Other" data-i18n="relation_other">Other</button>
+        </div>
+        <input type="hidden" id="profileRelationField" value="Self" />
+
         <label><span data-i18n="profile_address_label">पत्ता</span>
           <input type="text" id="profileAddressField" data-i18n-placeholder="placeholder_address" />
         </label>

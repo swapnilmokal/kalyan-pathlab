@@ -445,6 +445,7 @@ function aggregatePatients() {
     map[phone].gender = p.gender || "";
     map[phone].address = p.address || "";
     map[phone].city = p.city || "";
+    map[phone].relation = p.relation || "";
   });
   return Object.values(map).sort((a, b) => b.visits - a.visits || a.name.localeCompare(b.name));
 }
@@ -474,7 +475,7 @@ function renderPatients(filterText) {
         <div><strong>${p.visits}</strong><span>${t("total_visits")}</span></div>
         <div><strong>₹${p.total}</strong><span>${t("total_paid")}</span></div>
       </div>
-      ${(p.age || p.gender || p.address || p.city) ? `<div class="booking-meta">${[p.age ? p.age + " yrs" : "", p.gender, p.city].filter(Boolean).join(" · ")}</div>${p.address ? `<div class="booking-meta">📍 ${escapeHtml(p.address)}</div>` : ""}` : ""}
+      ${(p.age || p.gender || p.address || p.city) ? `<div class="booking-meta">${[p.age ? p.age + " yrs" : "", p.gender, p.relation && p.relation !== "Self" ? p.relation : "", p.city].filter(Boolean).join(" · ")}</div>${p.address ? `<div class="booking-meta">📍 ${escapeHtml(p.address)}</div>` : ""}` : ""}
       <button type="button" class="mini-btn approve view-history" data-phone="${escapeHtml(p.phone)}">${t("view_history_btn")}</button>
       <div class="patient-history" id="hist-${escapeHtml(p.phone)}" hidden></div>
     </div>`).join("");

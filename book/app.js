@@ -124,12 +124,52 @@ function renderCities() {
 }
 
 /* ---------- Test list ---------- */
+/* Original hand-drawn icons per category keyword — same visual family
+   used in the admin panel's Test Master, kept consistent across both apps. */
+const CAT_ICONS = {
+  kidney: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3C6 3 4 6.3 4 10.2c0 3 1.3 4 1.3 6 0 2.6 1.7 4.8 4.4 4.8 2 0 3.3-1.4 3.3-3.3 0-1.6-1.1-2.1-1.1-3.7s1.4-2 1.4-3.9C13.3 6.7 12.3 3 9.5 3Z"/></svg>',
+  liver: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9c0-3 2.5-5 6-5h5c3 0 5.5 2.7 5.5 6.2 0 4.3-3.3 7.8-7.5 7.8H9c-3 0-5-2.2-5-5V9Z"/></svg>',
+  thyroid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="4"/><circle cx="16.5" cy="12" r="4"/><path d="M11.3 10.5h1.4M11.3 13.5h1.4"/></svg>',
+  droplet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6.5 7.4 6.5 12a6.5 6.5 0 1 1-13 0C5.5 10.4 12 3 12 3Z"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7.2-4.5-9.7-9.2A5.4 5.4 0 0 1 12 6.3a5.4 5.4 0 0 1 9.7 5.5C19.2 16.5 12 21 12 21Z"/></svg>',
+  glucose: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 7 6 11.5a6 6 0 1 1-12 0C6 10 12 3 12 3Z"/><path d="M12 12v5M9.5 14.5h5"/></svg>',
+  lipid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 7 6 11.5a6 6 0 1 1-12 0C6 10 12 3 12 3Z"/><path d="M9 13.5h6M9 16h6" stroke-width="1.3"/></svg>',
+  capsule: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="10" width="17" height="4" rx="2"/><path d="M12 10v4"/></svg>',
+  thermo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14.2V5a1.5 1.5 0 1 1 3 0v9.2a3.5 3.5 0 1 1-3 0Z"/></svg>',
+  hormone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6.5" r="2.3"/><circle cx="18" cy="6.5" r="2.3"/><circle cx="12" cy="18" r="2.3"/><path d="M7.7 8.2 10.5 16M16.3 8.2 13.5 16"/></svg>',
+  blood: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5s7 8.3 7 13.3a7 7 0 1 1-14 0c0-5 7-13.3 7-13.3Z"/></svg>',
+  body: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><path d="M6 21l2-9h8l2 9M9 12V8h6v4"/></svg>',
+  tube: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v7l-4.3 8a2 2 0 0 0 1.8 2.9h9a2 2 0 0 0 1.8-2.9L14 10V3"/></svg>'
+};
+const CAT_ICON_RULES = [
+  { kw: ["kidney"], icon: "kidney", bg: "#f4ead9", fg: "#8a5a1f" },
+  { kw: ["liver"], icon: "liver", bg: "#ffe8d6", fg: "#b1560f" },
+  { kw: ["thyroid"], icon: "thyroid", bg: "#f3e8ff", fg: "#6b21a8" },
+  { kw: ["urine", "bladder"], icon: "droplet", bg: "#fff6d9", fg: "#a3790a" },
+  { kw: ["cardiac", "heart"], icon: "heart", bg: "#ffe1e6", fg: "#b3123f" },
+  { kw: ["diabetes", "sugar", "glucose"], icon: "glucose", bg: "#ffe9d6", fg: "#b1560f" },
+  { kw: ["lipid", "cholesterol"], icon: "lipid", bg: "#e6ecff", fg: "#3346c9" },
+  { kw: ["vitamin", "mineral"], icon: "capsule", bg: "#e3f7ea", fg: "#12793f" },
+  { kw: ["fever", "infection"], icon: "thermo", bg: "#ffe1e1", fg: "#c21f1f" },
+  { kw: ["hormone", "fertility", "pregnanc"], icon: "hormone", bg: "#ffe3f0", fg: "#b3126e" },
+  { kw: ["full body", "checkup", "package"], icon: "body", bg: "#e6ecff", fg: "#0b4ea2" },
+  { kw: ["blood", "cbc", "anemia", "hemoglobin"], icon: "blood", bg: "#ffe1e6", fg: "#c21f1f" }
+];
+function categoryVisual(name) {
+  const s = String(name || "").toLowerCase();
+  for (const rule of CAT_ICON_RULES) { if (rule.kw.some(k => s.includes(k))) return rule; }
+  return { icon: "tube", bg: "#e8f0ff", fg: "#0b4ea2" };
+}
+
 function renderCategoryTabs() {
   const wrap = document.getElementById("categoryTabs");
   const prevActive = wrap.querySelector("button.active")?.dataset.cat || "all";
   wrap.innerHTML =
-    `<button data-cat="all" class="${prevActive === "all" ? "active" : ""}">${t("cat_all")}</button>` +
-    TEST_CATEGORIES.map((c) => `<button data-cat="${c.id}" class="${prevActive === c.id ? "active" : ""}">${translateCategoryName(c)}</button>`).join("");
+    `<button data-cat="all" class="${prevActive === "all" ? "active" : ""}"><span class="cat-icon-badge" style="background:#e8f0ff;color:#0b4ea2">${CAT_ICONS.tube}</span><span class="cat-tile-label">${t("cat_all")}</span></button>` +
+    TEST_CATEGORIES.map((c) => {
+      const v = categoryVisual(c.name || c.id);
+      return `<button data-cat="${c.id}" class="${prevActive === c.id ? "active" : ""}"><span class="cat-icon-badge" style="background:${v.bg};color:${v.fg}">${CAT_ICONS[v.icon]}</span><span class="cat-tile-label">${translateCategoryName(c)}</span></button>`;
+    }).join("");
 }
 document.getElementById("categoryTabs").addEventListener("click", (e) => {
   const wrap = e.currentTarget;
@@ -692,10 +732,10 @@ function getFamilyProfiles() {
   try { return JSON.parse(localStorage.getItem(FAMILY_KEY) || "[]"); } catch (e) { return []; }
 }
 function saveFamilyProfiles(list) { localStorage.setItem(FAMILY_KEY, JSON.stringify(list)); }
-function upsertFamilyProfile(phone, name, photo) {
+function upsertFamilyProfile(phone, name, photo, relation) {
   const list = getFamilyProfiles();
   const i = list.findIndex(p => p.phone === phone);
-  const entry = { phone, name: name || "", photo: photo || "" };
+  const entry = { phone, name: name || "", photo: photo || "", relation: relation || "Self" };
   if (i > -1) list[i] = { ...list[i], ...entry }; else list.push(entry);
   saveFamilyProfiles(list);
   renderFamilyChips();
@@ -720,7 +760,7 @@ function renderFamilyChips() {
   wrap.innerHTML = list.map(p => `
     <div class="family-chip${p.phone === activePhone ? " active-chip" : ""}" data-phone="${p.phone}">
       <div class="family-chip-avatar">${p.photo ? `<img src="${p.photo}" alt="">` : initials(p.name)}</div>
-      <div class="family-chip-info"><strong>${p.name || t("profile_new_line")}</strong><span>📞 ${p.phone}</span></div>
+      <div class="family-chip-info"><strong>${p.name || t("profile_new_line")}</strong><span>${p.relation && p.relation !== "Self" ? p.relation + " · " : ""}📞 ${p.phone}</span></div>
     </div>`).join("");
   wrap.querySelectorAll(".family-chip").forEach(chip => chip.addEventListener("click", () => {
     const phone = chip.dataset.phone;
@@ -733,7 +773,7 @@ function renderFamilyChips() {
 function cacheProfileLocally(phone, profile) {
   localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify({ phone, profile, savedAt: Date.now() }));
   localStorage.setItem(ACTIVE_PHONE_KEY, phone);
-  upsertFamilyProfile(phone, profile.name, profile.photo);
+  upsertFamilyProfile(phone, profile.name, profile.photo, profile.relation);
   updateTopBadge(profile.name, profile.photo);
 }
 function getCachedProfile(phone) {
@@ -748,15 +788,32 @@ function fillProfileForm(p) {
   document.getElementById("profileFormWrap").hidden = false;
   document.getElementById("profileNameField").value = p.name || "";
   document.getElementById("profileAgeField").value = p.age || "";
-  document.getElementById("profileGenderField").value = p.gender || "";
   document.getElementById("profileAddressField").value = p.address || "";
   document.getElementById("profileCityField").value = p.city || "";
+  setPillValue("genderPillRow", "profileGenderField", "gender", p.gender || "");
+  setPillValue("relationPillRow", "profileRelationField", "relation", p.relation || "Self");
   const img = document.getElementById("profilePhotoPreview");
   const placeholder = document.getElementById("profilePhotoPlaceholder");
   if (p.photo) { img.src = p.photo; img.hidden = false; placeholder.hidden = true; }
   else { img.hidden = true; placeholder.hidden = false; }
   selectedPhotoBase64 = null; selectedPhotoType = null; /* reset — only re-upload if user picks a NEW file */
 }
+function setPillValue(rowId, hiddenId, dataAttr, value) {
+  const row = document.getElementById(rowId);
+  if (!row) return;
+  row.querySelectorAll(".pill-btn").forEach(b => b.classList.toggle("active", b.dataset[dataAttr] === value));
+  document.getElementById(hiddenId).value = value;
+}
+document.getElementById("genderPillRow").addEventListener("click", e => {
+  const btn = e.target.closest(".pill-btn");
+  if (!btn) return;
+  setPillValue("genderPillRow", "profileGenderField", "gender", btn.dataset.gender);
+});
+document.getElementById("relationPillRow").addEventListener("click", e => {
+  const btn = e.target.closest(".pill-btn");
+  if (!btn) return;
+  setPillValue("relationPillRow", "profileRelationField", "relation", btn.dataset.relation);
+});
 function setSyncStatus(msg) {
   const el = document.getElementById("profileSyncStatus");
   if (el) el.textContent = msg || "";
@@ -841,12 +898,13 @@ document.getElementById("profileSaveBtn").addEventListener("click", () => {
     name: document.getElementById("profileNameField").value.trim(),
     age: document.getElementById("profileAgeField").value,
     gender: document.getElementById("profileGenderField").value,
+    relation: document.getElementById("profileRelationField").value || "Self",
     address: document.getElementById("profileAddressField").value.trim(),
     city: document.getElementById("profileCityField").value.trim(),
     photo: selectedPhotoBase64 ? `data:${selectedPhotoType};base64,${selectedPhotoBase64}` : (existingCached.photo || "")
   };
   cacheProfileLocally(phone, profile); /* saved on this device immediately — never lost, works offline */
-  const payload = { type: "profile", phone, name: profile.name, age: profile.age, gender: profile.gender, address: profile.address, city: profile.city };
+  const payload = { type: "profile", phone, name: profile.name, age: profile.age, gender: profile.gender, relation: profile.relation, address: profile.address, city: profile.city };
   if (selectedPhotoBase64) { payload.photoBase64 = selectedPhotoBase64; payload.photoType = selectedPhotoType; }
   const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
   if (!canReachServer) {
