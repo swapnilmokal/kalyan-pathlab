@@ -104,9 +104,20 @@
       <input type="search" id="testSearch" placeholder="टेस्टचे नाव टाईप करा… उदा. Thyroid, Sugar, CBC" data-i18n-placeholder="tests_search_placeholder" />
     </div>
     <div class="category-tabs" id="categoryTabs"></div>
-    <div id="testListWrap"></div>
+    <div id="testListWrap" hidden></div>
     <p class="no-result" id="noResult" hidden data-i18n="no_result">तुम्ही शोधलेली टेस्ट यादीत नाही? काळजी नाही — कॉल करा, आमच्याकडे उपलब्ध असू शकते.</p>
   </section>
+
+  <div class="test-modal" id="testModal" hidden>
+    <div class="test-modal-backdrop" id="testModalBackdrop"></div>
+    <div class="test-modal-sheet">
+      <div class="test-modal-header">
+        <h3 id="testModalTitle"></h3>
+        <button type="button" id="testModalClose" class="test-modal-close" aria-label="Close">✕</button>
+      </div>
+      <div class="test-modal-body" id="testModalBody"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ===== CART / SELECTED (नेहमी दिसणारी पट्टी) ===== -->

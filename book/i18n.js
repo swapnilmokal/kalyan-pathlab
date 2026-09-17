@@ -51,6 +51,8 @@ const TRANSLATIONS = {
   tests_heading: { mr: "टेस्ट व किंमत यादी", hi: "टेस्ट व मूल्य सूची", en: "Tests & Price List" },
   tests_search_placeholder: { mr: "टेस्टचे नाव टाईप करा… उदा. Thyroid, Sugar, CBC", hi: "टेस्ट का नाम टाइप करें... जैसे Thyroid, Sugar, CBC", en: "Type a test name… e.g. Thyroid, Sugar, CBC" },
   cat_all: { mr: "सर्व", hi: "सभी", en: "All" },
+  found_tests_prefix: { mr: "एकूण", hi: "कुल", en: "Found" },
+  found_tests_suffix: { mr: "टेस्ट सापडल्या —", hi: "टेस्ट मिलीं —", en: "tests for" },
   no_result: {
     mr: "तुम्ही शोधलेली टेस्ट यादीत नाही? काळजी नाही — कॉल करा, आमच्याकडे उपलब्ध असू शकते.",
     hi: "आपके द्वारा खोजी गई टेस्ट सूची में नहीं है? चिंता न करें — कॉल करें, हमारे पास उपलब्ध हो सकती है।",
@@ -278,7 +280,14 @@ const CATEGORY_TRANSLATIONS = {
   infection: { hi: "इन्फेक्शन व बुखार संबंधित", en: "Infection & Fever Related" },
   hormones: { hi: "हार्मोन्स व फर्टिलिटी", en: "Hormones & Fertility" },
   cardiac: { hi: "कार्डियक व अन्य", en: "Cardiac & Others" },
-  packages: { hi: "फुल बॉडी चेकअप पैकेज", en: "Full Body Checkup Packages" }
+  packages: { hi: "फुल बॉडी चेकअप पैकेज", en: "Full Body Checkup Packages" },
+  anemia: { hi: "एनीमिया व ब्लड प्रोफाइल", en: "Anemia & Blood Profile" },
+  autoimmune: { hi: "आर्थराइटिस व ऑटोइम्यून", en: "Arthritis & Autoimmune" },
+  markers: { hi: "इन्फेक्शन मार्कर्स (HIV/HCV/VDRL)", en: "Infection Markers (HIV/HCV/VDRL)" },
+  urine: { hi: "यूरिन टेस्ट", en: "Urine Tests" },
+  coagulation: { hi: "कोएग्युलेशन (PT/INR)", en: "Coagulation (PT/INR)" },
+  special: { hi: "स्पेशल टेस्ट", en: "Special Tests" },
+  other: { hi: "अन्य टेस्ट", en: "Other Tests" }
 };
 
 let currentLang = localStorage.getItem("kp_lang") || "en";

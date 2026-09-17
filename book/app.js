@@ -161,64 +161,122 @@ function categoryVisual(name) {
   return { icon: "tube", bg: "#e8f0ff", fg: "#0b4ea2" };
 }
 
+/* Smart profile grouping — regardless of what raw "Category" value was
+   typed in Test Master, tests are re-grouped here by keyword into a
+   fixed set of sensible profiles (Fever, Diabetes, Thyroid, Liver,
+   Kidney...), so the browse screen never turns into one tile per test. */
+const CANON_RULES = [
+  { id: "special", label: "स्पेशल टेस्ट्स", kw: ["special"] },
+  { id: "packages", label: "फुल बॉडी चेकअप पॅकेजेस", kw: ["full body", "health checkup", "master health", "senior citizen", "package", "pre-marriage"] },
+  { id: "infection", label: "इन्फेक्शन व ताप संबंधित", kw: ["widal", "dengue", "malaria", "malerian", "typhoid", "chikungunya", "leptospira", "fever", "ns1", "crp"] },
+  { id: "diabetes", label: "मधुमेह (डायबिटीज) प्रोफाइल", kw: ["fbs", "ppbs", "rbs", "hba1c", "insulin", "glucose", "sugar", "diabetes"] },
+  { id: "thyroid", label: "थायरॉइड प्रोफाइल", kw: ["t3", "t4", "tsh", "thyroid"] },
+  { id: "lipid", label: "लिपिड प्रोफाइल (हृदय / कोलेस्ट्रॉल)", kw: ["lipid", "cholesterol", "triglyceride", "hdl", "ldl", "vldl", "homocysteine", "troponin", "ecg", "cardiac"] },
+  { id: "liver", label: "लिव्हर फंक्शन टेस्ट (LFT)", kw: ["lft", "liver", "sgot", "sgpt", "bilirubin", "albumin", "ast", "alt"] },
+  { id: "kidney", label: "किडनी फंक्शन टेस्ट (KFT)", kw: ["kft", "rft", "kidney", "urea", "creatinine", "uric acid", "electrolyte", "sodium", "potassium", "egfr", "bun"] },
+  { id: "anemia", label: "अ‍ॅनिमिया व ब्लड प्रोफाइल", kw: ["cbc", "hemogram", "iron", "ferritin", "tibc", "folic acid", "vitamin b12", "b12", "hb electrophoresis", "platelet", "esr", "peripheral smear", "anemia", "blood group"] },
+  { id: "vitamins", label: "व्हिटॅमिन्स व मिनरल्स", kw: ["vitamin d", "calcium", "phosphorus", "magnesium", "vitamin"] },
+  { id: "hormones", label: "हार्मोन्स व फर्टिलिटी", kw: ["hcg", "fertility", "prolactin", "prl", "fsh", "lh", "testosterone", "anc profile", "estradiol", " e2", "hormone"] },
+  { id: "markers", label: "इन्फेक्शन मार्कर्स (HIV/HCV/VDRL)", kw: ["hiv", "hcv", "hbsag", "vdrl", "hepatitis"] },
+  { id: "autoimmune", label: "आर्थरायटिस व ऑटोइम्यून", kw: ["ana", "ra factor", "rheumatoid", "arthritis"] },
+  { id: "urine", label: "युरिन टेस्ट्स", kw: ["urine", "stool"] },
+  { id: "coagulation", label: "कोअ‍ॅग्युलेशन (PT/INR)", kw: ["pt/inr", "pt / inr", "coagulation", "aptt"] },
+  { id: "basic", label: "बेसिक व रूटीन टेस्ट", kw: ["complete blood count"] }
+];
+function canonicalCategory(rawCategory, testName) {
+  const s = (String(rawCategory || "") + " " + String(testName || "")).toLowerCase();
+  for (const rule of CANON_RULES) { if (rule.kw.some(k => s.includes(k))) return rule; }
+  return { id: "other", label: "इतर टेस्ट्स" };
+}
+
 function renderCategoryTabs() {
   const wrap = document.getElementById("categoryTabs");
-  const prevActive = wrap.querySelector("button.active")?.dataset.cat || "all";
   wrap.innerHTML =
-    `<button data-cat="all" class="${prevActive === "all" ? "active" : ""}"><span class="cat-icon-badge" style="background:#e8f0ff;color:#0b4ea2">${CAT_ICONS.tube}</span><span class="cat-tile-label">${t("cat_all")}</span></button>` +
+    `<button data-cat="all"><span class="cat-icon-badge" style="background:#e8f0ff;color:#0b4ea2">${CAT_ICONS.tube}</span><span class="cat-tile-label">${t("cat_all")}</span></button>` +
     TEST_CATEGORIES.map((c) => {
       const v = categoryVisual(c.name || c.id);
-      return `<button data-cat="${c.id}" class="${prevActive === c.id ? "active" : ""}"><span class="cat-icon-badge" style="background:${v.bg};color:${v.fg}">${CAT_ICONS[v.icon]}</span><span class="cat-tile-label">${translateCategoryName(c)}</span></button>`;
+      return `<button data-cat="${c.id}"><span class="cat-icon-badge" style="background:${v.bg};color:${v.fg}">${CAT_ICONS[v.icon]}</span><span class="cat-tile-label">${translateCategoryName(c)}</span></button>`;
     }).join("");
 }
 document.getElementById("categoryTabs").addEventListener("click", (e) => {
-  const wrap = e.currentTarget;
   const btn = e.target.closest("button");
   if (!btn) return;
-  wrap.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
-  btn.classList.add("active");
-  renderTestList(document.getElementById("testSearch").value, btn.dataset.cat);
+  openTestModal(btn.dataset.cat);
 });
 
-function renderTestList(filterText = "", catFilter = "all") {
-  const wrap = document.getElementById("testListWrap");
-  const noResult = document.getElementById("noResult");
-  const term = filterText.trim().toLowerCase();
-  let anyShown = false;
-  let html = "";
-
-  TEST_CATEGORIES.forEach((cat) => {
-    if (catFilter !== "all" && cat.id !== catFilter) return;
-    const matches = cat.tests.filter((t) => t.name.toLowerCase().includes(term));
-    if (matches.length === 0) return;
-    anyShown = true;
-    html += `<div class="test-category-title">${translateCategoryName(cat)}</div>`;
-    matches.forEach((t) => {
-      const isAdded = selectedTests.some((s) => s.name === t.name);
-      html += `
-        <div class="test-row">
-          <span class="test-row-name">${t.name}</span>
-          <div class="test-row-price">
-            <span class="test-row-mrp">₹${t.mrp}</span>
-            <span class="test-row-final">₹${t.price}</span>
-          </div>
-          <button type="button" class="test-add-btn ${isAdded ? "added" : ""}" data-name="${encodeURIComponent(t.name)}" data-price="${t.price}">${isAdded ? "✓" : "+"}</button>
-        </div>`;
-    });
-  });
-
-  wrap.innerHTML = html;
-  noResult.hidden = anyShown;
-
-  wrap.querySelectorAll(".test-add-btn").forEach((btn) => {
+/* ---------- Test row (shared by modal + search results) — name, MRP struck-through, price, discount % ---------- */
+function testRowHTML(t) {
+  const isAdded = selectedTests.some((s) => s.name === t.name);
+  const discPct = t.mrp > 0 && t.mrp > t.price ? Math.round((1 - t.price / t.mrp) * 100) : 0;
+  return `
+    <div class="test-row">
+      <div class="test-row-info">
+        <span class="test-row-name">${escapeHtmlLocal(t.name)}</span>
+        <div class="test-row-price">
+          <span class="test-row-final">₹${t.price}</span>
+          ${t.mrp > t.price ? `<span class="test-row-mrp">₹${t.mrp}</span>` : ""}
+          ${discPct > 0 ? `<span class="test-discount-badge">${discPct}% off</span>` : ""}
+        </div>
+      </div>
+      <button type="button" class="test-add-btn ${isAdded ? "added" : ""}" data-name="${encodeURIComponent(t.name)}" data-price="${t.price}">${isAdded ? "✓" : "+"}</button>
+    </div>`;
+}
+function wireTestAddButtons(container, afterToggle) {
+  container.querySelectorAll(".test-add-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const name = decodeURIComponent(btn.dataset.name);
       const price = Number(btn.dataset.price);
       toggleTest(name, price);
-      renderTestList(document.getElementById("testSearch").value, document.querySelector(".category-tabs button.active").dataset.cat);
       renderSelected();
+      if (afterToggle) afterToggle();
     });
   });
+}
+
+/* ---------- Category popup (professional bottom-sheet modal) ---------- */
+let currentModalCat = null;
+function openTestModal(catId) {
+  currentModalCat = catId;
+  const modal = document.getElementById("testModal");
+  const title = document.getElementById("testModalTitle");
+  const body = document.getElementById("testModalBody");
+  if (catId === "all") {
+    title.textContent = t("cat_all");
+    body.innerHTML = TEST_CATEGORIES.map((cat) => `
+      <div class="test-category-title">${translateCategoryName(cat)}</div>
+      ${cat.tests.map(testRowHTML).join("")}`).join("");
+  } else {
+    const cat = TEST_CATEGORIES.find((c) => c.id === catId);
+    if (!cat) return;
+    title.textContent = translateCategoryName(cat);
+    body.innerHTML = cat.tests.map(testRowHTML).join("");
+  }
+  wireTestAddButtons(body, () => openTestModal(currentModalCat));
+  modal.hidden = false;
+  document.body.style.overflow = "hidden";
+}
+function closeTestModal() {
+  document.getElementById("testModal").hidden = true;
+  document.body.style.overflow = "";
+  currentModalCat = null;
+}
+document.getElementById("testModalClose").addEventListener("click", closeTestModal);
+document.getElementById("testModalBackdrop").addEventListener("click", closeTestModal);
+
+/* ---------- Search — flat "Found N tests" list (matches the search-results style shown in the reference) ---------- */
+function renderSearchResults(term) {
+  const wrap = document.getElementById("testListWrap");
+  const noResult = document.getElementById("noResult");
+  const q = term.trim().toLowerCase();
+  if (!q) { wrap.innerHTML = ""; wrap.hidden = true; noResult.hidden = true; document.getElementById("categoryTabs").hidden = false; return; }
+  document.getElementById("categoryTabs").hidden = true;
+  wrap.hidden = false;
+  const matches = [];
+  TEST_CATEGORIES.forEach((cat) => cat.tests.forEach((t) => { if (t.name.toLowerCase().includes(q)) matches.push(t); }));
+  if (matches.length === 0) { wrap.innerHTML = ""; noResult.hidden = false; return; }
+  noResult.hidden = true;
+  wrap.innerHTML = `<p class="search-found-heading">${t("found_tests_prefix")} ${matches.length} ${t("found_tests_suffix")} "${escapeHtmlLocal(term)}"</p>` + matches.map(testRowHTML).join("");
+  wireTestAddButtons(wrap, () => renderSearchResults(document.getElementById("testSearch").value));
 }
 
 function toggleTest(name, price) {
@@ -246,7 +304,8 @@ function renderSelected() {
       selectedTests.splice(Number(btn.dataset.i), 1);
       renderSelected();
       updateCartBar();
-      renderTestList(document.getElementById("testSearch").value, document.querySelector(".category-tabs button.active").dataset.cat);
+      if (!document.getElementById("testModal").hidden) openTestModal(currentModalCat);
+      if (!document.getElementById("testListWrap").hidden) renderSearchResults(document.getElementById("testSearch").value);
     });
   });
 }
@@ -266,8 +325,7 @@ function updateCartBar() {
 
 /* ---------- Search ---------- */
 document.getElementById("testSearch").addEventListener("input", (e) => {
-  const activeCat = document.querySelector(".category-tabs button.active")?.dataset.cat || "all";
-  renderTestList(e.target.value, activeCat);
+  renderSearchResults(e.target.value);
 });
 
 /* ---------- Report mode (multi-select) -> show email field if Email checked ---------- */
@@ -601,10 +659,10 @@ document.getElementById("reviewForm").addEventListener("submit", (e) => {
 function onLanguageChanged() {
   renderCities();
   renderCategoryTabs();
-  renderTestList(
-    document.getElementById("testSearch") ? document.getElementById("testSearch").value : "",
-    document.querySelector(".category-tabs button.active")?.dataset.cat || "all"
-  );
+  if (document.getElementById("testSearch") && document.getElementById("testSearch").value) {
+    renderSearchResults(document.getElementById("testSearch").value);
+  }
+  if (!document.getElementById("testModal").hidden && currentModalCat) openTestModal(currentModalCat);
   renderSelected();
   updateCartBar();
   if (typeof allReviews !== "undefined") renderReviews(allReviews);
@@ -623,12 +681,12 @@ function fetchLiveTests() {
       const grouped = [];
       const catIndex = {};
       rows.forEach((r) => {
-        const catName = (r.category || "इतर टेस्ट").trim();
-        if (!(catName in catIndex)) {
-          catIndex[catName] = grouped.length;
-          grouped.push({ id: `cat${grouped.length}`, name: catName, tests: [] });
+        const canon = canonicalCategory(r.category, r.name);
+        if (!(canon.id in catIndex)) {
+          catIndex[canon.id] = grouped.length;
+          grouped.push({ id: canon.id, name: canon.label, tests: [] });
         }
-        grouped[catIndex[catName]].tests.push({
+        grouped[catIndex[canon.id]].tests.push({
           name: r.name,
           mrp: Number(r.mrp) || 0,
           price: Number(r.price) || 0
@@ -636,7 +694,6 @@ function fetchLiveTests() {
       });
       TEST_CATEGORIES = grouped;
       renderCategoryTabs();
-      renderTestList();
     })
     .catch(() => {}); // इंटरनेट/लिंक प्रॉब्लेम असल्यास built-in यादी तशीच राहते
 }
@@ -644,7 +701,6 @@ function fetchLiveTests() {
 /* ---------- Init ---------- */
 renderCities();
 renderCategoryTabs();
-renderTestList();
 renderSelected();
 fetchLiveTests();
 fetchSettings();
