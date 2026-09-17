@@ -470,22 +470,25 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
   };
 
   // WhatsApp confirmation message (customer taps Send once — lab receives it instantly)
+  // टीप: गुंतागुंतीचे संयुक्त (ZWJ) इमोजी (उदा. 👨‍⚕️) जुन्या फोन/WhatsApp
+  // व्हर्जनवर किंवा संथ इंटरनेटवर तुटलेले "�" म्हणून दिसू शकतात — म्हणून इथे
+  // फक्त साधे, single-codepoint इमोजी वापरले आहेत.
   const waMsg =
-    `✅ *नवीन बुकिंग - Kalyan Pathlab* ✅\n` +
-    `━━━━━━━━━━━━━━\n` +
-    (lookedUpPatient ? `🆔 *Patient ID:* ${lookedUpPatient.patientId} (Returning)\n` : "") +
-    `👤 *नाव:* ${fullName}\n` +
-    `📞 *मोबाईल:* ${phone}\n` +
-    `📍 *पत्ता:* ${address}, ${city}\n` +
-    `🧪 *टेस्ट/पॅकेज:* ${testNames.join(", ") || "-"}\n` +
-    `💰 *अंदाजे रक्कम:* ₹${total}\n` +
-    `📅 *कलेक्शन दिवस/वेळ:* ${date} ${time}\n` +
-    `👨‍⚕️ *डॉक्टर रेफरन्स:* ${doctor}\n` +
-    `📄 *रिपोर्ट हवा:* ${reportMode}` +
-    (capturedLocation ? `\n📍 *लोकेशन:* ${capturedLocation}` : "") +
-    (lookedUpPatient && lookedUpPatient.lastTests ? `\n🕓 *मागील टेस्ट:* ${lookedUpPatient.lastTests}` : "") +
-    `\n━━━━━━━━━━━━━━\n` +
-    `_संस्कार फाउंडेशन संचलित · Care For Quality_`;
+    `✅ नवीन बुकिंग — Kalyan Pathlab\n` +
+    `━━━━━━━━━━━━━━━━━━\n` +
+    (lookedUpPatient ? `🆔 Patient ID: ${lookedUpPatient.patientId} (Returning)\n\n` : "\n") +
+    `👤 नाव: ${fullName}\n` +
+    `📞 मोबाईल: ${phone}\n` +
+    `📍 पत्ता: ${address}, ${city}\n\n` +
+    `🧪 टेस्ट/पॅकेज:\n${testNames.map(n => `   • ${n}`).join("\n") || "   -"}\n\n` +
+    `💰 अंदाजे रक्कम: ₹${total}\n` +
+    `📅 कलेक्शन: ${date}, ${time}\n` +
+    `🩺 डॉक्टर रेफरन्स: ${doctor}\n` +
+    `📄 रिपोर्ट हवा: ${reportMode}` +
+    (capturedLocation ? `\n📍 लोकेशन: ${capturedLocation}` : "") +
+    (lookedUpPatient && lookedUpPatient.lastTests ? `\n🕓 मागील टेस्ट: ${lookedUpPatient.lastTests}` : "") +
+    `\n━━━━━━━━━━━━━━━━━━\n` +
+    `संस्कार फाउंडेशन संचलित • Care For Quality 🙏`;
 
   const waLink = `https://wa.me/${CONFIG.labWhatsApp}?text=${encodeURIComponent(waMsg)}`;
 
@@ -497,6 +500,7 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
 
   localStorage.setItem("kp_phone", phone);
   localStorage.setItem("kp_last_status", "Pending Confirmation");
+  syncProfileFromBooking(phone, fullName, address, city); // बुकिंग = आपोआप प्रोफाईल सेव्ह/अपडेट (Sheet + या डिव्हाइसवर)
 
   const appUrl = window.location.href.split("?")[0].split("#")[0];
   const box = document.getElementById("confirmBox");
@@ -997,7 +1001,46 @@ function syncPendingProfile() {
 window.addEventListener("online", syncPendingProfile);
 
 /* ---- Top header badge → tap to jump to Profile tab ---- */
-document.getElementById("topProfileBadge").addEventListener("click", () => showSection("profile"));
+/* ---- Top header quick-switch dropdown (profile switching accessible from anywhere) ---- */
+function renderProfileSwitchDropdown() {
+  const list = getFamilyProfiles();
+  const dd = document.getElementById("profileSwitchDropdown");
+  const activePhone = localStorage.getItem(ACTIVE_PHONE_KEY);
+  dd.innerHTML =
+    list.map(p => `
+      <div class="psd-chip${p.phone === activePhone ? " current" : ""}" data-phone="${p.phone}">
+        <div class="psd-avatar">${p.photo ? `<img src="${p.photo}" alt="">` : initials(p.name)}</div>
+        <div class="psd-info"><strong>${p.name || t("profile_new_line")}</strong><span>${p.relation && p.relation !== "Self" ? p.relation + " · " : ""}📞 ${p.phone}</span></div>
+      </div>`).join("") +
+    `<div class="psd-add" id="psdAddNew">+ ${t("family_add_btn")}</div>`;
+  dd.querySelectorAll(".psd-chip").forEach(chip => chip.addEventListener("click", () => {
+    const phone = chip.dataset.phone;
+    document.getElementById("profilePhoneInput").value = phone;
+    document.getElementById("profileLoginBox").hidden = false;
+    loadProfileForPhone(phone, false);
+    closeProfileSwitchDropdown();
+    showSection("profile");
+  }));
+  document.getElementById("psdAddNew").addEventListener("click", () => {
+    closeProfileSwitchDropdown();
+    showSection("profile");
+    document.getElementById("addFamilyBtn").click();
+  });
+}
+function closeProfileSwitchDropdown() { document.getElementById("profileSwitchDropdown").hidden = true; }
+document.getElementById("topProfileBadge").addEventListener("click", (e) => {
+  e.stopPropagation();
+  const list = getFamilyProfiles();
+  if (list.length === 0) { showSection("profile"); return; }
+  const dd = document.getElementById("profileSwitchDropdown");
+  if (!dd.hidden) { closeProfileSwitchDropdown(); return; }
+  renderProfileSwitchDropdown();
+  dd.hidden = false;
+});
+document.addEventListener("click", (e) => {
+  const dd = document.getElementById("profileSwitchDropdown");
+  if (!dd.hidden && !e.target.closest(".profile-switch-dropdown") && !e.target.closest("#topProfileBadge")) closeProfileSwitchDropdown();
+});
 
 /* ---- Simple, real "health record" = their own past bookings/tests, not fabricated data ---- */
 function loadHealthHistory(phone) {
@@ -1019,6 +1062,29 @@ function loadHealthHistory(phone) {
     .catch(() => { box.innerHTML = `<p class="section-sub">${t("network_weak")}</p>`; });
 }
 function escapeHtmlLocal(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+/* Booking = auto profile save/update (so a profile is never "missing"
+   after someone books, even if they never opened the Profile tab). */
+function syncProfileFromBooking(phone, name, address, city) {
+  if (!/^[0-9]{10}$/.test(phone)) return;
+  const existing = getCachedProfile(phone) || {};
+  const profile = {
+    name: name || existing.name || "",
+    age: existing.age || "",
+    gender: existing.gender || "",
+    relation: existing.relation || "Self",
+    address: address || existing.address || "",
+    city: city || existing.city || "",
+    photo: existing.photo || ""
+  };
+  cacheProfileLocally(phone, profile);
+  const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
+  const payload = { type: "profile", phone, name: profile.name, age: profile.age, gender: profile.gender, relation: profile.relation, address: profile.address, city: profile.city };
+  if (!canReachServer) { localStorage.setItem(PROFILE_PENDING_KEY, JSON.stringify(payload)); return; }
+  fetch(CONFIG.appsScriptUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) }).catch(() => {
+    localStorage.setItem(PROFILE_PENDING_KEY, JSON.stringify(payload));
+  });
+}
 
 /* Auto-login: if a phone is remembered on this device, load that
    profile right away (front-end shows name/photo without asking
