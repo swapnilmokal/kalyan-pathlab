@@ -233,6 +233,14 @@ textarea{min-height:74px; resize:vertical;}
 .family-chip-avatar img{width:100%; height:100%; object-fit:cover;}
 .family-chip-info strong{display:block; font-size:0.95rem;}
 .family-chip-info span{font-size:0.8rem; color:var(--muted);}
+#familyProfilesList{display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x proximity; padding-bottom:4px; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+#familyProfilesList::-webkit-scrollbar{display:none;}
+#familyProfilesList .family-chip{flex:0 0 auto; flex-direction:column; text-align:center; width:88px; scroll-snap-align:center; margin-top:0;}
+#familyProfilesList .family-chip-avatar{width:52px; height:52px; font-size:1.1rem; margin:0 auto;}
+#familyProfilesList .family-chip-info{margin-top:4px;}
+#familyProfilesList .family-chip-info strong{font-size:0.82rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; max-width:84px;}
+#familyProfilesList .family-chip-info span{display:none;}
+.swipe-hint{text-align:center; font-size:0.75rem; color:var(--muted); margin:2px 0 10px;}
 
 /* ---------- Gender / Relation pill selectors ---------- */
 .field-label{display:block; font-weight:600; font-size:0.95rem; color:var(--navy); margin:14px 0 6px;}

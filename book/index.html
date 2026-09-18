@@ -303,17 +303,68 @@
     <div id="familyProfilesBox" class="status-check-box" hidden>
       <h3 data-i18n="family_heading">👪 या डिव्हाइसवरील प्रोफाईल्स</h3>
       <div id="familyProfilesList"></div>
+      <p class="swipe-hint" data-i18n="swipe_hint">← स्वाइप करून प्रोफाईल बदला →</p>
       <button type="button" id="addFamilyBtn" class="btn btn-outline btn-block" style="margin-top:10px" data-i18n="family_add_btn">+ नवीन व्यक्ती जोडा</button>
     </div>
 
     <div class="status-check-box" id="profileLoginBox">
       <input type="tel" id="profilePhoneInput" placeholder="10 अंकी मोबाईल नंबर" pattern="[0-9]{10}" data-i18n-placeholder="placeholder_phone" />
-      <button type="button" id="profileLoadBtn" class="btn btn-primary btn-block" style="margin-top:10px;" data-i18n="profile_load_btn">प्रोफाईल पहा (Login)</button>
+      <button type="button" id="profileLoadBtn" class="btn btn-primary btn-block" style="margin-top:10px;" data-i18n="btn_continue">पुढे जा</button>
       <button type="button" id="guestModeBtn" class="link-btn" style="display:block;text-align:center;margin-top:10px" data-i18n="guest_mode_btn">Guest म्हणून पुढे जा →</button>
       <p id="profileSyncStatus" class="section-sub" style="margin-top:8px"></p>
 
+      <!-- Login: existing profile with a password already set -->
+      <div id="loginPasswordStep" hidden style="margin-top:14px">
+        <label><span data-i18n="password_label">पासवर्ड</span>
+          <input type="password" id="loginPasswordField" autocomplete="current-password" />
+        </label>
+        <button type="button" id="loginSubmitBtn" class="btn btn-primary btn-block" style="margin-top:10px" data-i18n="btn_login">Login</button>
+        <button type="button" id="forgotPasswordLink" class="link-btn" style="display:block;text-align:center;margin-top:10px" data-i18n="forgot_password_link">पासवर्ड विसरलात?</button>
+        <p id="loginError" class="section-sub" style="color:var(--red-dark)" hidden></p>
+        <button type="button" class="link-btn back-step" style="display:block;text-align:center;margin-top:10px" data-i18n="back_to_start">← मागे जा</button>
+      </div>
+
+      <!-- Forgot password step 1: request code -->
+      <div id="forgotStep1" hidden style="margin-top:14px">
+        <p class="section-sub" data-i18n="forgot_step1_note">तुमच्या रजिस्टर्ड ईमेलवर एक Reset Code पाठवला जाईल.</p>
+        <button type="button" id="sendResetCodeBtn" class="btn btn-primary btn-block" data-i18n="btn_send_reset_code">Reset Code पाठवा</button>
+        <p id="forgotStep1Error" class="section-sub" style="color:var(--red-dark)" hidden></p>
+        <button type="button" class="link-btn back-step" style="display:block;text-align:center;margin-top:10px" data-i18n="back_to_login">← Login वर परत जा</button>
+      </div>
+
+      <!-- Forgot password step 2: enter code + new password -->
+      <div id="forgotStep2" hidden style="margin-top:14px">
+        <p class="section-sub" data-i18n="forgot_step2_note">ईमेलमध्ये आलेला 6-अंकी code टाका (15 मिनिटांत वापरा).</p>
+        <label><span data-i18n="reset_code_label">Reset Code</span>
+          <input type="text" id="resetCodeField" inputmode="numeric" maxlength="6" />
+        </label>
+        <label><span data-i18n="new_password_label">नवीन पासवर्ड</span>
+          <input type="password" id="resetPwdField1" autocomplete="new-password" />
+        </label>
+        <label><span data-i18n="confirm_password_label">पासवर्ड पुन्हा टाका</span>
+          <input type="password" id="resetPwdField2" autocomplete="new-password" />
+        </label>
+        <button type="button" id="confirmResetBtn" class="btn btn-primary btn-block" style="margin-top:10px" data-i18n="btn_reset_password">पासवर्ड रिसेट करा</button>
+        <p id="forgotStep2Error" class="section-sub" style="color:var(--red-dark)" hidden></p>
+        <button type="button" class="link-btn back-step" style="display:block;text-align:center;margin-top:10px" data-i18n="back_to_login">← Login वर परत जा</button>
+      </div>
+
       <div id="profileFormWrap" hidden style="margin-top:18px">
         <p id="profileIdLine" class="section-sub"></p>
+
+        <!-- shown only for a brand-new profile, or a legacy profile that never set a password -->
+        <div id="authFieldsBlock" hidden>
+          <p class="section-sub" data-i18n="auth_fields_note">पासवर्ड सेट करा — पुढच्या वेळी याच नंबरने login करण्यासाठी लागेल.</p>
+          <label><span data-i18n="profile_email_label">ईमेल (पासवर्ड रिसेटसाठी आवश्यक)</span>
+            <input type="email" id="profileEmailField" placeholder="you@example.com" />
+          </label>
+          <label><span data-i18n="new_password_label">पासवर्ड</span>
+            <input type="password" id="profilePwdField1" autocomplete="new-password" />
+          </label>
+          <label><span data-i18n="confirm_password_label">पासवर्ड पुन्हा टाका</span>
+            <input type="password" id="profilePwdField2" autocomplete="new-password" />
+          </label>
+        </div>
 
         <div class="profile-photo-row">
           <div class="profile-photo-preview" id="profilePhotoPreviewWrap">

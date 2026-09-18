@@ -830,6 +830,46 @@ function renderFamilyChips() {
   }));
 }
 
+/* ---- Swipe gesture: swipe left/right on the profile card to switch
+   between family members saved on this device (real touch detection,
+   not just a horizontally-scrolling list). ---- */
+function switchToAdjacentProfile(direction) {
+  const list = getFamilyProfiles();
+  if (list.length < 2) return;
+  const activePhone = localStorage.getItem(ACTIVE_PHONE_KEY);
+  let idx = list.findIndex(p => p.phone === activePhone);
+  if (idx === -1) idx = 0;
+  idx = (idx + direction + list.length) % list.length;
+  const next = list[idx];
+  document.getElementById("profilePhoneInput").value = next.phone;
+  document.getElementById("profileLoginBox").hidden = false;
+  loadProfileForPhone(next.phone, false);
+  showToast(`${next.name || t("profile_new_line")}`);
+}
+function enableSwipeToSwitchProfile(el) {
+  if (!el) return;
+  let startX = 0, startY = 0, tracking = false;
+  el.addEventListener("touchstart", e => {
+    if (e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    tracking = true;
+  }, { passive: true });
+  el.addEventListener("touchend", e => {
+    if (!tracking) return;
+    tracking = false;
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const dx = endX - startX;
+    const dy = endY - startY;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      switchToAdjacentProfile(dx < 0 ? 1 : -1); // डावीकडे स्वाइप = पुढची प्रोफाईल, उजवीकडे = मागची
+    }
+  }, { passive: true });
+}
+enableSwipeToSwitchProfile(document.getElementById("profileFormWrap"));
+enableSwipeToSwitchProfile(document.getElementById("familyProfilesBox"));
+
 function cacheProfileLocally(phone, profile) {
   localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify({ phone, profile, savedAt: Date.now() }));
   localStorage.setItem(ACTIVE_PHONE_KEY, phone);
@@ -910,28 +950,171 @@ function loadProfileForPhone(phone, silent) {
     .catch(() => { if (!cached && !silent) showToast(t("network_weak")); });
 }
 
-document.getElementById("profileLoadBtn").addEventListener("click", () => {
+/* ---------- Password hashing (client-side, phone acts as per-user salt) ----------
+   Plaintext password never leaves the device — only SHA-256(phone+":"+password)
+   is ever sent or stored. Not bank-grade (no server pepper), but a real,
+   meaningful layer beyond "anyone who knows a phone number can see the profile". */
+async function hashPassword(phone, password) {
+  const enc = new TextEncoder().encode(phone + ":" + password);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+let pendingAuthPhone = null;
+
+function resetAuthUI() {
+  document.getElementById("loginPasswordStep").hidden = true;
+  document.getElementById("forgotStep1").hidden = true;
+  document.getElementById("forgotStep2").hidden = true;
+  document.getElementById("profileFormWrap").hidden = true;
+  document.getElementById("authFieldsBlock").hidden = true;
+  document.getElementById("profileLoadBtn").hidden = false;
+  document.getElementById("guestModeBtn").hidden = false;
+  document.getElementById("loginError").hidden = true;
+  document.getElementById("forgotStep1Error").hidden = true;
+  document.getElementById("forgotStep2Error").hidden = true;
+  document.getElementById("profilePhoneInput").value = "";
+  document.getElementById("profileIdLine").textContent = "";
+  setSyncStatus("");
+  document.getElementById("profileHistoryList").innerHTML = "";
+  renderFamilyChips();
+}
+document.querySelectorAll(".back-step").forEach(btn => btn.addEventListener("click", resetAuthUI));
+
+document.getElementById("profileLoadBtn").addEventListener("click", async () => {
   const phone = document.getElementById("profilePhoneInput").value.trim();
   if (!/^[0-9]{10}$/.test(phone)) { showToast(t("toast_invalid_phone")); return; }
-  loadProfileForPhone(phone, false);
+  const knownOnDevice = getFamilyProfiles().some(p => p.phone === phone);
+  if (knownOnDevice) { loadProfileForPhone(phone, false); return; } // या डिव्हाइसवर आधीच login केलेला आहे — पासवर्ड परत नको
+  pendingAuthPhone = phone;
+  const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
+  if (!canReachServer) { showToast(t("network_weak")); return; }
+  const btn = document.getElementById("profileLoadBtn");
+  btn.disabled = true;
+  try {
+    const res = await fetch(`${CONFIG.appsScriptUrl}?action=profileExists&phone=${phone}`);
+    const data = await res.json();
+    if (!data.found) {
+      document.getElementById("profileLoadBtn").hidden = true;
+      document.getElementById("guestModeBtn").hidden = true;
+      document.getElementById("authFieldsBlock").hidden = false;
+      document.getElementById("profileFormWrap").hidden = false;
+      document.getElementById("profileIdLine").textContent = t("profile_new_line");
+      fillProfileForm({});
+    } else if (!data.hasPassword) {
+      const res2 = await fetch(`${CONFIG.appsScriptUrl}?action=profile&phone=${phone}`);
+      const pd = await res2.json();
+      document.getElementById("profileLoadBtn").hidden = true;
+      document.getElementById("guestModeBtn").hidden = true;
+      document.getElementById("authFieldsBlock").hidden = false;
+      document.getElementById("profileFormWrap").hidden = false;
+      document.getElementById("profileIdLine").textContent = pd.found ? `${t("profile_found_line")} ${pd.patientId}` : t("profile_new_line");
+      fillProfileForm(pd.found ? pd : {});
+      loadHealthHistory(phone);
+    } else {
+      document.getElementById("profileLoadBtn").hidden = true;
+      document.getElementById("guestModeBtn").hidden = true;
+      document.getElementById("loginPasswordStep").hidden = false;
+      document.getElementById("loginPasswordField").value = "";
+      document.getElementById("loginPasswordField").focus();
+    }
+  } catch (e) {
+    showToast(t("network_weak"));
+  } finally {
+    btn.disabled = false;
+  }
 });
+
+document.getElementById("loginSubmitBtn").addEventListener("click", async () => {
+  const phone = pendingAuthPhone;
+  const password = document.getElementById("loginPasswordField").value;
+  if (!password) { showToast(t("toast_enter_password")); return; }
+  document.getElementById("loginError").hidden = true;
+  const hash = await hashPassword(phone, password);
+  try {
+    const res = await fetch(`${CONFIG.appsScriptUrl}?action=login&phone=${phone}&hash=${hash}`);
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById("loginPasswordStep").hidden = true;
+      document.getElementById("profileFormWrap").hidden = false;
+      document.getElementById("profileIdLine").textContent = `${t("profile_found_line")} ${data.profile.patientId}`;
+      fillProfileForm(data.profile);
+      cacheProfileLocally(phone, data.profile);
+      setSyncStatus(t("profile_synced_status"));
+      loadHealthHistory(phone);
+      showToast(t("login_success_toast"));
+    } else {
+      document.getElementById("loginError").textContent = t("wrong_password_error");
+      document.getElementById("loginError").hidden = false;
+    }
+  } catch (e) { showToast(t("network_weak")); }
+});
+document.getElementById("loginPasswordField").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("loginSubmitBtn").click(); });
+
+document.getElementById("forgotPasswordLink").addEventListener("click", () => {
+  document.getElementById("loginPasswordStep").hidden = true;
+  document.getElementById("forgotStep1").hidden = false;
+});
+document.getElementById("sendResetCodeBtn").addEventListener("click", async () => {
+  const phone = pendingAuthPhone;
+  document.getElementById("forgotStep1Error").hidden = true;
+  try {
+    const res = await fetch(`${CONFIG.appsScriptUrl}?action=requestReset&phone=${phone}`);
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById("forgotStep1").hidden = true;
+      document.getElementById("forgotStep2").hidden = false;
+      showToast(t("reset_code_sent_toast"));
+    } else {
+      document.getElementById("forgotStep1Error").textContent = data.reason === "no_email" ? t("no_email_on_file_error") : t("network_weak");
+      document.getElementById("forgotStep1Error").hidden = false;
+    }
+  } catch (e) { showToast(t("network_weak")); }
+});
+document.getElementById("confirmResetBtn").addEventListener("click", async () => {
+  const phone = pendingAuthPhone;
+  const code = document.getElementById("resetCodeField").value.trim();
+  const p1 = document.getElementById("resetPwdField1").value;
+  const p2 = document.getElementById("resetPwdField2").value;
+  document.getElementById("forgotStep2Error").hidden = true;
+  if (!code) { showToast(t("toast_enter_code")); return; }
+  if (p1.length < 4) { showToast(t("password_too_short")); return; }
+  if (p1 !== p2) { showToast(t("password_mismatch")); return; }
+  const hash = await hashPassword(phone, p1);
+  try {
+    const res = await fetch(`${CONFIG.appsScriptUrl}?action=confirmReset&phone=${phone}&code=${code}&hash=${hash}`);
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById("forgotStep2").hidden = true;
+      document.getElementById("profileFormWrap").hidden = false;
+      document.getElementById("profileIdLine").textContent = `${t("profile_found_line")} ${data.profile.patientId}`;
+      fillProfileForm(data.profile);
+      cacheProfileLocally(phone, data.profile);
+      setSyncStatus(t("profile_synced_status"));
+      loadHealthHistory(phone);
+      notifyLabWhatsAppPasswordChanged(data.profile.name, phone);
+      showToast(t("password_reset_success_toast"));
+    } else {
+      const key = data.reason === "wrong_code" ? "wrong_reset_code_error" : data.reason === "expired" ? "reset_code_expired_error" : "network_weak";
+      document.getElementById("forgotStep2Error").textContent = t(key);
+      document.getElementById("forgotStep2Error").hidden = false;
+    }
+  } catch (e) { showToast(t("network_weak")); }
+});
+
+/* पासवर्ड बदलल्याची सूचना लॅबच्या WhatsApp वर (ईमेल आधीच सर्व्हरकडून आपोआप गेलेला असतो) */
+function notifyLabWhatsAppPasswordChanged(name, phone) {
+  const msg = `🔑 पासवर्ड बदलला — Kalyan Pathlab\nनाव: ${name || "-"}\nमोबाईल: ${phone}`;
+  window.open(`https://wa.me/919870020674?text=${encodeURIComponent(msg)}`, "_blank");
+}
 
 document.getElementById("guestModeBtn").addEventListener("click", () => {
   showSection("home");
   showToast(t("guest_mode_toast"));
 });
 
-document.getElementById("switchProfileBtn").addEventListener("click", () => {
-  document.getElementById("profileFormWrap").hidden = true;
-  document.getElementById("profilePhoneInput").value = "";
-  document.getElementById("profileIdLine").textContent = "";
-  setSyncStatus("");
-  document.getElementById("profileHistoryList").innerHTML = "";
-  renderFamilyChips();
-});
+document.getElementById("switchProfileBtn").addEventListener("click", resetAuthUI);
 document.getElementById("addFamilyBtn").addEventListener("click", () => {
-  document.getElementById("profileFormWrap").hidden = true;
-  document.getElementById("profilePhoneInput").value = "";
+  resetAuthUI();
   document.getElementById("profilePhoneInput").focus();
 });
 
@@ -950,9 +1133,23 @@ document.getElementById("profilePhotoInput").addEventListener("change", async e 
   placeholder.hidden = true;
 });
 
-document.getElementById("profileSaveBtn").addEventListener("click", () => {
+document.getElementById("profileSaveBtn").addEventListener("click", async () => {
   const phone = document.getElementById("profilePhoneInput").value.trim();
   if (!/^[0-9]{10}$/.test(phone)) { showToast(t("toast_invalid_phone")); return; }
+
+  // पहिल्यांदाच profile बनवत असाल / जुनी profile ला password सेट करत असाल — दोन्हीत हे field दिसतं
+  const settingPassword = !document.getElementById("authFieldsBlock").hidden;
+  let email = "", pwdHash = "";
+  if (settingPassword) {
+    email = document.getElementById("profileEmailField").value.trim();
+    const p1 = document.getElementById("profilePwdField1").value;
+    const p2 = document.getElementById("profilePwdField2").value;
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) { showToast(t("valid_email_required")); return; }
+    if (p1.length < 4) { showToast(t("password_too_short")); return; }
+    if (p1 !== p2) { showToast(t("password_mismatch")); return; }
+    pwdHash = await hashPassword(phone, p1);
+  }
+
   const existingCached = getCachedProfile(phone) || {};
   const profile = {
     name: document.getElementById("profileNameField").value.trim(),
@@ -984,6 +1181,13 @@ document.getElementById("profileSaveBtn").addEventListener("click", () => {
       showToast(t("profile_saved_offline_toast"));
       setSyncStatus(t("profile_offline_copy"));
     });
+
+  if (settingPassword) {
+    fetch(CONFIG.appsScriptUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "setPassword", phone, hash: pwdHash, email }) })
+      .then(() => showToast(t("password_set_toast")))
+      .catch(() => {});
+    document.getElementById("authFieldsBlock").hidden = true;
+  }
 });
 
 function syncPendingProfile() {
