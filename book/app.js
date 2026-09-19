@@ -1216,7 +1216,8 @@ function renderProfileSwitchDropdown() {
         <div class="psd-avatar">${p.photo ? `<img src="${p.photo}" alt="">` : initials(p.name)}</div>
         <div class="psd-info"><strong>${p.name || t("profile_new_line")}</strong><span>${p.relation && p.relation !== "Self" ? p.relation + " · " : ""}📞 ${p.phone}</span></div>
       </div>`).join("") +
-    `<div class="psd-add" id="psdAddNew">+ ${t("family_add_btn")}</div>`;
+    `<div class="psd-add" id="psdAddNew">+ ${t("family_add_btn")}</div>` +
+    (activePhone ? `<div class="psd-add" id="psdLogout" style="color:#a1235a">🔓 ${t("logout_btn")}</div>` : "");
   dd.querySelectorAll(".psd-chip").forEach(chip => chip.addEventListener("click", () => {
     const phone = chip.dataset.phone;
     document.getElementById("profilePhoneInput").value = phone;
@@ -1230,7 +1231,24 @@ function renderProfileSwitchDropdown() {
     showSection("profile");
     document.getElementById("addFamilyBtn").click();
   });
+  const psdLogout = document.getElementById("psdLogout");
+  if (psdLogout) psdLogout.addEventListener("click", () => {
+    closeProfileSwitchDropdown();
+    logoutUser();
+  });
 }
+
+/* ---- Logout: ends the current session on this device but keeps the
+   saved family profiles so logging back in is quick. ---- */
+function logoutUser() {
+  localStorage.removeItem(ACTIVE_PHONE_KEY);
+  localStorage.removeItem(PROFILE_CACHE_KEY);
+  updateTopBadge("", "");
+  resetAuthUI();
+  showSection("home");
+  showToast(t("logout_success_toast"));
+}
+document.getElementById("logoutBtn").addEventListener("click", logoutUser);
 function closeProfileSwitchDropdown() { document.getElementById("profileSwitchDropdown").hidden = true; }
 document.getElementById("topProfileBadge").addEventListener("click", (e) => {
   e.stopPropagation();

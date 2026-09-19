@@ -84,6 +84,8 @@ const TRANSLATIONS = {
   password_reset_success_toast: { mr: "पासवर्ड यशस्वीरित्या बदलला ✓", hi: "पासवर्ड सफलतापूर्वक बदला ✓", en: "Password changed successfully ✓" },
   password_set_toast: { mr: "पासवर्ड सेट झाला ✓", hi: "पासवर्ड सेट हो गया ✓", en: "Password set ✓" },
   swipe_hint: { mr: "← स्वाइप करून प्रोफाईल बदला →", hi: "← स्वाइप करके प्रोफाइल बदलें →", en: "← Swipe to switch profile →" },
+  logout_btn: { mr: "Logout", hi: "Logout", en: "Logout" },
+  logout_success_toast: { mr: "Logout झालं ✓", hi: "Logout हो गया ✓", en: "Logged out ✓" },
   no_result: {
     mr: "तुम्ही शोधलेली टेस्ट यादीत नाही? काळजी नाही — कॉल करा, आमच्याकडे उपलब्ध असू शकते.",
     hi: "आपके द्वारा खोजी गई टेस्ट सूची में नहीं है? चिंता न करें — कॉल करें, हमारे पास उपलब्ध हो सकती है।",
