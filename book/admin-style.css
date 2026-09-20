@@ -99,6 +99,9 @@ body{margin:0;font-family:'Noto Sans Devanagari','Poppins','Segoe UI',system-ui,
 .pin-input{width:100%;max-width:220px;padding:14px;text-align:center;font-size:1.5rem;letter-spacing:8px;border-radius:12px;border:none;margin-bottom:14px}
 .pin-lock-screen .btn{max-width:220px}
 .pin-error{color:#ffb3c1;font-size:0.85rem;margin-top:12px}
+.pin-forgot-link{background:transparent;border:none;color:#c7cff0;font-size:0.85rem;text-decoration:underline;margin-top:16px;cursor:pointer}
+.pin-reset-step{margin-top:18px;width:100%;max-width:220px;display:flex;flex-direction:column;align-items:center}
+.pin-reset-step .pin-input{font-size:1.1rem;letter-spacing:2px}
 
 /* ---------- Category color badge ---------- */
 .cat-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;font-size:0.85rem;margin-right:8px;flex-shrink:0}

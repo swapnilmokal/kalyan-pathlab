@@ -22,6 +22,14 @@
   <input type="password" id="pinInput" inputmode="numeric" maxlength="6" placeholder="••••" class="pin-input" autocomplete="off" />
   <button type="button" id="pinSubmitBtn" class="btn btn-primary btn-block" data-i18n="pin_unlock">Unlock</button>
   <p id="pinError" class="pin-error" hidden data-i18n="pin_wrong">Wrong PIN, try again.</p>
+  <button type="button" id="forgotPinLink" class="pin-forgot-link" data-i18n="pin_forgot_link">Forgot PIN?</button>
+
+  <div id="pinResetStep" hidden class="pin-reset-step">
+    <p class="pin-lock-sub" data-i18n="pin_reset_note">Reset code sent to the lab's registered email.</p>
+    <input type="text" id="pinResetCodeField" inputmode="numeric" maxlength="6" placeholder="Reset Code" class="pin-input" data-i18n-placeholder="pin_reset_code_ph" />
+    <input type="password" id="pinResetNewField" inputmode="numeric" maxlength="6" placeholder="New PIN (4–6 digits)" class="pin-input" data-i18n-placeholder="pin_new_ph" />
+    <button type="button" id="confirmPinResetBtn" class="btn btn-primary btn-block" data-i18n="pin_reset_confirm_btn">Reset PIN &amp; Unlock</button>
+  </div>
 </div>
 
 <header class="admin-topbar">
@@ -35,6 +43,7 @@
   <button type="button" id="notifBellBtn" class="icon-btn notif-bell" aria-label="Notifications">🔔<span id="notifCount" class="notif-count" hidden>0</span></button>
   <button type="button" id="shareCustomerLinkBtn" class="icon-btn" aria-label="Share customer app link">📤</button>
   <button type="button" id="refreshBtn" class="icon-btn" aria-label="Refresh">🔄</button>
+  <button type="button" id="topLogoutBtn" class="icon-btn" aria-label="Logout" title="Logout">🔓</button>
 </header>
 
 <nav class="admin-tabs">

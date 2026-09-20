@@ -132,6 +132,14 @@ const TRANSLATIONS = {
   pin_invalid: { en: "PIN must be 4–6 digits.", mr: "PIN 4 ते 6 अंकी असावा.", hi: "PIN 4 से 6 अंकों का होना चाहिए।" },
   pin_mismatch: { en: "Both PINs don't match.", mr: "दोन्ही PIN जुळत नाहीत.", hi: "दोनों PIN मेल नहीं खाते।" },
   pin_changed: { en: "PIN changed ✓", mr: "PIN बदलला ✓", hi: "PIN बदल गया ✓" },
+  logout_success: { en: "Logged out", mr: "Logout झालं", hi: "Logout हो गया" },
+  pin_forgot_link: { en: "Forgot PIN?", mr: "PIN विसरलात?", hi: "PIN भूल गए?" },
+  pin_reset_note: { en: "Reset code sent to the lab's registered email.", mr: "लॅबच्या रजिस्टर्ड ईमेलवर reset code पाठवला.", hi: "लैब के रजिस्टर्ड ईमेल पर reset code भेजा गया।" },
+  pin_reset_code_ph: { en: "Reset Code", mr: "Reset Code", hi: "Reset Code" },
+  pin_reset_confirm_btn: { en: "Reset PIN & Unlock", mr: "PIN रिसेट करून Unlock करा", hi: "PIN रिसेट करके Unlock करें" },
+  pin_reset_sent: { en: "Reset code emailed ✓", mr: "Reset code ईमेलवर पाठवला ✓", hi: "Reset code ईमेल पर भेजा ✓" },
+  pin_reset_wrong_code: { en: "Wrong reset code.", mr: "चुकीचा reset code.", hi: "गलत reset code।" },
+  pin_reset_success: { en: "PIN reset successfully ✓", mr: "PIN यशस्वीरित्या रिसेट झाला ✓", hi: "PIN सफलतापूर्वक रिसेट हुआ ✓" },
 
   /* ---------- Patient list ---------- */
   patients_found: { en: "patient(s) found", mr: "पेशंट सापडले", hi: "मरीज़ मिले" },
@@ -877,6 +885,39 @@ document.getElementById("changePinBtn").addEventListener("click", () => {
 document.getElementById("lockNowBtn").addEventListener("click", () => {
   sessionStorage.removeItem(PIN_UNLOCK_KEY);
   showLockScreen();
+});
+document.getElementById("topLogoutBtn").addEventListener("click", () => {
+  sessionStorage.removeItem(PIN_UNLOCK_KEY);
+  showLockScreen();
+  showToast(t("logout_success"));
+});
+
+/* ---- Forgot PIN: emails a one-time reset code to the lab's own
+   registered email (kalyan.pathlab.21@gmail.com) — since the Admin PIN
+   is one shared secret for the lab (not a per-person login), the
+   lab's own inbox is the right out-of-band recovery channel. */
+let adminPinResetCode = null;
+document.getElementById("forgotPinLink").addEventListener("click", () => {
+  adminPinResetCode = String(Math.floor(100000 + Math.random() * 900000));
+  fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "adminPinReset", code: adminPinResetCode }) }).catch(() => {});
+  document.getElementById("pinResetStep").hidden = false;
+  document.getElementById("forgotPinLink").hidden = true;
+  document.getElementById("pinResetCodeField").value = "";
+  document.getElementById("pinResetNewField").value = "";
+  showToast(t("pin_reset_sent"));
+});
+document.getElementById("confirmPinResetBtn").addEventListener("click", () => {
+  const code = document.getElementById("pinResetCodeField").value.trim();
+  const newPin = document.getElementById("pinResetNewField").value.trim();
+  if (!adminPinResetCode || code !== adminPinResetCode) { showToast(t("pin_reset_wrong_code")); return; }
+  if (newPin.length < 4 || newPin.length > 6 || !/^\d+$/.test(newPin)) { showToast(t("pin_invalid")); return; }
+  localStorage.setItem(PIN_KEY, newPin);
+  adminPinResetCode = null;
+  document.getElementById("pinResetStep").hidden = true;
+  document.getElementById("forgotPinLink").hidden = false;
+  sessionStorage.setItem(PIN_UNLOCK_KEY, "1");
+  hideLockScreen();
+  showToast(t("pin_reset_success"));
 });
 
 if (sessionStorage.getItem(PIN_UNLOCK_KEY) === "1") { hideLockScreen(); } else { showLockScreen(); }

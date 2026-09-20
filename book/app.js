@@ -870,19 +870,20 @@ function enableSwipeToSwitchProfile(el) {
 enableSwipeToSwitchProfile(document.getElementById("profileFormWrap"));
 enableSwipeToSwitchProfile(document.getElementById("familyProfilesBox"));
 
+function getAllCachedProfiles() {
+  try { return JSON.parse(localStorage.getItem(PROFILE_CACHE_KEY) || "{}"); } catch (e) { return {}; }
+}
 function cacheProfileLocally(phone, profile) {
-  localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify({ phone, profile, savedAt: Date.now() }));
+  const all = getAllCachedProfiles();
+  all[phone] = profile;
+  localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(all));
   localStorage.setItem(ACTIVE_PHONE_KEY, phone);
   upsertFamilyProfile(phone, profile.name, profile.photo, profile.relation);
   updateTopBadge(profile.name, profile.photo);
 }
 function getCachedProfile(phone) {
-  try {
-    const raw = localStorage.getItem(PROFILE_CACHE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return parsed.phone === phone ? parsed.profile : null;
-  } catch (e) { return null; }
+  const all = getAllCachedProfiles();
+  return all[phone] || null;
 }
 function fillProfileForm(p) {
   document.getElementById("profileFormWrap").hidden = false;
@@ -919,19 +920,24 @@ function setSyncStatus(msg) {
   if (el) el.textContent = msg || "";
 }
 
+let profileLoadToken = 0; // जलद profile-switch मध्ये जुनं (उशिरा आलेलं) उत्तर टाकून द्यायला
 function loadProfileForPhone(phone, silent) {
+  const myToken = ++profileLoadToken;
   const cached = getCachedProfile(phone);
   if (cached) {
     fillProfileForm(cached);
     document.getElementById("profileIdLine").textContent = cached.patientId ? `${t("profile_found_line")} ${cached.patientId}` : t("profile_new_line");
     setSyncStatus(t("profile_offline_copy"));
     updateTopBadge(cached.name, cached.photo);
+    localStorage.setItem(ACTIVE_PHONE_KEY, phone);
+    renderFamilyChips();
   }
   const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
   if (!canReachServer) { if (!cached && !silent) showToast(t("network_weak")); return; }
   fetch(`${CONFIG.appsScriptUrl}?action=profile&phone=${phone}`)
     .then(res => res.json())
     .then(data => {
+      if (myToken !== profileLoadToken) return; // यादरम्यान दुसरी profile उघडली गेली — हे जुनं उत्तर दुर्लक्षित
       document.getElementById("profileFormWrap").hidden = false;
       const idLine = document.getElementById("profileIdLine");
       if (data.found) {
@@ -940,6 +946,7 @@ function loadProfileForPhone(phone, silent) {
         cacheProfileLocally(phone, data);
         setSyncStatus(t("profile_synced_status"));
         updateTopBadge(data.name, data.photo);
+        renderFamilyChips();
       } else if (!cached) {
         idLine.textContent = t("profile_new_line");
         fillProfileForm({});
@@ -947,7 +954,7 @@ function loadProfileForPhone(phone, silent) {
       }
       loadHealthHistory(phone);
     })
-    .catch(() => { if (!cached && !silent) showToast(t("network_weak")); });
+    .catch(() => { if (myToken === profileLoadToken && !cached && !silent) showToast(t("network_weak")); });
 }
 
 /* ---------- Password hashing (client-side, phone acts as per-user salt) ----------
@@ -1242,7 +1249,6 @@ function renderProfileSwitchDropdown() {
    saved family profiles so logging back in is quick. ---- */
 function logoutUser() {
   localStorage.removeItem(ACTIVE_PHONE_KEY);
-  localStorage.removeItem(PROFILE_CACHE_KEY);
   updateTopBadge("", "");
   resetAuthUI();
   showSection("home");
