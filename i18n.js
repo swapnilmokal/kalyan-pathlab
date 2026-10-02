@@ -1,0 +1,409 @@
+/* =====================================================================
+   Kalyan Pathlab - भाषा (Language) सिस्टीम
+   मराठी (mr), हिंदी (hi), English (en) — वरती भाषा बदलली की संपूर्ण
+   वेबसाईटवरचा मजकूर लगेच बदलतो. निवड फोनवर सेव्ह राहते (पुढच्या वेळीही
+   तीच भाषा दिसेल).
+   ---------------------------------------------------------------------
+   टीप: पेशंटने भरलेले रिव्ह्यू, टेस्टची इंग्रजी वैद्यकीय नावं, आणि
+   लॅब मालकाला जाणारा WhatsApp/ईमेल मजकूर मुद्दाम भाषांतरित केलेला नाही
+   (ते जसंच्या तसं राहतं) — कारण तो अस्सल मजकूर किंवा लॅबसाठीचा
+   अंतर्गत मजकूर आहे.
+   ===================================================================== */
+
+const TRANSLATIONS = {
+  tagline: { mr: "संस्कार फाउंडेशन संचलित · Care For Quality", hi: "संस्कार फाउंडेशन द्वारा संचालित · Care For Quality", en: "Run by Sanskar Foundation · Care For Quality" },
+
+  nav_home: { mr: "🏠 मुख्यपृष्ठ", hi: "🏠 होम", en: "🏠 Home" },
+  nav_tests: { mr: "🧪 टेस्ट लिस्ट", hi: "🧪 टेस्ट लिस्ट", en: "🧪 Test List" },
+  nav_booking: { mr: "📅 बुकिंग", hi: "📅 बुकिंग", en: "📅 Booking" },
+  nav_payment: { mr: "💳 पेमेंट व स्थिती", hi: "💳 पेमेंट व स्थिति", en: "💳 Payment & Status" },
+  nav_reviews: { mr: "⭐ रिव्ह्यूज", hi: "⭐ रिव्यू", en: "⭐ Reviews" },
+  nav_contact: { mr: "📞 संपर्क", hi: "📞 संपर्क", en: "📞 Contact" },
+
+  discount_badge: { mr: "सर्व टेस्टवर 30% ते 70% सवलत", hi: "सभी टेस्ट पर 30% से 70% तक छूट", en: "30% to 70% off on all tests" },
+  hero_title_line1: { mr: "तुमची तपासणी,", hi: "आपकी जांच,", en: "Your test," },
+  hero_title_line2: { mr: "घरबसल्या व विश्वासाने.", hi: "घर बैठे और भरोसे के साथ।", en: "at home, with trust." },
+  hero_sub: {
+    mr: "रक्त तपासणी, फुल बॉडी चेकअप — अचूक रिपोर्ट्स, वाजवी दरात. सॅम्पल कलेक्शनसाठी घरी येण्याची सेवा पूर्ण मोफत.",
+    hi: "रक्त जांच, फुल बॉडी चेकअप — सटीक रिपोर्ट, उचित दरों में। सैंपल कलेक्शन के लिए घर आने की सेवा पूरी तरह मुफ्त।",
+    en: "Blood tests, full body checkups — accurate reports at fair prices. Home sample collection is completely free."
+  },
+  btn_book_now: { mr: "🩸 आत्ताच बुकिंग करा", hi: "🩸 अभी बुकिंग करें", en: "🩸 Book Now" },
+  btn_whatsapp_ask: { mr: "WhatsApp वर विचारा", hi: "WhatsApp पर पूछें", en: "Ask on WhatsApp" },
+  btn_share_friend: { mr: "👥 मित्राला पाठवा", hi: "👥 दोस्त को भेजें", en: "👥 Send to a Friend" },
+  stat_tests: { mr: "टेस्ट व प्रोफाइल्स", hi: "टेस्ट व प्रोफाइल", en: "Tests & Profiles" },
+  stat_cities: { mr: "शहरांत मोफत होम सर्विस", hi: "शहरों में मुफ्त होम सर्विस", en: "Cities with Free Home Service" },
+  stat_lines: { mr: "डायरेक्ट फोन लाईन्स", hi: "डायरेक्ट फोन लाइनें", en: "Direct Phone Lines" },
+
+  cities_heading: { mr: "मोफत होम सॅम्पल कलेक्शन — या शहरांत", hi: "मुफ्त होम सैंपल कलेक्शन — इन शहरों में", en: "Free Home Sample Collection — In These Cities" },
+
+  about_heading: { mr: "स्थानिक, काळजीपूर्वक व सहज उपलब्ध.", hi: "स्थानीय, सावधानीपूर्वक और आसानी से उपलब्ध।", en: "Local, careful, and easily accessible." },
+  about_para: {
+    mr: "Kalyan Pathlab ही कल्याण परिसरातील विश्वासार्ह डायग्नोस्टिक लॅब आहे, संस्कार फाउंडेशन अंतर्गत चालवली जाते. एक साधी ब्लड टेस्ट असो किंवा फुल बॉडी चेकअप — प्रत्येक सॅम्पल काळजीपूर्वक हाताळला जातो, अत्याधुनिक व स्वयंचलित मशीनवर तपासला जातो आणि रिपोर्ट पोहोचण्याआधी तपासला जातो.",
+    hi: "Kalyan Pathlab कल्याण क्षेत्र की एक भरोसेमंद डायग्नोस्टिक लैब है, जो संस्कार फाउंडेशन के तहत चलाई जाती है। चाहे एक साधारण ब्लड टेस्ट हो या फुल बॉडी चेकअप — हर सैंपल सावधानी से संभाला जाता है, अत्याधुनिक व स्वचालित मशीनों पर जांचा जाता है और रिपोर्ट पहुंचने से पहले जांचा जाता है।",
+    en: "Kalyan Pathlab is a trusted diagnostic lab in the Kalyan area, run under Sanskar Foundation. Whether it's a simple blood test or a full body checkup — every sample is handled with care, tested on advanced automated machines, and checked before the report reaches you."
+  },
+  about_stat_categories: { mr: "टेस्ट कॅटेगरीज", hi: "टेस्ट श्रेणियाँ", en: "Test Categories" },
+
+  gallery_heading: { mr: "आमच्या लॅबमध्ये डोकावून पहा", hi: "हमारी लैब में एक नज़र डालें", en: "Take a Peek Inside Our Lab" },
+  gallery_sub: { mr: "आमची मशीन्स व टेस्टिंग प्रक्रिया.", hi: "हमारी मशीनें व टेस्टिंग प्रक्रिया।", en: "Our machines and testing process." },
+
+  tests_heading: { mr: "टेस्ट व किंमत यादी", hi: "टेस्ट व मूल्य सूची", en: "Tests & Price List" },
+  tests_search_placeholder: { mr: "टेस्टचे नाव टाईप करा… उदा. Thyroid, Sugar, CBC", hi: "टेस्ट का नाम टाइप करें... जैसे Thyroid, Sugar, CBC", en: "Type a test name… e.g. Thyroid, Sugar, CBC" },
+  cat_all: { mr: "सर्व", hi: "सभी", en: "All" },
+  found_tests_prefix: { mr: "एकूण", hi: "कुल", en: "Found" },
+  found_tests_suffix: { mr: "टेस्ट सापडल्या —", hi: "टेस्ट मिलीं —", en: "tests for" },
+
+  /* ---------- Password login / reset ---------- */
+  btn_continue: { mr: "पुढे जा", hi: "आगे बढ़ें", en: "Continue" },
+  password_label: { mr: "पासवर्ड", hi: "पासवर्ड", en: "Password" },
+  btn_login: { mr: "Login", hi: "Login", en: "Login" },
+  forgot_password_link: { mr: "पासवर्ड विसरलात?", hi: "पासवर्ड भूल गए?", en: "Forgot password?" },
+  back_to_start: { mr: "← मागे जा", hi: "← वापस जाएं", en: "← Go back" },
+  back_to_login: { mr: "← Login वर परत जा", hi: "← Login पर वापस जाएं", en: "← Back to Login" },
+  forgot_step1_note: { mr: "तुमच्या रजिस्टर्ड ईमेलवर एक Reset Code पाठवला जाईल.", hi: "आपके रजिस्टर्ड ईमेल पर एक Reset Code भेजा जाएगा।", en: "A reset code will be sent to your registered email." },
+  btn_send_reset_code: { mr: "Reset Code पाठवा", hi: "Reset Code भेजें", en: "Send Reset Code" },
+  forgot_step2_note: { mr: "ईमेलमध्ये आलेला 6-अंकी code टाका (15 मिनिटांत वापरा).", hi: "ईमेल में आया 6-अंकों का code डालें (15 मिनट में उपयोग करें)।", en: "Enter the 6-digit code from your email (valid for 15 minutes)." },
+  reset_code_label: { mr: "Reset Code", hi: "Reset Code", en: "Reset Code" },
+  new_password_label: { mr: "नवीन पासवर्ड", hi: "नया पासवर्ड", en: "New Password" },
+  confirm_password_label: { mr: "पासवर्ड पुन्हा टाका", hi: "पासवर्ड फिर से डालें", en: "Confirm Password" },
+  btn_reset_password: { mr: "पासवर्ड रिसेट करा", hi: "पासवर्ड रिसेट करें", en: "Reset Password" },
+  auth_fields_note: { mr: "पासवर्ड सेट करा — पुढच्या वेळी याच नंबरने login करण्यासाठी लागेल.", hi: "पासवर्ड सेट करें — अगली बार इसी नंबर से login करने के लिए चाहिए।", en: "Set a password — you'll need it to log in with this number next time." },
+  profile_email_label: { mr: "ईमेल (पासवर्ड रिसेटसाठी आवश्यक)", hi: "ईमेल (पासवर्ड रिसेट के लिए ज़रूरी)", en: "Email (needed for password reset)" },
+  valid_email_required: { mr: "योग्य ईमेल टाका.", hi: "सही ईमेल डालें।", en: "Enter a valid email." },
+  password_too_short: { mr: "पासवर्ड किमान 4 अक्षरी असावा.", hi: "पासवर्ड कम से कम 4 अक्षर का हो।", en: "Password must be at least 4 characters." },
+  password_mismatch: { mr: "दोन्ही पासवर्ड जुळत नाहीत.", hi: "दोनों पासवर्ड मेल नहीं खाते।", en: "Passwords don't match." },
+  toast_enter_password: { mr: "पासवर्ड टाका.", hi: "पासवर्ड डालें।", en: "Enter your password." },
+  wrong_password_error: { mr: "चुकीचा पासवर्ड, परत प्रयत्न करा.", hi: "गलत पासवर्ड, फिर कोशिश करें।", en: "Wrong password, try again." },
+  login_success_toast: { mr: "Login झालं ✓", hi: "Login हो गया ✓", en: "Logged in ✓" },
+  reset_code_sent_toast: { mr: "Reset Code ईमेलवर पाठवला ✓", hi: "Reset Code ईमेल पर भेजा ✓", en: "Reset code sent to your email ✓" },
+  no_email_on_file_error: { mr: "या प्रोफाईलला ईमेल जोडलेला नाही. कृपया लॅबशी संपर्क साधा (98700 20674).", hi: "इस प्रोफाइल से ईमेल जुड़ा नहीं है। कृपया लैब से संपर्क करें (98700 20674)।", en: "No email is linked to this profile. Please contact the lab (98700 20674)." },
+  toast_enter_code: { mr: "Reset Code टाका.", hi: "Reset Code डालें।", en: "Enter the reset code." },
+  wrong_reset_code_error: { mr: "चुकीचा Reset Code.", hi: "गलत Reset Code।", en: "Incorrect reset code." },
+  reset_code_expired_error: { mr: "Reset Code ची वेळ संपली, परत पाठवा.", hi: "Reset Code की समय सीमा समाप्त, फिर से भेजें।", en: "Reset code expired — request a new one." },
+  password_reset_success_toast: { mr: "पासवर्ड यशस्वीरित्या बदलला ✓", hi: "पासवर्ड सफलतापूर्वक बदला ✓", en: "Password changed successfully ✓" },
+  password_set_toast: { mr: "पासवर्ड सेट झाला ✓", hi: "पासवर्ड सेट हो गया ✓", en: "Password set ✓" },
+  swipe_hint: { mr: "← स्वाइप करून प्रोफाईल बदला →", hi: "← स्वाइप करके प्रोफाइल बदलें →", en: "← Swipe to switch profile →" },
+  logout_btn: { mr: "Logout", hi: "Logout", en: "Logout" },
+  logout_success_toast: { mr: "Logout झालं ✓", hi: "Logout हो गया ✓", en: "Logged out ✓" },
+  no_result: {
+    mr: "तुम्ही शोधलेली टेस्ट यादीत नाही? काळजी नाही — कॉल करा, आमच्याकडे उपलब्ध असू शकते.",
+    hi: "आपके द्वारा खोजी गई टेस्ट सूची में नहीं है? चिंता न करें — कॉल करें, हमारे पास उपलब्ध हो सकती है।",
+    en: "Can't find the test you're looking for? Don't worry — give us a call, we may still have it."
+  },
+
+  cart_book_btn: { mr: "बुक करा →", hi: "बुक करें →", en: "Book →" },
+
+  booking_heading: { mr: "बुकिंग फॉर्म", hi: "बुकिंग फॉर्म", en: "Booking Form" },
+  booking_sub: {
+    mr: "खालील माहिती भरा — बुकिंग झाल्यावर तुम्हाला व आम्हाला दोघांनाही कन्फर्मेशन मिळेल.",
+    hi: "नीचे दी गई जानकारी भरें — बुकिंग होने पर आपको और हमें दोनों को कन्फर्मेशन मिलेगा।",
+    en: "Fill in the details below — once booked, both you and we will get a confirmation."
+  },
+  selected_tests_label: { mr: "निवडलेल्या टेस्ट:", hi: "चयनित टेस्ट:", en: "Selected Tests:" },
+  selected_tests_empty: { mr: "कोणतीही टेस्ट निवडलेली नाही — ", hi: "कोई टेस्ट चयनित नहीं है — ", en: "No tests selected — " },
+  selected_tests_choose_link: { mr: "टेस्ट लिस्टमधून निवडा", hi: "टेस्ट लिस्ट से चुनें", en: "choose from the test list" },
+  selected_tests_or_type: { mr: " किंवा खाली टाईप करा.", hi: " या नीचे टाइप करें।", en: " or type below." },
+  label_manual_test: { mr: "टेस्ट/पॅकेजचे नाव (हवं असल्यास टाईप करा)", hi: "टेस्ट/पैकेज का नाम (चाहें तो टाइप करें)", en: "Test/Package name (type if needed)" },
+  label_fullname: { mr: "तुमचे पूर्ण नाव *", hi: "आपका पूरा नाम *", en: "Your Full Name *" },
+  placeholder_fullname: { mr: "पूर्ण नाव", hi: "पूरा नाम", en: "Full name" },
+  label_phone: { mr: "मोबाईल नंबर *", hi: "मोबाइल नंबर *", en: "Mobile Number *" },
+  placeholder_phone: { mr: "10 अंकी मोबाईल नंबर", hi: "10 अंकों का मोबाइल नंबर", en: "10-digit mobile number" },
+  label_altphone: { mr: "पर्यायी संपर्क नंबर", hi: "वैकल्पिक संपर्क नंबर", en: "Alternate Contact Number" },
+  placeholder_altphone: { mr: "घरचा/दुसरा नंबर (ऐच्छिक)", hi: "घर का/दूसरा नंबर (वैकल्पिक)", en: "Home/other number (optional)" },
+  label_address: { mr: "पूर्ण पत्ता *", hi: "पूरा पता *", en: "Full Address *" },
+  placeholder_address: { mr: "घर/फ्लॅट नं, इमारत, एरिया, शहर, पिनकोड", hi: "घर/फ्लैट नं, इमारत, एरिया, शहर, पिनकोड", en: "House/flat no, building, area, city, pincode" },
+  label_city: { mr: "शहर *", hi: "शहर *", en: "City *" },
+  city_placeholder_option: { mr: "शहर निवडा", hi: "शहर चुनें", en: "Select city" },
+  btn_location: { mr: "📍 माझे सध्याचे लोकेशन जोडा (ऐच्छिक)", hi: "📍 मेरा वर्तमान लोकेशन जोड़ें (वैकल्पिक)", en: "📍 Add My Current Location (optional)" },
+  label_doctor: { mr: "रेफरन्स डॉक्टर किंवा स्वतः", hi: "रेफरेंस डॉक्टर या स्वयं", en: "Referring Doctor or Self" },
+  placeholder_doctor: { mr: "डॉ. चे नाव लिहा, किंवा 'स्वतः' असे लिहा", hi: "डॉ. का नाम लिखें, या 'स्वयं' लिखें", en: "Enter doctor's name, or write 'Self'" },
+  label_collection_date: { mr: "सॅम्पल कलेक्शनचा दिवस *", hi: "सैंपल कलेक्शन की तारीख *", en: "Sample Collection Date *" },
+  label_collection_time: { mr: "वेळ *", hi: "समय *", en: "Time *" },
+  label_report_mode: { mr: "रिपोर्ट कसा हवा? *", hi: "रिपोर्ट कैसे चाहिए? *", en: "How would you like the report? *" },
+  report_hardcopy: { mr: "हार्ड कॉपी (घरी)", hi: "हार्ड कॉपी (घर पर)", en: "Hard Copy (at home)" },
+  report_whatsapp: { mr: "WhatsApp", hi: "WhatsApp", en: "WhatsApp" },
+  report_email: { mr: "ईमेल", hi: "ईमेल", en: "Email" },
+  label_email: { mr: "ईमेल आयडी", hi: "ईमेल आईडी", en: "Email ID" },
+  label_prescription: { mr: "डॉक्टरचं प्रिस्क्रिप्शन (असल्यास, ऐच्छिक)", hi: "डॉक्टर का प्रिस्क्रिप्शन (हो तो, वैकल्पिक)", en: "Doctor's Prescription (if any, optional)" },
+  consent_text: {
+    mr: "वरील सर्व माहिती बरोबर आहे व मी सॅम्पल कलेक्शनसाठी संपर्क करण्यास संमती देतो.",
+    hi: "उपरोक्त सभी जानकारी सही है और मैं सैंपल कलेक्शन के लिए संपर्क करने की सहमति देता/देती हूं।",
+    en: "All the information above is correct, and I consent to being contacted for sample collection."
+  },
+  btn_confirm_booking: { mr: "✅ बुकिंग कन्फर्म करा", hi: "✅ बुकिंग कन्फर्म करें", en: "✅ Confirm Booking" },
+  booking_form_note: {
+    mr: "बुकिंगनंतर WhatsApp विंडो उघडेल — तिथे फक्त \"Send\" दाबा, म्हणजे आमच्याकडे लगेच बुकिंग पोहोचेल.",
+    hi: "बुकिंग के बाद WhatsApp विंडो खुलेगी — वहाँ सिर्फ \"Send\" दबाएँ, ताकि आपकी बुकिंग हमारे पास तुरंत पहुंचे।",
+    en: "After booking, a WhatsApp window will open — just tap \"Send\" there, and your booking will reach us instantly."
+  },
+
+  payment_heading: { mr: "पेमेंट व बुकिंग स्थिती", hi: "पेमेंट व बुकिंग स्थिति", en: "Payment & Booking Status" },
+  payment_sub: {
+    mr: "सॅम्पल कलेक्शनच्या वेळी कॅश किंवा खालील QR कोड स्कॅन करून UPI ने पेमेंट करू शकता.",
+    hi: "सैंपल कलेक्शन के समय कैश या नीचे दिए गए QR कोड को स्कैन करके UPI से भुगतान कर सकते हैं।",
+    en: "You can pay by cash at the time of sample collection, or scan the QR code below to pay via UPI."
+  },
+
+  reviews_heading: { mr: "पेशंट्सचा अनुभव", hi: "मरीज़ों का अनुभव", en: "Patient Experiences" },
+  reviews_sub: {
+    mr: "आमच्याकडे टेस्ट केलेल्या पेशंट्सचे मत — तुमचाही अनुभव शेअर करा.",
+    hi: "हमारे यहाँ टेस्ट करवाने वाले मरीज़ों की राय — अपना अनुभव भी शेयर करें।",
+    en: "What our patients say — share your experience too."
+  },
+  btn_write_review: { mr: "✍️ तुमचा रिव्ह्यू लिहा", hi: "✍️ अपना रिव्यू लिखें", en: "✍️ Write Your Review" },
+  btn_close_review: { mr: "✕ रिव्ह्यू फॉर्म बंद करा", hi: "✕ रिव्यू फॉर्म बंद करें", en: "✕ Close Review Form" },
+  review_modal_title: { mr: "तुमचा रिव्ह्यू लिहा", hi: "अपना रिव्यू लिखें", en: "Write Your Review" },
+  label_review_name: { mr: "तुमचे नाव *", hi: "आपका नाम *", en: "Your Name *" },
+  placeholder_review_name: { mr: "तुमचे नाव", hi: "आपका नाम", en: "Your name" },
+  label_review_phone: {
+    mr: "मोबाईल नंबर (फक्त पडताळणीसाठी, पब्लिक दिसणार नाही)",
+    hi: "मोबाइल नंबर (केवल सत्यापन हेतु, सार्वजनिक नहीं दिखेगा)",
+    en: "Mobile Number (for verification only, not shown publicly)"
+  },
+  label_review_test: { mr: "तुम्ही कोणती टेस्ट/सर्व्हिस घेतली?", hi: "आपने कौन सी टेस्ट/सर्विस ली?", en: "Which test/service did you take?" },
+  label_rating: { mr: "रेटिंग द्या *", hi: "रेटिंग दें *", en: "Give a Rating *" },
+  label_feedback: { mr: "तुमचा अभिप्राय *", hi: "आपकी प्रतिक्रिया *", en: "Your Feedback *" },
+  placeholder_feedback: { mr: "तुमचा अनुभव इथे लिहा…", hi: "अपना अनुभव यहाँ लिखें...", en: "Write your experience here…" },
+  btn_submit_review: { mr: "रिव्ह्यू सबमिट करा", hi: "रिव्यू सबमिट करें", en: "Submit Review" },
+  review_form_note: {
+    mr: "रिव्ह्यू आमच्या टीमकडून तपासल्यानंतर पेजवर दिसेल.",
+    hi: "रिव्यू हमारी टीम द्वारा जांचे जाने के बाद पेज पर दिखेगा।",
+    en: "Your review will appear on the page after our team verifies it."
+  },
+  review_thanks_note: {
+    mr: "तुमचा रिव्ह्यू आमच्या टीमकडून तपासल्यानंतर पेजवर दिसेल.",
+    hi: "आपका रिव्यू हमारी टीम द्वारा जांचे जाने के बाद पेज पर दिखेगा।",
+    en: "Your review will appear on the page after our team verifies it."
+  },
+
+  footer_address_label: { mr: "पत्ता", hi: "पता", en: "Address" },
+  footer_maps_link: { mr: "Google Maps वर पहा →", hi: "Google Maps पर देखें →", en: "View on Google Maps →" },
+  footer_contact_label: { mr: "संपर्क", hi: "संपर्क", en: "Contact" },
+  footer_whatsapp_link: { mr: "WhatsApp वर मेसेज करा →", hi: "WhatsApp पर मैसेज करें →", en: "Message on WhatsApp →" },
+  footer_timing_label: { mr: "वेळ", hi: "समय", en: "Hours" },
+  footer_timing_text: {
+    mr: "सोम - शनि: 7:00 AM – 9:00 PM<br />रवि: 8:00 AM – 1:00 PM",
+    hi: "सोम - शनि: 7:00 AM – 9:00 PM<br />रवि: 8:00 AM – 1:00 PM",
+    en: "Mon - Sat: 7:00 AM – 9:00 PM<br />Sun: 8:00 AM – 1:00 PM"
+  },
+  main_site_btn: { mr: "🌐 वेबसाईटला भेट देण्यासाठी क्लिक करा", hi: "🌐 वेबसाइट पर जाने के लिए क्लिक करें", en: "🌐 Click to Visit Our Website" },
+  copyright: { mr: "© Kalyan Pathlab, Kalyan East · संस्कार फाउंडेशन संचलित", hi: "© Kalyan Pathlab, Kalyan East · संस्कार फाउंडेशन द्वारा संचालित", en: "© Kalyan Pathlab, Kalyan East · Run by Sanskar Foundation" },
+
+  toast_select_test: { mr: "कृपया किमान एक टेस्ट निवडा किंवा नाव टाईप करा.", hi: "कृपया कम से कम एक टेस्ट चुनें या नाम टाइप करें।", en: "Please select at least one test or type a name." },
+  toast_select_city: { mr: "कृपया शहर निवडा.", hi: "कृपया शहर चुनें।", en: "Please select a city." },
+  toast_booking_ready: { mr: "बुकिंग माहिती तयार झाली ✓", hi: "बुकिंग जानकारी तैयार हो गई ✓", en: "Booking details ready ✓" },
+  toast_prescription_large: {
+    mr: "प्रिस्क्रिप्शन फाईल खूप मोठी आहे (8MB पेक्षा जास्त) — फाईलशिवाय बुकिंग पाठवली जाईल.",
+    hi: "प्रिस्क्रिप्शन फाइल बहुत बड़ी है (8MB से अधिक) — फाइल के बिना बुकिंग भेजी जाएगी।",
+    en: "Prescription file is too large (over 8MB) — booking will be sent without the file."
+  },
+  toast_give_rating: { mr: "कृपया स्टार रेटिंग द्या.", hi: "कृपया स्टार रेटिंग दें।", en: "Please give a star rating." },
+
+  loc_not_supported: { mr: "या ब्राउझरमध्ये लोकेशन सपोर्ट नाही.", hi: "इस ब्राउज़र में लोकेशन सपोर्ट नहीं है।", en: "Location isn't supported in this browser." },
+  loc_searching: { mr: "लोकेशन शोधत आहे…", hi: "लोकेशन खोजा जा रहा है...", en: "Finding location…" },
+  loc_added: { mr: "✓ लोकेशन जोडले", hi: "✓ लोकेशन जोड़ा गया", en: "✓ Location added" },
+  loc_failed: { mr: "लोकेशन मिळाले नाही — परवानगी द्या किंवा नंतर प्रयत्न करा.", hi: "लोकेशन नहीं मिला — अनुमति दें या बाद में प्रयास करें।", en: "Couldn't get location — please allow access or try again later." },
+
+  confirm_box_title: { mr: "✅ बुकिंगची माहिती तयार झाली!", hi: "✅ बुकिंग जानकारी तैयार हो गई!", en: "✅ Your booking details are ready!" },
+  confirm_box_text: {
+    mr: "खालील बटणावर क्लिक करून WhatsApp मध्ये फक्त \"Send\" दाबा — म्हणजे तुमची बुकिंग लगेच आमच्यापर्यंत पोहोचेल.",
+    hi: "नीचे दिए गए बटन पर क्लिक करके WhatsApp में सिर्फ \"Send\" दबाएँ — ताकि आपकी बुकिंग हमारे पास तुरंत पहुंच जाए।",
+    en: "Click the button below and just tap \"Send\" in WhatsApp — your booking will reach us right away."
+  },
+  confirm_box_wa_btn: { mr: "WhatsApp वर बुकिंग पाठवा", hi: "WhatsApp पर बुकिंग भेजें", en: "Send Booking via WhatsApp" },
+  confirm_box_or_call: { mr: "किंवा थेट कॉल करा:", hi: "या सीधे कॉल करें:", en: "Or call us directly:" },
+  thank_you: { mr: "धन्यवाद", hi: "धन्यवाद", en: "Thank you" },
+  review_word: { mr: "रिव्ह्यू", hi: "रिव्यू", en: "reviews" },
+
+  welcome_back: { mr: "पुन्हा स्वागत आहे", hi: "फिर से स्वागत है", en: "Welcome back" },
+  visits_count_prefix: { mr: "आधीच्या भेटी:", hi: "पिछली विज़िट:", en: "Previous visits:" },
+  last_test_prefix: { mr: "शेवटची टेस्ट", hi: "पिछली टेस्ट", en: "Last test" },
+  autofill_btn: { mr: "माहिती भरा", hi: "जानकारी भरें", en: "Fill my details" },
+  autofill_done: { mr: "माहिती भरली ✓", hi: "जानकारी भर दी ✓", en: "Details filled ✓" },
+  your_patient_id: { mr: "तुमचा Patient ID", hi: "आपका Patient ID", en: "Your Patient ID" },
+  new_patient_id_note: { mr: "तुमचा Patient ID पुढच्या बुकिंगपासून दिसेल.", hi: "आपका Patient ID अगली बुकिंग से दिखेगा।", en: "Your Patient ID will appear from your next booking." },
+
+  label_payment: { mr: "पेमेंट पद्धत *", hi: "भुगतान तरीका *", en: "Payment Method *" },
+  payment_cash: { mr: "कॅश (सॅम्पल कलेक्शनच्या वेळी)", hi: "कैश (सैंपल कलेक्शन के समय)", en: "Cash (at sample collection)" },
+  payment_upi: { mr: "UPI", hi: "UPI", en: "UPI" },
+  pay_via_upi: { mr: "UPI अ‍ॅपने पे करा →", hi: "UPI ऐप से पे करें →", en: "Pay via UPI App →" },
+  toast_select_report_mode: { mr: "कृपया किमान एक रिपोर्ट पद्धत निवडा.", hi: "कृपया कम से कम एक रिपोर्ट तरीका चुनें।", en: "Please select at least one report delivery method." },
+  status_check_heading: { mr: "माझी बुकिंग स्थिती / रिपोर्ट पहा", hi: "मेरी बुकिंग स्थिति / रिपोर्ट देखें", en: "Check My Booking Status / Report" },
+  status_check_sub: { mr: "बुकिंगच्या वेळी दिलेला मोबाईल नंबर टाका.", hi: "बुकिंग के समय दिया गया मोबाइल नंबर डालें।", en: "Enter the mobile number used at booking." },
+  status_check_btn: { mr: "स्थिती तपासा", hi: "स्थिति जांचें", en: "Check Status" },
+  no_booking_found: { mr: "या नंबरसाठी बुकिंग सापडली नाही.", hi: "इस नंबर के लिए बुकिंग नहीं मिली।", en: "No booking found for this number." },
+  download_report: { mr: "📄 रिपोर्ट डाउनलोड करा", hi: "📄 रिपोर्ट डाउनलोड करें", en: "📄 Download Report" },
+  toast_invalid_phone: { mr: "योग्य 10 अंकी मोबाईल नंबर टाका.", hi: "सही 10 अंकों का मोबाइल नंबर डालें।", en: "Enter a valid 10-digit mobile number." },
+  notif_status_prefix: { mr: "तुमची बुकिंग आता", hi: "आपकी बुकिंग अब", en: "Your booking is now" },
+  app_link_note: { mr: "पुन्हा भेट देण्यासाठी ही लिंक सेव्ह करा:", hi: "फिर से आने के लिए यह लिंक सेव करें:", en: "Save this link to visit again:" },
+  new_booking_btn: { mr: "🔄 नवीन बुकिंग करा", hi: "🔄 नई बुकिंग करें", en: "🔄 Start a New Booking" },
+
+  /* ---------- My Profile ---------- */
+  nav_profile: { mr: "👤 प्रोफाईल", hi: "👤 प्रोफाइल", en: "👤 Profile" },
+  profile_heading: { mr: "माझी प्रोफाईल", hi: "मेरी प्रोफाइल", en: "My Profile" },
+  profile_sub: { mr: "तुमचा मोबाईल नंबर टाका — प्रोफाईल असेल तर दिसेल, नसेल तर नवीन तयार करा.", hi: "अपना मोबाइल नंबर डालें — प्रोफाइल होगी तो दिखेगी, नहीं तो नई बनाएं।", en: "Enter your mobile number — if a profile exists it'll load, otherwise you can create one." },
+  profile_load_btn: { mr: "प्रोफाईल पहा", hi: "प्रोफाइल देखें", en: "Load Profile" },
+  profile_found_line: { mr: "प्रोफाईल सापडली — Patient ID:", hi: "प्रोफाइल मिली — Patient ID:", en: "Profile found — Patient ID:" },
+  profile_new_line: { mr: "या नंबरवर प्रोफाईल नाही — खाली माहिती भरून नवीन तयार करा.", hi: "इस नंबर पर प्रोफाइल नहीं है — नीचे जानकारी भरकर नई बनाएं।", en: "No profile on this number yet — fill in the details below to create one." },
+  profile_name_label: { mr: "पूर्ण नाव", hi: "पूरा नाम", en: "Full Name" },
+  profile_age_label: { mr: "वय", hi: "उम्र", en: "Age" },
+  profile_gender_label: { mr: "लिंग", hi: "लिंग", en: "Gender" },
+  profile_gender_select: { mr: "निवडा", hi: "चुनें", en: "Select" },
+  profile_gender_male: { mr: "पुरुष", hi: "पुरुष", en: "Male" },
+  profile_gender_female: { mr: "स्त्री", hi: "महिला", en: "Female" },
+  profile_gender_other: { mr: "इतर", hi: "अन्य", en: "Other" },
+  profile_address_label: { mr: "पत्ता", hi: "पता", en: "Address" },
+  profile_city_label: { mr: "शहर", hi: "शहर", en: "City" },
+  profile_save_btn: { mr: "प्रोफाईल सेव्ह करा", hi: "प्रोफाइल सेव करें", en: "Save Profile" },
+  profile_saved_toast: { mr: "प्रोफाईल सेव्ह झाली ✓", hi: "प्रोफाइल सेव हुई ✓", en: "Profile saved ✓" },
+  placeholder_city: { mr: "शहराचं नाव", hi: "शहर का नाम", en: "City name" },
+  profile_offline_copy: { mr: "📴 Offline — या डिव्हाइसवर सेव्ह केलेली कॉपी दाखवत आहे", hi: "📴 Offline — इस डिवाइस पर सेव की गई कॉपी दिखा रहे हैं", en: "📴 Offline — showing the copy saved on this device" },
+  profile_synced_status: { mr: "✅ Online सेव्ह झालं (synced)", hi: "✅ Online सेव हो गया (synced)", en: "✅ Saved online (synced)" },
+  profile_saved_offline_toast: { mr: "या डिव्हाइसवर सेव्ह झालं — इंटरनेट आल्यावर आपोआप sync होईल", hi: "इस डिवाइस पर सेव हुआ — इंटरनेट आने पर अपने आप sync होगा", en: "Saved on this device — will sync automatically once you're online" },
+  profile_sync_done_toast: { mr: "प्रोफाईल आता online sync झाली ✓", hi: "प्रोफाइल अब online sync हो गई ✓", en: "Profile is now synced online ✓" },
+  profile_history_heading: { mr: "📋 माझा टेस्ट इतिहास", hi: "📋 मेरा टेस्ट इतिहास", en: "📋 My Test History" },
+  network_weak: { mr: "इंटरनेट कमजोर आहे, पुन्हा प्रयत्न करा", hi: "इंटरनेट कमज़ोर है, फिर कोशिश करें", en: "Weak connection. Please try again." },
+  /* ---------- बुकिंग टप्पे व स्लॉट ---------- */
+  bstep1: { mr: "टेस्ट", hi: "टेस्ट", en: "Tests" },
+  bstep2: { mr: "पत्ता", hi: "पता", en: "Address" },
+  bstep3: { mr: "वेळ व पेमेंट", hi: "समय व पेमेंट", en: "Time & Payment" },
+  step_next: { mr: "पुढे →", hi: "आगे →", en: "Next →" },
+  step_back: { mr: "← मागे", hi: "← पीछे", en: "← Back" },
+  label_collection_slot: { mr: "वेळ निवडा *", hi: "समय चुनें *", en: "Choose a time slot *" },
+  slot_note: { mr: "आधी दिवस निवडा. रविवारी सॅम्पल कलेक्शन दुपारी 1 पर्यंत.", hi: "पहले दिन चुनें। रविवार को सैंपल कलेक्शन दोपहर 1 बजे तक।", en: "Pick a day first. On Sundays, collection runs until 1 PM." },
+  toast_select_slot: { mr: "कृपया सॅम्पल कलेक्शनची वेळ निवडा", hi: "कृपया सैंपल कलेक्शन का समय चुनें", en: "Please choose a collection time slot" },
+  toast_past_date: { mr: "मागची तारीख निवडता येत नाही", hi: "पिछली तारीख नहीं चुन सकते", en: "You can't pick a past date" },
+  home_reviews_heading: { mr: "पेशंट्स काय म्हणतात", hi: "मरीज़ क्या कहते हैं", en: "What patients say" },
+  home_reviews_all: { mr: "सर्व रिव्ह्यू पहा", hi: "सभी रिव्यू देखें", en: "See all reviews" },
+  /* ---------- नवीन होम पेज ---------- */
+  hero_title: { mr: "घरबसल्या ब्लड टेस्ट, कमी किमतीत", hi: "घर बैठे ब्लड टेस्ट, कम कीमत में", en: "Blood tests at home, at lower prices" },
+  hero_sub: { mr: "मोफत होम सॅम्पल कलेक्शन. रिपोर्ट WhatsApp, ईमेल किंवा हार्ड कॉपीमध्ये.", hi: "मुफ्त होम सैंपल कलेक्शन। रिपोर्ट WhatsApp, ईमेल या हार्ड कॉपी में।", en: "Free home sample collection. Reports on WhatsApp, email or hard copy." },
+  hero_cta_book: { mr: "📅 आत्ता बुक करा", hi: "📅 अभी बुक करें", en: "📅 Book now" },
+  hero_cta_rates: { mr: "रेट लिस्ट पहा", hi: "रेट लिस्ट देखें", en: "View rates" },
+  trust_free: { mr: "मोफत होम कलेक्शन", hi: "मुफ्त होम कलेक्शन", en: "Free home collection" },
+  trust_off: { mr: "30–70% सवलत", hi: "30–70% छूट", en: "30–70% off" },
+  trust_report: { mr: "रिपोर्ट WhatsApp वर", hi: "रिपोर्ट WhatsApp पर", en: "Reports on WhatsApp" },
+  popular_heading: { mr: "लोकप्रिय टेस्ट", hi: "लोकप्रिय टेस्ट", en: "Popular tests" },
+  how_heading: { mr: "बुकिंग कशी करायची", hi: "बुकिंग कैसे करें", en: "How booking works" },
+  step1_t: { mr: "टेस्ट निवडा", hi: "टेस्ट चुनें", en: "Pick your tests" },
+  step1_d: { mr: "रेट लिस्टमधून निवडा किंवा नाव टाईप करा.", hi: "रेट लिस्ट से चुनें या नाम टाइप करें।", en: "Choose from the rate list or type a name." },
+  step2_t: { mr: "वेळ व पत्ता भरा", hi: "समय और पता भरें", en: "Add time and address" },
+  step2_d: { mr: "सॅम्पल कलेक्शनचा दिवस व वेळ सांगा.", hi: "सैंपल कलेक्शन का दिन और समय बताएं।", en: "Tell us the day and time for collection." },
+  step3_t: { mr: "घरी सॅम्पल, मग रिपोर्ट", hi: "घर पर सैंपल, फिर रिपोर्ट", en: "Sample at home, then report" },
+  step3_d: { mr: "आमचा टेक्निशियन घरी येतो. रिपोर्ट तुम्हाला पाठवतो.", hi: "हमारा टेक्नीशियन घर आता है। रिपोर्ट आपको भेजते हैं।", en: "Our technician visits you. We send the report." },
+  cities_heading: { mr: "या शहरांत मोफत होम सर्विस", hi: "इन शहरों में मुफ्त होम सर्विस", en: "Free home service in" },
+  tile_status: { mr: "बुकिंग स्थिती", hi: "बुकिंग स्थिति", en: "Booking status" },
+  home_menu_heading: { mr: "काय करायचंय?", hi: "क्या करना है?", en: "What would you like to do?" },
+  nav_profile_label: { mr: "प्रोफाइल", hi: "प्रोफाइल", en: "Profile" },
+  nav_book_label: { mr: "टेस्ट बुक", hi: "टेस्ट बुक", en: "Book Test" },
+  nav_ratelist_label: { mr: "टेस्ट रेट लिस्ट", hi: "टेस्ट रेट लिस्ट", en: "Test Rate List" },
+  nav_reviews_label: { mr: "Review", hi: "Review", en: "Review" },
+  nav_contact_label: { mr: "Contact", hi: "Contact", en: "Contact" },
+  profile_relation_label: { mr: "नातं (Self / कुटुंबातील व्यक्ती)", hi: "रिश्ता (Self / परिवार का सदस्य)", en: "Relation (Self / Family member)" },
+  relation_self: { mr: "Self", hi: "Self", en: "Self" },
+  relation_spouse: { mr: "जोडीदार", hi: "जीवनसाथी", en: "Spouse" },
+  relation_mother: { mr: "आई", hi: "माँ", en: "Mother" },
+  relation_father: { mr: "वडील", hi: "पिता", en: "Father" },
+  relation_son: { mr: "मुलगा", hi: "बेटा", en: "Son" },
+  relation_daughter: { mr: "मुलगी", hi: "बेटी", en: "Daughter" },
+  relation_other: { mr: "इतर", hi: "अन्य", en: "Other" },
+  family_heading: { mr: "👪 या डिव्हाइसवरील प्रोफाईल्स", hi: "👪 इस डिवाइस पर प्रोफाइल", en: "👪 Profiles on this device" },
+  family_add_btn: { mr: "+ नवीन व्यक्ती जोडा", hi: "+ नया व्यक्ति जोड़ें", en: "+ Add New Person" },
+  guest_mode_btn: { mr: "Guest म्हणून पुढे जा →", hi: "Guest के रूप में आगे बढ़ें →", en: "Continue as Guest →" },
+  guest_mode_toast: { mr: "Guest म्हणून सुरू आहात — बुकिंग करता येईल, पण history सेव्ह होणार नाही.", hi: "Guest के तौर पर चल रहे हैं — बुकिंग कर सकते हैं, पर history सेव नहीं होगी।", en: "Continuing as Guest — you can still book, but history won't be saved." },
+  profile_photo_choose: { mr: "📷 फोटो निवडा", hi: "📷 फोटो चुनें", en: "📷 Choose Photo" },
+  switch_profile_btn: { mr: "← दुसरी प्रोफाईल / नवीन व्यक्ती", hi: "← दूसरी प्रोफाइल / नया व्यक्ति", en: "← Switch Profile / Add Person" },
+  photo_too_large: { mr: "फोटो 3MB पेक्षा लहान असावा.", hi: "फोटो 3MB से छोटी होनी चाहिए।", en: "Photo must be under 3MB." }
+};
+
+// ठराविक शहरांची नावं भाषेनुसार दाखवण्यासाठी (पाठवला जाणारा खरा डेटा नेहमी मराठीतच राहतो,
+// जेणेकरून लॅबच्या Sheet/ईमेलमध्ये सुसंगतता राहील — फक्त वेबसाईटवरचं लेबल भाषेनुसार बदलतं)
+const CITY_TRANSLATIONS = {
+  "कल्याण": { hi: "कल्याण", en: "Kalyan" },
+  "डोंबिवली": { hi: "डोंबिवली", en: "Dombivli" },
+  "अंबरनाथ": { hi: "अंबरनाथ", en: "Ambernath" },
+  "बदलापूर": { hi: "बदलापुर", en: "Badlapur" },
+  "उल्हासनगर": { hi: "उल्हासनगर", en: "Ulhasnagar" },
+  "ठाणे": { hi: "ठाणे", en: "Thane" },
+  "मुंबई": { hi: "मुंबई", en: "Mumbai" },
+  "नवी मुंबई": { hi: "नवी मुंबई", en: "Navi Mumbai" }
+};
+
+// built-in टेस्ट कॅटेगरींची नावं भाषेनुसार (tests-data.js मधल्या id शी जोडलेली).
+// Sheet मधून लाईव्ह डेटा आला, तर त्यातल्या कॅटेगरी क्लायंटने Sheet मध्ये जशा लिहिल्या
+// तशाच दिसतील (त्यांचं भाषांतर आपोआप होणार नाही).
+const CATEGORY_TRANSLATIONS = {
+  basic: { hi: "बेसिक व रूटीन टेस्ट", en: "Basic & Routine Tests" },
+  diabetes: { hi: "डायबिटीज़ (मधुमेह) प्रोफाइल", en: "Diabetes Profile" },
+  thyroid: { hi: "थायरॉइड प्रोफाइल", en: "Thyroid Profile" },
+  liver: { hi: "लिवर फंक्शन टेस्ट (LFT)", en: "Liver Function Test (LFT)" },
+  kidney: { hi: "किडनी फंक्शन टेस्ट (KFT)", en: "Kidney Function Test (KFT)" },
+  lipid: { hi: "लिपिड प्रोफाइल (हृदय / कोलेस्ट्रॉल)", en: "Lipid Profile (Heart / Cholesterol)" },
+  vitamins: { hi: "विटामिन व मिनरल्स", en: "Vitamins & Minerals" },
+  infection: { hi: "इन्फेक्शन व बुखार संबंधित", en: "Infection & Fever Related" },
+  hormones: { hi: "हार्मोन्स व फर्टिलिटी", en: "Hormones & Fertility" },
+  cardiac: { hi: "कार्डियक व अन्य", en: "Cardiac & Others" },
+  packages: { hi: "फुल बॉडी चेकअप पैकेज", en: "Full Body Checkup Packages" },
+  anemia: { hi: "एनीमिया व ब्लड प्रोफाइल", en: "Anemia & Blood Profile" },
+  autoimmune: { hi: "आर्थराइटिस व ऑटोइम्यून", en: "Arthritis & Autoimmune" },
+  markers: { hi: "इन्फेक्शन मार्कर्स (HIV/HCV/VDRL)", en: "Infection Markers (HIV/HCV/VDRL)" },
+  urine: { hi: "यूरिन टेस्ट", en: "Urine Tests" },
+  coagulation: { hi: "कोएग्युलेशन (PT/INR)", en: "Coagulation (PT/INR)" },
+  special: { hi: "स्पेशल टेस्ट", en: "Special Tests" },
+  other: { hi: "अन्य टेस्ट", en: "Other Tests" }
+};
+
+let currentLang = localStorage.getItem("kp_lang") || "en";
+
+function t(key) {
+  const entry = TRANSLATIONS[key];
+  if (!entry) return key;
+  return entry[currentLang] || entry.mr || key;
+}
+
+// एखाद्या कॅटेगरीचं नाव सध्याच्या भाषेत परत देते (built-in कॅटेगरीसाठी भाषांतर वापरतं,
+// Sheet मधून आलेल्या कॅटेगरीसाठी जसं लिहिलंय तसंच दाखवतं)
+function translateCategoryName(cat) {
+  if (currentLang === "mr") return cat.name;
+  const tr = CATEGORY_TRANSLATIONS[cat.id];
+  return (tr && tr[currentLang]) || cat.name;
+}
+
+// शहराचं नाव सध्याच्या भाषेत परत देते (पाठवला जाणारा value मात्र नेहमी मूळ मराठी नावच असतो)
+function translateCityName(cityMr) {
+  if (currentLang === "mr") return cityMr;
+  const tr = CITY_TRANSLATIONS[cityMr];
+  return (tr && tr[currentLang]) || cityMr;
+}
+
+function applyLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem("kp_lang", lang);
+  document.documentElement.lang = lang;
+
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.textContent = t(el.getAttribute("data-i18n"));
+  });
+  document.querySelectorAll("[data-i18n-html]").forEach((el) => {
+    el.innerHTML = t(el.getAttribute("data-i18n-html"));
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    el.placeholder = t(el.getAttribute("data-i18n-placeholder"));
+  });
+
+  const langSelect = document.getElementById("langSelect");
+  if (langSelect) langSelect.value = lang;
+
+  // JS ने आधीच तयार केलेला डायनॅमिक भाग पुन्हा भाषेनुसार रेंडर करतो
+  if (typeof onLanguageChanged === "function") onLanguageChanged();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const langSelect = document.getElementById("langSelect");
+  if (langSelect) {
+    langSelect.value = currentLang;
+    langSelect.addEventListener("change", (e) => applyLanguage(e.target.value));
+  }
+  applyLanguage(currentLang);
+});

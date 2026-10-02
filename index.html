@@ -2,182 +2,380 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Kalyan Pathlab — Diagnostic Testing, Kalyan East</title>
-<meta name="description" content="Kalyan Pathlab offers blood tests, full body checkups and COVID-19 testing in Kalyan East. Home sample collection. Accurate reports, trusted service." />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Kalyan Pathlab — ऑनलाइन ब्लड टेस्ट बुकिंग</title>
+<meta name="description" content="Kalyan Pathlab (संस्कार फाउंडेशन संचलित) - सर्व ब्लड टेस्टवर 30% ते 70% सवलत. कल्याण, डोंबिवली, अंबरनाथ, बदलापूर, उल्हासनगर, ठाणे, मुंबई, नवी मुंबई येथे मोफत होम सर्विस." />
 <meta name="theme-color" content="#0b1440" />
-<link rel="icon" href="./book/icons/icon-192.png" />
+<meta property="og:title" content="Kalyan Pathlab — ऑनलाइन ब्लड टेस्ट बुकिंग" />
+<meta property="og:description" content="सर्व ब्लड टेस्टवर 30% ते 70% सवलत. मोफत होम सॅम्पल कलेक्शन." />
+<meta property="og:image" content="./icons/icon-512.png" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="icon" href="./icons/icon-192.png" />
+<link rel="apple-touch-icon" href="./icons/icon-192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./main-style.css" />
+<link rel="stylesheet" href="./style.css" />
 </head>
 <body>
 
-<div class="ticker" data-i18n="ticker">30% to 70% off on various blood tests — call and book today</div>
-
+<!-- ===== TOP BAR ===== -->
 <header class="topbar">
   <div class="topbar-inner">
-    <img src="./logo_mark.png" alt="Kalyan Pathlab" class="topbar-logo" />
+    <img src="./icons/logo.png" alt="Kalyan Pathlab" class="topbar-logo" />
     <div class="topbar-text">
       <span class="topbar-name">Kalyan Pathlab</span>
-      <span class="topbar-tag" data-i18n="tagline">Pathology Laboratory · Kalyan East</span>
+      <span class="topbar-tag" data-i18n="tagline">संस्कार फाउंडेशन संचलित · Care For Quality</span>
     </div>
-    <nav class="topbar-nav">
-      <a href="#services" data-i18n="nav_services">Services</a>
-      <a href="#about" data-i18n="nav_about">About</a>
-      <a href="#gallery" data-i18n="nav_gallery">Gallery</a>
-      <a href="#reviews" data-i18n="nav_reviews">Reviews</a>
-      <a href="#contact" data-i18n="nav_contact">Contact</a>
-    </nav>
-    <div class="topbar-actions">
-      <select id="langSelect" class="lang-select" aria-label="Language / भाषा">
-        <option value="en">🌐 English</option>
-        <option value="mr">🌐 मराठी</option>
-        <option value="hi">🌐 हिंदी</option>
-      </select>
-      <a class="btn-call-icon" href="tel:+919870020674" aria-label="Call">☎</a>
-    </div>
+    <a class="topbar-call" href="tel:+919870020674" aria-label="कॉल करा">☎</a>
+    <button type="button" class="topbar-share" id="shareBtn" aria-label="शेअर करा">🔗</button>
+  </div>
+  <div class="ecg-line" aria-hidden="true">
+    <svg viewBox="0 0 600 40" preserveAspectRatio="none"><polyline points="0,20 60,20 80,5 100,35 120,20 180,20 200,8 215,32 230,20 300,20 320,5 340,35 360,20 420,20 440,8 455,32 470,20 600,20"/></svg>
   </div>
 </header>
 
-<section class="hero" style="padding-bottom:0;">
-  <div class="hero-inner">
-    <div class="hero-copy">
-      <div class="hero-eyebrow" data-i18n="hero_eyebrow">Kalyan East · Run by Sanskar Foundation</div>
-      <h1 data-i18n-html="hero_title">Your results,<br /><em>read clearly.</em></h1>
-      <p class="hero-sub" data-i18n="hero_sub">Blood tests, full body checkups and COVID-19 testing — done carefully, explained simply. Home sample collection available.</p>
-      <div class="hero-actions">
-        <a href="tel:+919870020674" class="btn btn-primary"><span data-i18n="btn_call">Call</span> — 98700 20674</a>
-        <a href="https://wa.me/919870020674?text=Hi%2C%20I%27d%20like%20to%20book%20a%20test%20at%20Kalyan%20Pathlab" target="_blank" rel="noopener" class="btn btn-whatsapp" data-i18n="btn_whatsapp">WhatsApp</a>
-      </div>
-      <div class="hero-actions">
-        <a href="./book/" class="btn btn-app">📱 <span data-i18n="btn_download_app">Download Our Booking App</span></a>
-      </div>
-    </div>
-    <div class="hero-photo">
-      <img src="./equipment.jpg" alt="Kalyan Pathlab automated testing equipment" />
-      <div class="hero-photo-cap" data-i18n="hero_photo_cap">Our actual lab — Kalyan East</div>
-    </div>
-  </div>
-  <div class="stats-strip">
-    <div><strong>30–70%</strong><span data-i18n="stat_off">Off select blood tests</span></div>
-    <div><strong data-i18n="stat_home_word">Home</strong><span data-i18n="stat_home_sub">Sample collection</span></div>
-    <div><strong>2</strong><span data-i18n="stat_lines">Direct phone lines</span></div>
-    <div><strong data-i18n="stat_digital_word">Digital</strong><span data-i18n="stat_digital_sub">Reports</span></div>
-  </div>
-</section>
+<!-- ===== MAIN NAV TABS + भाषा निवड (एकाच रांगेत) ===== -->
+<nav class="main-nav" id="mainNav">
+  <button type="button" class="nav-btn" data-section="home" data-i18n="nav_home">🏠 मुख्यपृष्ठ</button>
+  <button type="button" class="nav-btn" data-section="tests" data-i18n="nav_tests">🧪 टेस्ट लिस्ट</button>
+  <button type="button" class="nav-btn nav-primary" data-section="booking" data-i18n="nav_booking">📅 बुकिंग</button>
+  <button type="button" class="nav-btn" data-section="payment" data-i18n="nav_payment">💳 पेमेंट व स्थिती</button>
+  <button type="button" class="nav-btn" data-section="reviews" data-i18n="nav_reviews">⭐ रिव्ह्यूज</button>
+  <button type="button" class="nav-btn" data-section="contact" data-i18n="nav_contact">📞 संपर्क</button>
+  <span class="nav-lang">
+    <span class="nav-lang-icon">🌐</span>
+    <select id="langSelect" aria-label="Language / भाषा">
+      <option value="en">English</option>
+      <option value="mr">मराठी</option>
+      <option value="hi">हिंदी</option>
+    </select>
+  </span>
+</nav>
 
-<div class="app-banner">
-  <h3 data-i18n="app_banner_title">📱 Book Faster with Our App</h3>
-  <p data-i18n="app_banner_sub">See exact prices for 50+ tests, book a home visit, and track it all — right from your phone. Free, no installation from an app store needed.</p>
-  <a href="./book/" class="btn btn-primary" data-i18n="btn_open_app">Open Booking App →</a>
+<div id="notifBanner" class="confirm-banner" hidden></div>
+
+<!-- ===== HOME ===== -->
+<div class="page-section" id="section-home" hidden>
+  <section class="home">
+
+    <div class="home-hero">
+      <svg class="home-hero-drop" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5s7 8.3 7 13.3a7 7 0 1 1-14 0c0-5 7-13.3 7-13.3Z"/></svg>
+      <span class="home-hero-badge" data-i18n="discount_badge">सर्व टेस्टवर 30% ते 70% सवलत</span>
+      <h1 data-i18n="hero_title">घरबसल्या ब्लड टेस्ट, कमी किमतीत</h1>
+      <p data-i18n="hero_sub">मोफत होम सॅम्पल कलेक्शन. रिपोर्ट WhatsApp, ईमेल किंवा हार्ड कॉपीमध्ये.</p>
+      <div class="home-hero-actions">
+        <button type="button" class="btn btn-primary jump-to" data-section="booking" data-i18n="hero_cta_book">📅 आत्ता बुक करा</button>
+        <button type="button" class="btn btn-ghost jump-to" data-section="tests" data-i18n="hero_cta_rates">रेट लिस्ट पहा</button>
+      </div>
+    </div>
+
+    <ul class="trust-row">
+      <li><span aria-hidden="true">🏠</span><b data-i18n="trust_free">मोफत होम कलेक्शन</b></li>
+      <li><span aria-hidden="true">💸</span><b data-i18n="trust_off">30–70% सवलत</b></li>
+      <li><span aria-hidden="true">📲</span><b data-i18n="trust_report">रिपोर्ट WhatsApp वर</b></li>
+    </ul>
+
+    <h2 class="home-h" data-i18n="popular_heading">लोकप्रिय टेस्ट</h2>
+    <div class="popular-row" id="popularTests"></div>
+
+    <h2 class="home-h" data-i18n="how_heading">बुकिंग कशी करायची</h2>
+    <ol class="steps">
+      <li><span class="step-num">1</span><div><b data-i18n="step1_t">टेस्ट निवडा</b><small data-i18n="step1_d">रेट लिस्टमधून निवडा किंवा नाव टाईप करा.</small></div></li>
+      <li><span class="step-num">2</span><div><b data-i18n="step2_t">वेळ व पत्ता भरा</b><small data-i18n="step2_d">सॅम्पल कलेक्शनचा दिवस व वेळ सांगा.</small></div></li>
+      <li><span class="step-num">3</span><div><b data-i18n="step3_t">घरी सॅम्पल, मग रिपोर्ट</b><small data-i18n="step3_d">आमचा टेक्निशियन घरी येतो. रिपोर्ट तुम्हाला पाठवतो.</small></div></li>
+    </ol>
+
+    <h2 class="home-h" data-i18n="cities_heading">या शहरांत मोफत होम सर्विस</h2>
+    <div class="chip-row" id="cityChips"></div>
+
+    <h2 class="home-h" data-i18n="home_reviews_heading">पेशंट्स काय म्हणतात</h2>
+    <div class="popular-row" id="homeReviews"></div>
+    <button type="button" class="link-btn jump-to" data-section="reviews" style="display:block;margin:4px auto 0" data-i18n="home_reviews_all">सर्व रिव्ह्यू पहा</button>
+
+    <div class="home-tiles">
+      <button type="button" class="menu-tile jump-to" data-section="tests">
+        <span class="menu-tile-icon">💰</span>
+        <span class="menu-tile-label" data-i18n="nav_ratelist_label">टेस्ट रेट लिस्ट</span>
+      </button>
+      <button type="button" class="menu-tile jump-to" data-section="payment">
+        <span class="menu-tile-icon">🔎</span>
+        <span class="menu-tile-label" data-i18n="tile_status">बुकिंग स्थिती</span>
+      </button>
+      <button type="button" class="menu-tile jump-to" data-section="reviews">
+        <span class="menu-tile-icon">⭐</span>
+        <span class="menu-tile-label" data-i18n="nav_reviews_label">Review</span>
+      </button>
+      <button type="button" class="menu-tile jump-to" data-section="contact">
+        <span class="menu-tile-icon">📞</span>
+        <span class="menu-tile-label" data-i18n="nav_contact_label">Contact</span>
+      </button>
+    </div>
+
+    <a href="https://wa.me/919870020674?text=Namaskar%2C%20mala%20blood%20test%20booking%20baddal%20mahiti%20havi%20aahe" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block" style="margin-top:18px" data-i18n="btn_whatsapp_ask">WhatsApp वर विचारा</a>
+  </section>
 </div>
 
-<section id="services">
-  <h2 data-i18n="services_heading">A full range of diagnostics, under one roof.</h2>
-  <p class="section-sub" data-i18n="services_sub">Type to search a test or profile — from routine screening to complete checkups.</p>
-  <div class="search-box">
-    <input type="search" id="testSearch" placeholder="Search a test…" data-i18n-placeholder="search_placeholder" />
-  </div>
-  <div class="service-grid" id="serviceGrid">
-    <div class="service-card"><span class="service-num">01</span><h3>Complete Blood Count (CBC)</h3><p>Hemoglobin, WBC count, RBC count, Platelet count and other parameters</p></div>
-    <div class="service-card"><span class="service-num">02</span><h3>Kidney Function Test (KFT)</h3><p>Urea, Creatinine, Uric Acid, eGFR, Sodium, Potassium, Chloride</p></div>
-    <div class="service-card"><span class="service-num">03</span><h3>Liver Function Test (LFT)</h3><p>SGPT, SGOT, Bilirubin, ALP, GGT, Total Protein, Albumin/Globulin ratio</p></div>
-    <div class="service-card"><span class="service-num">04</span><h3>Diabetes Profile</h3><p>Fasting & PP blood sugar, HbA1c, average & estimated glucose</p></div>
-    <div class="service-card"><span class="service-num">05</span><h3>Lipid Profile</h3><p>Total, HDL & LDL Cholesterol, VLDL, Triglycerides, LDL/HDL ratio</p></div>
-    <div class="service-card"><span class="service-num">06</span><h3>Thyroid Profile</h3><p>T3, T4, TSH (Ultrasensitive – 4th generation)</p></div>
-    <div class="service-card"><span class="service-num">07</span><h3>Iron Profile</h3><p>Iron, TIBC, Transferrin Saturation, Ferritin</p></div>
-    <div class="service-card"><span class="service-num">08</span><h3>Vitamin Profile</h3><p>Vitamin B12, Vitamin D (25-Hydroxy), Calcium</p></div>
-    <div class="service-card"><span class="service-num">09</span><h3>Urine Analysis (CUE)</h3><p>Colour, appearance, specific gravity, pH, protein, sugar, microscopic examination</p></div>
-    <div class="service-card"><span class="service-num">10</span><h3>Other Tests</h3><p>ECG, CRP, RA Factor, Serum Uric Acid, ASO Titer</p></div>
-    <div class="service-card"><span class="service-num">11</span><h3>Full Body Checkup Packages</h3><p>Comprehensive packages screening the major organs and systems in a single visit</p></div>
-    <div class="service-card"><span class="service-num">12</span><h3>COVID-19 Testing</h3><p>Fast, reliable testing with reports for travel or clearance</p></div>
-  </div>
-  <p class="no-result" id="noResult" data-i18n="no_result">No matching test found — call us, we likely still offer it.</p>
-
-  <div class="home-visit-box">
-    <h3 data-i18n="home_visit_title">Can't visit us? We'll come to you.</h3>
-    <p data-i18n="home_visit_sub">Free home sample collection available across these cities:</p>
-    <div class="city-chip-row">
-      <span data-i18n="city_kalyan">Kalyan</span>
-      <span data-i18n="city_dombivli">Dombivli</span>
-      <span data-i18n="city_ambernath">Ambernath</span>
-      <span data-i18n="city_badlapur">Badlapur</span>
-      <span data-i18n="city_ulhasnagar">Ulhasnagar</span>
-      <span data-i18n="city_thane">Thane</span>
-      <span data-i18n="city_mumbai">Mumbai</span>
-      <span data-i18n="city_navimumbai">Navi Mumbai</span>
+<!-- ===== TEST LIST ===== -->
+<div class="page-section" id="section-tests" hidden>
+  <section class="tests" id="tests">
+    <h2 data-i18n="tests_heading">टेस्ट व किंमत यादी</h2>
+    <div class="search-box">
+      <input type="search" id="testSearch" placeholder="टेस्टचे नाव टाईप करा… उदा. Thyroid, Sugar, CBC" data-i18n-placeholder="tests_search_placeholder" />
     </div>
-    <a href="tel:+919870020674" class="btn btn-outline-light" data-i18n="btn_book_home">Book Home Collection</a>
-  </div>
-</section>
+    <div class="category-tabs" id="categoryTabs"></div>
+    <div id="testListWrap" hidden></div>
+    <p class="no-result" id="noResult" hidden data-i18n="no_result">तुम्ही शोधलेली टेस्ट यादीत नाही? काळजी नाही — कॉल करा, आमच्याकडे उपलब्ध असू शकते.</p>
+  </section>
 
-<section id="about">
-  <h2 data-i18n="about_heading">Local, careful, and easy to reach.</h2>
-  <div class="about">
-    <div class="about-photo"><img src="./lab-tech.jpg" alt="Lab technician examining a sample at Kalyan Pathlab" /></div>
-    <div>
-      <p data-i18n="about_para">Kalyan Pathlab is a trusted diagnostic centre in Kalyan East, operated under Sanskar Foundation. Whether it's a single blood test or a full body checkup, our team handles every sample with care — processed on modern, automated equipment and reviewed before the report reaches you.</p>
-      <div class="feature-tags">
-        <span data-i18n="tag_fast">Fast & accurate reports</span>
-        <span data-i18n="tag_private">Privacy & trusted service</span>
-        <span data-i18n="tag_modern">Testing on modern equipment</span>
+  <div class="test-modal" id="testModal" hidden>
+    <div class="test-modal-backdrop" id="testModalBackdrop"></div>
+    <div class="test-modal-sheet">
+      <div class="test-modal-header">
+        <h3 id="testModalTitle"></h3>
+        <button type="button" id="testModalClose" class="test-modal-close" aria-label="Close">✕</button>
       </div>
-      <div class="about-stats">
-        <div><strong>12+</strong><span data-i18n="stat_categories">Test categories offered</span></div>
-        <div><strong>2</strong><span data-i18n="stat_lines">Direct phone lines</span></div>
+      <div class="test-modal-body" id="testModalBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CART / SELECTED (नेहमी दिसणारी पट्टी) ===== -->
+<div class="cart-bar" id="cartBar" hidden>
+  <span id="cartSummary">0 टेस्ट निवडल्या</span>
+  <button type="button" class="btn btn-primary btn-sm jump-to" data-section="booking" data-i18n="cart_book_btn">बुक करा →</button>
+</div>
+
+<!-- ===== BOOKING FORM ===== -->
+<div class="page-section" id="section-booking" hidden>
+  <section class="booking" id="booking">
+    <h2 data-i18n="booking_heading">बुकिंग फॉर्म</h2>
+    <p class="section-sub" data-i18n="booking_sub">खालील माहिती भरा — बुकिंग झाल्यावर तुम्हाला व आम्हाला दोघांनाही कन्फर्मेशन मिळेल.</p>
+
+    <form id="bookingForm" novalidate>
+      <ol class="bprog" id="bookingProgress" aria-label="Steps">
+        <li data-step="1" class="on"><span>1</span><b data-i18n="bstep1">टेस्ट</b></li>
+        <li data-step="2"><span>2</span><b data-i18n="bstep2">पत्ता</b></li>
+        <li data-step="3"><span>3</span><b data-i18n="bstep3">वेळ व पेमेंट</b></li>
+      </ol>
+
+      <!-- ===== STEP 1: टेस्ट ===== -->
+      <div class="bstep" data-step="1">
+      <div class="selected-tests-box" id="selectedTestsBox">
+        <strong data-i18n="selected_tests_label">निवडलेल्या टेस्ट:</strong>
+        <div id="selectedTestsList" class="selected-list">कोणतीही टेस्ट निवडलेली नाही — <button type="button" class="link-btn jump-to" data-section="tests">टेस्ट लिस्टमधून निवडा</button> किंवा खाली टाईप करा.</div>
+      </div>
+
+      <label><span data-i18n="label_manual_test">टेस्ट/पॅकेजचे नाव (हवं असल्यास टाईप करा)</span>
+        <input type="text" id="manualTest" placeholder="उदा. Full Body Checkup" />
+      </label>
+
+      <label><span data-i18n="label_prescription">डॉक्टरचे प्रिस्क्रिप्शन (असल्यास, ऐच्छिक)</span>
+        <input type="file" id="prescription" accept="image/*,.pdf" />
+      </label>
+
+      <div class="bstep-nav"><button type="button" class="btn btn-primary btn-block step-next" data-i18n="step_next">पुढे →</button></div>
+      </div>
+
+      <!-- ===== STEP 2: माहिती व पत्ता ===== -->
+      <div class="bstep" data-step="2" hidden>
+      <label><span data-i18n="label_fullname">तुमचे पूर्ण नाव *</span>
+        <input type="text" id="fullName" required placeholder="पूर्ण नाव" data-i18n-placeholder="placeholder_fullname" />
+      </label>
+
+      <label><span data-i18n="label_phone">मोबाईल नंबर *</span>
+        <input type="tel" id="phone" required pattern="[0-9]{10}" placeholder="10 अंकी मोबाईल नंबर" data-i18n-placeholder="placeholder_phone" />
+      </label>
+      <p class="returning-note" id="returningPatientNote" hidden></p>
+
+      <label><span data-i18n="label_altphone">पर्यायी संपर्क नंबर</span>
+        <input type="tel" id="altPhone" placeholder="घरचा/दुसरा नंबर (ऐच्छिक)" data-i18n-placeholder="placeholder_altphone" />
+      </label>
+
+      <label><span data-i18n="label_address">पूर्ण पत्ता *</span>
+        <textarea id="address" required placeholder="घर/फ्लॅट नं, इमारत, एरिया, शहर, पिनकोड" data-i18n-placeholder="placeholder_address"></textarea>
+      </label>
+
+      <label><span data-i18n="label_city">शहर *</span>
+        <select id="city" required></select>
+      </label>
+
+      <div class="location-row">
+        <button type="button" id="getLocationBtn" class="btn btn-outline btn-sm" data-i18n="btn_location">📍 माझे सध्याचे लोकेशन जोडा (ऐच्छिक)</button>
+        <span id="locationStatus"></span>
+      </div>
+
+      <label><span data-i18n="label_doctor">रेफरन्स डॉक्टर किंवा स्वतः</span>
+        <input type="text" id="doctor" placeholder="डॉ. चे नाव लिहा, किंवा 'स्वतः' असे लिहा" data-i18n-placeholder="placeholder_doctor" />
+      </label>
+
+      <div class="bstep-nav two"><button type="button" class="btn btn-outline step-back" data-i18n="step_back">← मागे</button><button type="button" class="btn btn-primary step-next" data-i18n="step_next">पुढे →</button></div>
+      </div>
+
+      <!-- ===== STEP 3: वेळ, रिपोर्ट, पेमेंट ===== -->
+      <div class="bstep" data-step="3" hidden>
+      <label><span data-i18n="label_collection_date">सॅम्पल कलेक्शनचा दिवस *</span>
+        <input type="date" id="collectionDate" required />
+      </label>
+
+      <span class="field-label" data-i18n="label_collection_slot">वेळ निवडा *</span>
+      <div class="slot-grid" id="slotGrid">
+        <button type="button" class="slot-btn" data-slot="7:00 AM – 10:00 AM" data-start="7">7 AM – 10 AM</button>
+        <button type="button" class="slot-btn" data-slot="10:00 AM – 1:00 PM" data-start="10">10 AM – 1 PM</button>
+        <button type="button" class="slot-btn" data-slot="1:00 PM – 4:00 PM" data-start="13">1 PM – 4 PM</button>
+        <button type="button" class="slot-btn" data-slot="4:00 PM – 7:00 PM" data-start="16">4 PM – 7 PM</button>
+        <button type="button" class="slot-btn" data-slot="7:00 PM – 9:00 PM" data-start="19">7 PM – 9 PM</button>
+      </div>
+      <input type="hidden" id="collectionTime" value="" />
+      <p class="form-note slot-note" id="slotNote" data-i18n="slot_note">रविवारी सॅम्पल कलेक्शन दुपारी 1 पर्यंत.</p>
+
+      <label data-i18n="label_report_mode">रिपोर्ट कसा हवा? *</label>
+      <div class="radio-row">
+        <label class="radio-pill"><input type="checkbox" name="reportMode" value="Hard Copy" /> <span data-i18n="report_hardcopy">हार्ड कॉपी (घरी)</span></label>
+        <label class="radio-pill"><input type="checkbox" name="reportMode" value="WhatsApp" checked /> <span data-i18n="report_whatsapp">WhatsApp</span></label>
+        <label class="radio-pill"><input type="checkbox" name="reportMode" value="Email" /> <span data-i18n="report_email">ईमेल</span></label>
+      </div>
+
+      
+
+      <label id="emailFieldWrap" hidden><span data-i18n="label_email">ईमेल आयडी</span>
+        <input type="email" id="email" placeholder="report@example.com" />
+      </label>
+
+      <label data-i18n="label_payment">पेमेंट पद्धत *</label>
+      <div class="radio-row">
+        <label class="radio-pill"><input type="radio" name="paymentMethod" value="Cash" checked /> <span data-i18n="payment_cash">कॅश (सॅम्पल कलेक्शनच्या वेळी)</span></label>
+        <label class="radio-pill"><input type="radio" name="paymentMethod" value="UPI" /> <span data-i18n="payment_upi">UPI</span></label>
+      </div>
+      <div id="upiPayBox" class="upi-pay-box" hidden>
+        <img id="upiQrImg" src="./icons/qr.png" alt="UPI QR" />
+        <a id="upiPayLink" href="#" class="btn btn-whatsapp btn-block" data-i18n="pay_via_upi">UPI अ‍ॅपने पे करा →</a>
+        <p class="upi-id-text">UPI ID: <span id="upiIdText">enterprises60658@nyes</span></p>
+      </div>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="consent" required />
+        <span data-i18n="consent_text">वरील सर्व माहिती बरोबर आहे व मी सॅम्पल कलेक्शनसाठी संपर्क करण्यास संमती देतो.</span>
+      </label>
+
+      <button type="submit" class="btn btn-primary btn-block" data-i18n="btn_confirm_booking">✅ बुकिंग कन्फर्म करा</button>
+      <p class="form-note" data-i18n="booking_form_note">बुकिंगनंतर WhatsApp विंडो उघडेल — तिथे फक्त "Send" दाबा, म्हणजे आमच्याकडे लगेच बुकिंग पोहोचेल.</p>
+      <div class="bstep-nav"><button type="button" class="link-btn step-back" style="display:block;margin:6px auto 0" data-i18n="step_back">← मागे</button></div>
+      </div>
+    </form>
+
+    <div id="confirmBox" class="confirm-box" hidden></div>
+  </section>
+</div>
+
+<!-- ===== PAYMENT ===== -->
+<div class="page-section" id="section-payment" hidden>
+  <section class="payment">
+    <h2 data-i18n="payment_heading">ऑनलाइन पेमेंट (ऐच्छिक)</h2>
+    <p class="section-sub" data-i18n="payment_sub">सॅम्पल कलेक्शनच्या वेळी कॅश किंवा खालील QR कोड स्कॅन करून UPI ने पेमेंट करू शकता.</p>
+    <div class="qr-box">
+      <img id="mainQrImg" src="./icons/qr.png" alt="UPI Payment QR - Kalyan Pathlab" />
+      <p>UPI ID: <strong id="mainUpiIdText">enterprises60658@nyes</strong></p>
+    </div>
+
+    <div class="status-check-box">
+      <h3 data-i18n="status_check_heading">माझी बुकिंग स्थिती / रिपोर्ट पहा</h3>
+      <p class="section-sub" data-i18n="status_check_sub">बुकिंगच्या वेळी दिलेला मोबाईल नंबर टाका.</p>
+      <input type="tel" id="statusPhoneInput" placeholder="10 अंकी मोबाईल नंबर" pattern="[0-9]{10}" data-i18n-placeholder="placeholder_phone" />
+      <button type="button" id="statusCheckBtn" class="btn btn-primary btn-block" style="margin-top:10px;" data-i18n="status_check_btn">स्थिती तपासा</button>
+      <div id="statusResultWrap"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== REVIEWS ===== -->
+<div class="page-section" id="section-reviews" hidden>
+  <section class="reviews" id="reviews">
+    <h2 data-i18n="reviews_heading">पेशंट्सचा अनुभव</h2>
+    <p class="section-sub" data-i18n="reviews_sub">आमच्याकडे टेस्ट केलेल्या पेशंट्सचे मत — तुमचाही अनुभव शेअर करा.</p>
+
+    <div class="review-summary">
+      <span class="big-rating" id="avgRating">5.0</span>
+      <span class="stars" id="avgStars">★★★★★</span>
+      <span id="reviewCount">(4 रिव्ह्यू)</span>
+    </div>
+
+    <div class="review-list" id="reviewList"></div>
+
+    <button type="button" id="openReviewModal" class="btn btn-outline btn-block" data-i18n="btn_write_review">✍️ तुमचा रिव्ह्यू लिहा</button>
+
+    <div class="review-panel" id="reviewPanel" hidden>
+      <h3 id="reviewModalTitle" data-i18n="review_modal_title">तुमचा रिव्ह्यू लिहा</h3>
+      <form id="reviewForm">
+        <label><span data-i18n="label_review_name">तुमचे नाव *</span>
+          <input type="text" id="reviewName" required placeholder="तुमचे नाव" data-i18n-placeholder="placeholder_review_name" />
+        </label>
+
+        <label><span data-i18n="label_review_phone">मोबाईल नंबर (फक्त पडताळणीसाठी, पब्लिक दिसणार नाही)</span>
+          <input type="tel" id="reviewPhone" pattern="[0-9]{10}" placeholder="10 अंकी मोबाईल नंबर" data-i18n-placeholder="placeholder_phone" />
+        </label>
+
+        <label><span data-i18n="label_review_test">तुम्ही कोणती टेस्ट/सर्व्हिस घेतली?</span>
+          <input type="text" id="reviewTestTaken" placeholder="उदा. Full Body Checkup" />
+        </label>
+
+        <label data-i18n="label_rating">रेटिंग द्या *</label>
+        <div class="star-picker" id="starPicker">
+          <button type="button" data-val="1" aria-label="1 स्टार">★</button>
+          <button type="button" data-val="2" aria-label="2 स्टार">★</button>
+          <button type="button" data-val="3" aria-label="3 स्टार">★</button>
+          <button type="button" data-val="4" aria-label="4 स्टार">★</button>
+          <button type="button" data-val="5" aria-label="5 स्टार">★</button>
+        </div>
+        <input type="hidden" id="reviewRating" value="0" />
+
+        <label><span data-i18n="label_feedback">तुमचा अभिप्राय *</span>
+          <textarea id="reviewFeedback" required placeholder="तुमचा अनुभव इथे लिहा…" data-i18n-placeholder="placeholder_feedback"></textarea>
+        </label>
+
+        <button type="submit" class="btn btn-primary btn-block" data-i18n="btn_submit_review">रिव्ह्यू सबमिट करा</button>
+        <p class="form-note" data-i18n="review_form_note">रिव्ह्यू आमच्या टीमकडून तपासल्यानंतर पेजवर दिसेल.</p>
+      </form>
+      <div id="reviewThanks" class="confirm-box" hidden></div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== CONTACT / FOOTER ===== -->
+<div class="page-section" id="section-contact" hidden>
+  <footer>
+    <img src="./icons/logo.png" alt="Kalyan Pathlab" class="footer-logo" />
+    <p class="footer-tag" data-i18n="tagline">संस्कार फाउंडेशन संचलित · Care For Quality</p>
+
+    <div class="footer-grid">
+      <div>
+        <strong data-i18n="footer_address_label">पत्ता</strong>
+        <p>Shop No. 3, 1st Floor, Parvati Apartment,<br />Tisgaon Naka, Kalyan East – 421306</p>
+        <a href="https://www.google.com/maps/search/?api=1&query=Parvati%20Apartment%20Tisgaon%20Naka%20Kalyan%20East%20421306" target="_blank" rel="noopener" data-i18n="footer_maps_link">Google Maps वर पहा →</a>
+      </div>
+      <div>
+        <strong data-i18n="footer_contact_label">संपर्क</strong>
+        <p><a href="tel:+919870020674">98700 20674</a> / <a href="tel:+918828111774">88281 11774</a></p>
+        <p><a href="mailto:kalyan.pathlab.21@gmail.com">kalyan.pathlab.21@gmail.com</a></p>
+        <a href="https://wa.me/919870020674" target="_blank" rel="noopener" data-i18n="footer_whatsapp_link">WhatsApp वर मेसेज करा →</a>
+      </div>
+      <div>
+        <strong data-i18n="footer_timing_label">वेळ</strong>
+        <p data-i18n-html="footer_timing_text">सोम - शनि: 7:00 AM – 9:00 PM<br />रवि: 8:00 AM – 1:00 PM</p>
       </div>
     </div>
-  </div>
-</section>
 
-<section id="gallery">
-  <h2 data-i18n="gallery_heading">Inside the lab.</h2>
-  <p class="section-sub" data-i18n="gallery_sub">A look at our equipment and testing process.</p>
-  <div class="gallery-grid">
-    <figure><img src="./equipment.jpg" alt="Automated blood testing machines" /></figure>
-    <figure><img src="./lab-tech.jpg" alt="Lab technician analysing a blood sample" /></figure>
-    <figure><img src="./covid-test.jpg" alt="COVID-19 test sample tubes" /></figure>
-  </div>
-</section>
+    <div class="main-site-card">
+      <a class="main-site-btn" href="https://swapnilmokal.github.io/kalyan-pathlab/" target="_blank" rel="noopener" data-i18n="main_site_btn">🌐 वेबसाईटला भेट देण्यासाठी क्लिक करा</a>
+    </div>
+    <p class="copyright" data-i18n="copyright">© Kalyan Pathlab, Kalyan East · संस्कार फाउंडेशन संचलित</p>
+  </footer>
+</div>
 
-<section id="reviews">
-  <h2 data-i18n="reviews_heading">What patients are saying.</h2>
-  <p class="section-sub" data-i18n="reviews_sub">Real words from patients who've visited Kalyan Pathlab.</p>
-  <div class="review-grid">
-    <div class="review-card"><span class="stars">★★★★★</span><p>Technicians are very experienced and professional. Blood test rates also very impressive.</p><span class="who">— Purushottam</span></div>
-    <div class="review-card"><span class="stars">★★★★★</span><p>Blood test reports were available at a very low cost compared to other labs.</p><span class="who">— Megha</span></div>
-    <div class="review-card"><span class="stars">★★★★★</span><p>The report is very professional and the technicians are also very supportive.</p><span class="who">— Tushar Kamble</span></div>
-    <div class="review-card"><span class="stars">★★★★★</span><p>सगळ्या टेस्ट खूप कमी पैशात झाल्या. Thanks.</p><span class="who">— Reshma Patil</span></div>
-  </div>
-</section>
+<div id="toast" class="toast" hidden></div>
 
-<footer id="contact">
-  <h2 class="center" style="color:#fff; text-align:center;" data-i18n="contact_heading">Book a test or ask a question.</h2>
-  <div class="contact-grid">
-    <div>
-      <strong data-i18n="contact_phone">Phone</strong>
-      <p><a href="tel:+919870020674">98700 20674</a> / <a href="tel:+918828111774">88281 11774</a></p>
-    </div>
-    <div>
-      <strong data-i18n="contact_email">Email</strong>
-      <p><a href="mailto:kalyan.pathlab.21@gmail.com">kalyan.pathlab.21@gmail.com</a></p>
-    </div>
-    <div>
-      <strong data-i18n="contact_address">Address</strong>
-      <p>Shop No. 3, 1st Floor, Parvati Apartment, Tisgaon Naka, Kalyan East – 421306</p>
-      <a href="https://www.google.com/maps/search/?api=1&query=Parvati%20Apartment%20Tisgaon%20Naka%20Kalyan%20East%20421306" target="_blank" rel="noopener" data-i18n="contact_directions">Get directions →</a>
-    </div>
-    <div>
-      <strong data-i18n="contact_timings">Timings</strong>
-      <p data-i18n="timings_weekday">Monday – Saturday: 7:00 AM – 9:00 PM</p>
-      <p data-i18n="timings_sunday">Sunday: 8:00 AM – 1:00 PM</p>
-    </div>
-  </div>
-  <p class="copyright" data-i18n="copyright">© Kalyan Pathlab, Kalyan East · Run by Sanskar Foundation</p>
-</footer>
-
-<script src="./main-script.js"></script>
+<script src="./i18n.js"></script>
+<script src="./tests-data.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>
