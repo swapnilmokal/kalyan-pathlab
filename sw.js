@@ -1,4 +1,4 @@
-const CACHE = "kalyan-pathlab-v11";
+const CACHE = "kalyan-pathlab-v12";
 const ASSETS = [
   "./",
   "./index.html",
@@ -15,37 +15,34 @@ const ASSETS = [
 
 self.addEventListener("install", (e) => {
   e.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(ASSETS)).catch(() => {})
+    caches.open(CACHE).then((cache) => Promise.all(ASSETS.map((u) => cache.add(u).catch(() => {}))))
   );
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (e) => {
   e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-    )
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
+/* Network-first: नेहमी आधी ताजी फाईल आणतो (म्हणजे जुनं index.html + नवं app.js असं
+   मिक्स होऊन अ‍ॅप तुटत नाही). इंटरनेट नसेल तरच सेव्ह केलेली कॉपी दाखवतो. */
 self.addEventListener("fetch", (e) => {
-  if (e.request.method !== "GET") return;
-  // बॅकएंडचा (Apps Script) लाईव्ह डेटा कधीही कॅश करायचा नाही — नेहमी थेट
-  // नेटवर्कवरून ताजा डेटा आणायचा (बुकिंग, रिव्ह्यू, किंमती, Admin डेटा वगैरे)
-  if (e.request.url.includes("script.google.com")) return;
+  const req = e.request;
+  if (req.method !== "GET") return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return; // Apps Script, Google Fonts वगैरे थेट नेटवर्कवरून
   e.respondWith(
-    caches.match(e.request).then((cached) => {
-      const fetchPromise = fetch(e.request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const clone = networkResponse.clone();
-            caches.open(CACHE).then((cache) => cache.put(e.request, clone));
-          }
-          return networkResponse;
-        })
-        .catch(() => cached);
-      return cached || fetchPromise;
-    })
+    fetch(req)
+      .then((res) => {
+        if (res && res.status === 200) {
+          const copy = res.clone();
+          caches.open(CACHE).then((cache) => cache.put(req, copy));
+        }
+        return res;
+      })
+      .catch(() => caches.match(req).then((hit) => hit || caches.match("./index.html")))
   );
 });

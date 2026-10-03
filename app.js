@@ -78,7 +78,12 @@ async function shareApp() {
 
 /* ---------- Tab navigation (एका वेळी एकच सेक्शन दिसतं) ---------- */
 const SECTION_IDS = ["home", "tests", "booking", "payment", "reviews", "contact"];
-function showSection(name, instant) {
+let currentSection = "home";
+function scrollMainTop(instant) {
+  const main = document.getElementById("appMain");
+  if (main) main.scrollTo({ top: 0, behavior: instant ? "auto" : "smooth" });
+}
+function showSection(name, instant, fromPop) {
   SECTION_IDS.forEach((id) => {
     const el = document.getElementById(`section-${id}`);
     if (el) el.hidden = id !== name;
@@ -86,15 +91,17 @@ function showSection(name, instant) {
   document.querySelectorAll(".nav-btn").forEach((b) => {
     b.classList.toggle("active", b.dataset.section === name);
   });
-  // सेक्शन बदलल्यावर तो नक्की वरती (sticky topbar/nav च्या खाली) दिसावा म्हणून
-  // window.scrollTo ऐवजी त्याच सेक्शनला थेट scrollIntoView करतो — जुन्या स्क्रोल
-  // पोझिशनमुळे नवीन सेक्शन अर्धवट/लपलेला दिसण्याची शक्यता यामुळे राहत नाही.
-  if (instant) return;
-  requestAnimationFrame(() => {
-    const target = document.getElementById(`section-${name}`);
-    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
+  document.body.dataset.sec = name;
+  // मोबाईल "Back" बटण: मागच्या स्क्रीनवर जातं (अ‍ॅप एकदम बंद होत नाही)
+  if (!fromPop && name !== currentSection) history.pushState({ s: name }, "");
+  currentSection = name;
+  scrollMainTop(instant);
 }
+window.addEventListener("popstate", (e) => {
+  const s = (e.state && e.state.s) || "home";
+  if (document.getElementById("testModal") && !document.getElementById("testModal").hidden) closeTestModal();
+  showSection(s, true, true);
+});
 document.getElementById("mainNav").addEventListener("click", (e) => {
   const btn = e.target.closest(".nav-btn");
   if (btn) showSection(btn.dataset.section);
@@ -106,6 +113,16 @@ document.addEventListener("click", (e) => {
 
 /* ---------- Register service worker ---------- */
 if ("serviceWorker" in navigator) {
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  // नवीन आवृत्ती आली की (बुकिंग सुरू नसेल तर) अ‍ॅप एकदाच आपोआप रिफ्रेश होतं
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloaded) return;
+    if (typeof selectedTests !== "undefined" && selectedTests.length > 0) return;
+    if (typeof bookingStep !== "undefined" && bookingStep > 1) return;
+    reloaded = true;
+    location.reload();
+  });
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").catch(() => {});
   });
@@ -827,7 +844,8 @@ function renderPopularTests() {
   wireTestAddButtons(wrap, renderPopularTests);
 }
 renderPopularTests();
-showSection("home", true); // अ‍ॅप नेहमी होम पेजवरून सुरू होतं
+history.replaceState({ s: "home" }, "");
+showSection("home", true, true); // अ‍ॅप नेहमी होम पेजवरून सुरू होतं
 
 
 /* =====================================================================
@@ -848,8 +866,7 @@ function showBookingStep(n) {
     li.classList.toggle("done", s < n);
   });
   if (n === 3) refreshSlots();
-  const target = document.getElementById("section-booking");
-  if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  scrollMainTop(false);
 }
 
 function validateBookingStep(n) {

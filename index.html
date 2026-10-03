@@ -2,10 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
 <title>Kalyan Pathlab — ऑनलाइन ब्लड टेस्ट बुकिंग</title>
 <meta name="description" content="Kalyan Pathlab (संस्कार फाउंडेशन संचलित) - सर्व ब्लड टेस्टवर 30% ते 70% सवलत. कल्याण, डोंबिवली, अंबरनाथ, बदलापूर, उल्हासनगर, ठाणे, मुंबई, नवी मुंबई येथे मोफत होम सर्विस." />
 <meta name="theme-color" content="#0b1440" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta property="og:title" content="Kalyan Pathlab — ऑनलाइन ब्लड टेस्ट बुकिंग" />
 <meta property="og:description" content="सर्व ब्लड टेस्टवर 30% ते 70% सवलत. मोफत होम सॅम्पल कलेक्शन." />
 <meta property="og:image" content="./icons/icon-512.png" />
@@ -27,74 +30,31 @@
       <span class="topbar-name">Kalyan Pathlab</span>
       <span class="topbar-tag" data-i18n="tagline">संस्कार फाउंडेशन संचलित · Care For Quality</span>
     </div>
-    <a class="topbar-call" href="tel:+919870020674" aria-label="कॉल करा">☎</a>
-    <button type="button" class="topbar-share" id="shareBtn" aria-label="शेअर करा">🔗</button>
-  </div>
-  <div class="ecg-line" aria-hidden="true">
-    <svg viewBox="0 0 600 40" preserveAspectRatio="none"><polyline points="0,20 60,20 80,5 100,35 120,20 180,20 200,8 215,32 230,20 300,20 320,5 340,35 360,20 420,20 440,8 455,32 470,20 600,20"/></svg>
-  </div>
-</header>
-
-<!-- ===== MAIN NAV TABS + भाषा निवड (एकाच रांगेत) ===== -->
-<nav class="main-nav" id="mainNav">
-  <button type="button" class="nav-btn" data-section="home" data-i18n="nav_home">🏠 मुख्यपृष्ठ</button>
-  <button type="button" class="nav-btn" data-section="tests" data-i18n="nav_tests">🧪 टेस्ट लिस्ट</button>
-  <button type="button" class="nav-btn nav-primary" data-section="booking" data-i18n="nav_booking">📅 बुकिंग</button>
-  <button type="button" class="nav-btn" data-section="payment" data-i18n="nav_payment">💳 पेमेंट व स्थिती</button>
-  <button type="button" class="nav-btn" data-section="reviews" data-i18n="nav_reviews">⭐ रिव्ह्यूज</button>
-  <button type="button" class="nav-btn" data-section="contact" data-i18n="nav_contact">📞 संपर्क</button>
-  <span class="nav-lang">
-    <span class="nav-lang-icon">🌐</span>
-    <select id="langSelect" aria-label="Language / भाषा">
+    <select id="langSelect" class="topbar-lang" aria-label="Language / भाषा">
       <option value="en">English</option>
       <option value="mr">मराठी</option>
       <option value="hi">हिंदी</option>
     </select>
-  </span>
-</nav>
+    <a class="topbar-btn topbar-call" href="tel:+919870020674" aria-label="कॉल करा"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a>
+    <button type="button" class="topbar-btn" id="shareBtn" aria-label="शेअर करा"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button>
+  </div>
+</header>
 
+<main id="appMain">
 <div id="notifBanner" class="confirm-banner" hidden></div>
 
 <!-- ===== HOME ===== -->
 <div class="page-section" id="section-home" hidden>
   <section class="home">
-
     <div class="home-hero">
       <svg class="home-hero-drop" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5s7 8.3 7 13.3a7 7 0 1 1-14 0c0-5 7-13.3 7-13.3Z"/></svg>
-      <img class="home-hero-logo" src="./icons/logo.png" alt="Kalyan Pathlab" width="84" height="84" />
       <span class="home-hero-badge" data-i18n="discount_badge">सर्व टेस्टवर 30% ते 70% सवलत</span>
       <h1 data-i18n="hero_title">घरबसल्या ब्लड टेस्ट, कमी किमतीत</h1>
       <p data-i18n="hero_sub">मोफत होम सॅम्पल कलेक्शन. रिपोर्ट WhatsApp, ईमेल किंवा हार्ड कॉपीमध्ये.</p>
-      <div class="home-hero-actions">
-        <button type="button" class="btn btn-primary jump-to" data-section="booking" data-i18n="hero_cta_book">📅 आत्ता बुक करा</button>
-        <button type="button" class="btn btn-ghost jump-to" data-section="tests" data-i18n="hero_cta_rates">रेट लिस्ट पहा</button>
-      </div>
+      <button type="button" class="btn btn-primary btn-block jump-to" data-section="booking" data-i18n="hero_cta_book">📅 आत्ता बुक करा</button>
     </div>
 
-    <ul class="trust-row">
-      <li><span aria-hidden="true">🏠</span><b data-i18n="trust_free">मोफत होम कलेक्शन</b></li>
-      <li><span aria-hidden="true">💸</span><b data-i18n="trust_off">30–70% सवलत</b></li>
-      <li><span aria-hidden="true">📲</span><b data-i18n="trust_report">रिपोर्ट WhatsApp वर</b></li>
-    </ul>
-
-    <h2 class="home-h" data-i18n="popular_heading">लोकप्रिय टेस्ट</h2>
-    <div class="popular-row" id="popularTests"></div>
-
-    <h2 class="home-h" data-i18n="how_heading">बुकिंग कशी करायची</h2>
-    <ol class="steps">
-      <li><span class="step-num">1</span><div><b data-i18n="step1_t">टेस्ट निवडा</b><small data-i18n="step1_d">रेट लिस्टमधून निवडा किंवा नाव टाईप करा.</small></div></li>
-      <li><span class="step-num">2</span><div><b data-i18n="step2_t">वेळ व पत्ता भरा</b><small data-i18n="step2_d">सॅम्पल कलेक्शनचा दिवस व वेळ सांगा.</small></div></li>
-      <li><span class="step-num">3</span><div><b data-i18n="step3_t">घरी सॅम्पल, मग रिपोर्ट</b><small data-i18n="step3_d">आमचा टेक्निशियन घरी येतो. रिपोर्ट तुम्हाला पाठवतो.</small></div></li>
-    </ol>
-
-    <h2 class="home-h" data-i18n="cities_heading">या शहरांत मोफत होम सर्विस</h2>
-    <div class="chip-row" id="cityChips"></div>
-
-    <h2 class="home-h" data-i18n="home_reviews_heading">पेशंट्स काय म्हणतात</h2>
-    <div class="popular-row" id="homeReviews"></div>
-    <button type="button" class="link-btn jump-to" data-section="reviews" style="display:block;margin:4px auto 0" data-i18n="home_reviews_all">सर्व रिव्ह्यू पहा</button>
-
-    <div class="home-tiles">
+    <div class="quick-grid">
       <button type="button" class="menu-tile jump-to" data-section="tests">
         <span class="menu-tile-icon">💰</span>
         <span class="menu-tile-label" data-i18n="nav_ratelist_label">टेस्ट रेट लिस्ट</span>
@@ -107,13 +67,17 @@
         <span class="menu-tile-icon">⭐</span>
         <span class="menu-tile-label" data-i18n="nav_reviews_label">Review</span>
       </button>
-      <button type="button" class="menu-tile jump-to" data-section="contact">
-        <span class="menu-tile-icon">📞</span>
-        <span class="menu-tile-label" data-i18n="nav_contact_label">Contact</span>
-      </button>
+      <a class="menu-tile" href="https://wa.me/919870020674?text=Namaskar%2C%20mala%20blood%20test%20booking%20baddal%20mahiti%20havi%20aahe" target="_blank" rel="noopener">
+        <span class="menu-tile-icon">💬</span>
+        <span class="menu-tile-label" data-i18n="tile_whatsapp">WhatsApp</span>
+      </a>
     </div>
 
-    <a href="https://wa.me/919870020674?text=Namaskar%2C%20mala%20blood%20test%20booking%20baddal%20mahiti%20havi%20aahe" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block" style="margin-top:18px" data-i18n="btn_whatsapp_ask">WhatsApp वर विचारा</a>
+    <div class="home-row-head">
+      <h2 class="home-h" data-i18n="popular_heading">लोकप्रिय टेस्ट</h2>
+      <button type="button" class="link-btn jump-to" data-section="tests" data-i18n="see_all">सर्व पहा</button>
+    </div>
+    <div class="popular-row" id="popularTests"></div>
   </section>
 </div>
 
@@ -141,17 +105,10 @@
   </div>
 </div>
 
-<!-- ===== CART / SELECTED (नेहमी दिसणारी पट्टी) ===== -->
-<div class="cart-bar" id="cartBar" hidden>
-  <span id="cartSummary">0 टेस्ट निवडल्या</span>
-  <button type="button" class="btn btn-primary btn-sm jump-to" data-section="booking" data-i18n="cart_book_btn">बुक करा →</button>
-</div>
-
 <!-- ===== BOOKING FORM ===== -->
 <div class="page-section" id="section-booking" hidden>
   <section class="booking" id="booking">
     <h2 data-i18n="booking_heading">बुकिंग फॉर्म</h2>
-    <p class="section-sub" data-i18n="booking_sub">खालील माहिती भरा — बुकिंग झाल्यावर तुम्हाला व आम्हाला दोघांनाही कन्फर्मेशन मिळेल.</p>
 
     <form id="bookingForm" novalidate>
       <ol class="bprog" id="bookingProgress" aria-label="Steps">
@@ -181,34 +138,35 @@
       <!-- ===== STEP 2: माहिती व पत्ता ===== -->
       <div class="bstep" data-step="2" hidden>
       <label><span data-i18n="label_fullname">तुमचे पूर्ण नाव *</span>
-        <input type="text" id="fullName" required placeholder="पूर्ण नाव" data-i18n-placeholder="placeholder_fullname" />
+        <input type="text" id="fullName" required autocomplete="name" placeholder="पूर्ण नाव" data-i18n-placeholder="placeholder_fullname" />
       </label>
 
       <label><span data-i18n="label_phone">मोबाईल नंबर *</span>
-        <input type="tel" id="phone" required pattern="[0-9]{10}" placeholder="10 अंकी मोबाईल नंबर" data-i18n-placeholder="placeholder_phone" />
+        <input type="tel" id="phone" required inputmode="numeric" autocomplete="tel-national" pattern="[0-9]{10}" placeholder="10 अंकी मोबाईल नंबर" data-i18n-placeholder="placeholder_phone" />
       </label>
       <p class="returning-note" id="returningPatientNote" hidden></p>
 
-      <label><span data-i18n="label_altphone">पर्यायी संपर्क नंबर</span>
-        <input type="tel" id="altPhone" placeholder="घरचा/दुसरा नंबर (ऐच्छिक)" data-i18n-placeholder="placeholder_altphone" />
-      </label>
-
       <label><span data-i18n="label_address">पूर्ण पत्ता *</span>
-        <textarea id="address" required placeholder="घर/फ्लॅट नं, इमारत, एरिया, शहर, पिनकोड" data-i18n-placeholder="placeholder_address"></textarea>
+        <textarea id="address" rows="2" required placeholder="घर/फ्लॅट नं, इमारत, एरिया, शहर, पिनकोड" data-i18n-placeholder="placeholder_address"></textarea>
       </label>
 
       <label><span data-i18n="label_city">शहर *</span>
         <select id="city" required></select>
       </label>
 
-      <div class="location-row">
-        <button type="button" id="getLocationBtn" class="btn btn-outline btn-sm" data-i18n="btn_location">📍 माझे सध्याचे लोकेशन जोडा (ऐच्छिक)</button>
-        <span id="locationStatus"></span>
-      </div>
-
-      <label><span data-i18n="label_doctor">रेफरन्स डॉक्टर किंवा स्वतः</span>
-        <input type="text" id="doctor" placeholder="डॉ. चे नाव लिहा, किंवा 'स्वतः' असे लिहा" data-i18n-placeholder="placeholder_doctor" />
-      </label>
+      <details class="more-details">
+        <summary data-i18n="more_details">अधिक माहिती (ऐच्छिक)</summary>
+        <label><span data-i18n="label_altphone">पर्यायी संपर्क नंबर</span>
+          <input type="tel" id="altPhone" inputmode="numeric" placeholder="घरचा/दुसरा नंबर (ऐच्छिक)" data-i18n-placeholder="placeholder_altphone" />
+        </label>
+        <label><span data-i18n="label_doctor">रेफरन्स डॉक्टर किंवा स्वतः</span>
+          <input type="text" id="doctor" placeholder="डॉ. चे नाव लिहा, किंवा 'स्वतः' असे लिहा" data-i18n-placeholder="placeholder_doctor" />
+        </label>
+        <div class="location-row">
+          <button type="button" id="getLocationBtn" class="btn btn-outline btn-sm" data-i18n="btn_location">📍 माझे सध्याचे लोकेशन जोडा (ऐच्छिक)</button>
+          <span id="locationStatus"></span>
+        </div>
+      </details>
 
       <div class="bstep-nav two"><button type="button" class="btn btn-outline step-back" data-i18n="step_back">← मागे</button><button type="button" class="btn btn-primary step-next" data-i18n="step_next">पुढे →</button></div>
       </div>
@@ -259,9 +217,8 @@
         <span data-i18n="consent_text">वरील सर्व माहिती बरोबर आहे व मी सॅम्पल कलेक्शनसाठी संपर्क करण्यास संमती देतो.</span>
       </label>
 
-      <button type="submit" class="btn btn-primary btn-block" data-i18n="btn_confirm_booking">✅ बुकिंग कन्फर्म करा</button>
       <p class="form-note" data-i18n="booking_form_note">बुकिंगनंतर WhatsApp विंडो उघडेल — तिथे फक्त "Send" दाबा, म्हणजे आमच्याकडे लगेच बुकिंग पोहोचेल.</p>
-      <div class="bstep-nav"><button type="button" class="link-btn step-back" style="display:block;margin:6px auto 0" data-i18n="step_back">← मागे</button></div>
+      <div class="bstep-nav two"><button type="button" class="btn btn-outline step-back" data-i18n="step_back">← मागे</button><button type="submit" class="btn btn-primary" data-i18n="btn_confirm_booking">✅ बुकिंग कन्फर्म करा</button></div>
       </div>
     </form>
 
@@ -272,19 +229,20 @@
 <!-- ===== PAYMENT ===== -->
 <div class="page-section" id="section-payment" hidden>
   <section class="payment">
-    <h2 data-i18n="payment_heading">ऑनलाइन पेमेंट (ऐच्छिक)</h2>
-    <p class="section-sub" data-i18n="payment_sub">सॅम्पल कलेक्शनच्या वेळी कॅश किंवा खालील QR कोड स्कॅन करून UPI ने पेमेंट करू शकता.</p>
-    <div class="qr-box">
-      <img id="mainQrImg" src="./icons/qr.png" alt="UPI Payment QR - Kalyan Pathlab" />
-      <p>UPI ID: <strong id="mainUpiIdText">enterprises60658@nyes</strong></p>
-    </div>
+    <h2 data-i18n="payment_heading">पेमेंट व बुकिंग स्थिती</h2>
 
     <div class="status-check-box">
       <h3 data-i18n="status_check_heading">माझी बुकिंग स्थिती / रिपोर्ट पहा</h3>
       <p class="section-sub" data-i18n="status_check_sub">बुकिंगच्या वेळी दिलेला मोबाईल नंबर टाका.</p>
-      <input type="tel" id="statusPhoneInput" placeholder="10 अंकी मोबाईल नंबर" pattern="[0-9]{10}" data-i18n-placeholder="placeholder_phone" />
+      <input type="tel" id="statusPhoneInput" inputmode="numeric" placeholder="10 अंकी मोबाईल नंबर" pattern="[0-9]{10}" data-i18n-placeholder="placeholder_phone" />
       <button type="button" id="statusCheckBtn" class="btn btn-primary btn-block" style="margin-top:10px;" data-i18n="status_check_btn">स्थिती तपासा</button>
       <div id="statusResultWrap"></div>
+    </div>
+
+    <div class="qr-box">
+      <p class="qr-title" data-i18n="payment_sub">सॅम्पल कलेक्शनच्या वेळी कॅश किंवा खालील QR कोड स्कॅन करून UPI ने पेमेंट करू शकता.</p>
+      <img id="mainQrImg" src="./icons/qr.png" alt="UPI Payment QR - Kalyan Pathlab" />
+      <p>UPI ID: <strong id="mainUpiIdText">enterprises60658@nyes</strong></p>
     </div>
   </section>
 </div>
@@ -348,6 +306,9 @@
     <img src="./icons/logo.png" alt="Kalyan Pathlab" class="footer-logo" />
     <p class="footer-tag" data-i18n="tagline">संस्कार फाउंडेशन संचलित · Care For Quality</p>
 
+    <strong class="footer-cities-h" data-i18n="cities_heading">या शहरांत मोफत होम सर्विस</strong>
+    <div class="chip-row footer-cities" id="cityChips"></div>
+
     <div class="footer-grid">
       <div>
         <strong data-i18n="footer_address_label">पत्ता</strong>
@@ -372,6 +333,23 @@
     <p class="copyright" data-i18n="copyright">© Kalyan Pathlab, Kalyan East · संस्कार फाउंडेशन संचलित</p>
   </footer>
 </div>
+
+</main>
+
+<!-- ===== CART / SELECTED (निवडलेल्या टेस्टची पट्टी — टॅब बारच्या वर) ===== -->
+<div class="cart-bar" id="cartBar" hidden>
+  <span id="cartSummary">0 टेस्ट निवडल्या</span>
+  <button type="button" class="btn btn-primary btn-sm jump-to" data-section="booking" data-i18n="cart_book_btn">बुक करा →</button>
+</div>
+
+<!-- ===== BOTTOM TAB BAR ===== -->
+<nav class="tabbar" id="mainNav" aria-label="Main">
+  <button type="button" class="nav-btn" data-section="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span data-i18n="tab_home">मुख्यपृष्ठ</span></button>
+  <button type="button" class="nav-btn" data-section="tests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3"/></svg><span data-i18n="tab_tests">टेस्ट</span></button>
+  <button type="button" class="nav-btn nav-book" data-section="booking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg><span data-i18n="tab_book">बुकिंग</span></button>
+  <button type="button" class="nav-btn" data-section="payment"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span data-i18n="tab_status">स्थिती</span></button>
+  <button type="button" class="nav-btn" data-section="contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.800 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span data-i18n="tab_contact">संपर्क</span></button>
+</nav>
 
 <div id="toast" class="toast" hidden></div>
 
