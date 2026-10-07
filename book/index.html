@@ -2,99 +2,96 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
 <title>Kalyan Pathlab — ऑनलाइन ब्लड टेस्ट बुकिंग</title>
 <meta name="description" content="Kalyan Pathlab (संस्कार फाउंडेशन संचलित) - सर्व ब्लड टेस्टवर 30% ते 70% सवलत. कल्याण, डोंबिवली, अंबरनाथ, बदलापूर, उल्हासनगर, ठाणे, मुंबई, नवी मुंबई येथे मोफत होम सर्विस." />
 <meta name="theme-color" content="#0b1440" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta property="og:title" content="Kalyan Pathlab — ऑनलाइन ब्लड टेस्ट बुकिंग" />
 <meta property="og:description" content="सर्व ब्लड टेस्टवर 30% ते 70% सवलत. मोफत होम सॅम्पल कलेक्शन." />
-<meta property="og:image" content="./icons/icon-512.png" />
-<link rel="manifest" href="./manifest.json" />
-<link rel="icon" href="./icons/icon-192.png" />
-<link rel="apple-touch-icon" href="./icons/icon-192.png" />
+<meta property="og:image" content="./icons/icon-512.png?v=20261009" />
+<link rel="manifest" href="./manifest.json?v=20261009" />
+<link rel="icon" type="image/png" href="./icons/icon-192.png?v=20261009" />
+<link rel="apple-touch-icon" href="./icons/icon-192.png?v=20261009" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./style.css" />
+<link rel="preload" as="image" href="./icons/logo.png?v=20261009" />
+<link rel="stylesheet" href="./style.css?v=20261009" />
+<script src="./logo-fallback.js?v=20261009"></script>
 </head>
 <body>
 
 <!-- ===== TOP BAR ===== -->
 <header class="topbar">
   <div class="topbar-inner">
-    <img src="./icons/logo.png" alt="Kalyan Pathlab" class="topbar-logo" />
+    <img
+      src="./icons/logo.png?v=20261009"
+      alt="Kalyan Pathlab"
+      class="topbar-logo"
+      width="44"
+      height="44"
+      decoding="async"
+      fetchpriority="high"
+      data-fallbacks="./icons/logo.png|./icons/admin-logo.png"
+      data-fail="logo"
+      onerror="window.kpImgFail&&kpImgFail(this)"
+    />
     <div class="topbar-text">
       <span class="topbar-name">Kalyan Pathlab</span>
       <span class="topbar-tag" data-i18n="tagline">संस्कार फाउंडेशन संचलित · Care For Quality</span>
     </div>
-    <a class="topbar-call" href="tel:+919870020674" aria-label="कॉल करा">☎</a>
-    <button type="button" class="topbar-share" id="shareBtn" aria-label="शेअर करा">🔗</button>
-    <button type="button" class="topbar-profile-badge" id="topProfileBadge" aria-label="Profile" data-section="profile">
-      <span id="topProfileAvatarWrap" class="topbar-avatar">👤</span>
-    </button>
-    <div class="profile-switch-dropdown" id="profileSwitchDropdown" hidden></div>
-  </div>
-  <div class="ecg-line" aria-hidden="true">
-    <svg viewBox="0 0 600 40" preserveAspectRatio="none"><polyline points="0,20 60,20 80,5 100,35 120,20 180,20 200,8 215,32 230,20 300,20 320,5 340,35 360,20 420,20 440,8 455,32 470,20 600,20"/></svg>
-  </div>
-</header>
-
-<!-- ===== MAIN NAV TABS + भाषा निवड (एकाच रांगेत) ===== -->
-<nav class="main-nav" id="mainNav">
-  <button type="button" class="nav-btn" data-section="home" data-i18n="nav_home">🏠 मुख्यपृष्ठ</button>
-  <button type="button" class="nav-btn" data-section="tests" data-i18n="nav_tests">🧪 टेस्ट लिस्ट</button>
-  <button type="button" class="nav-btn" data-section="booking" data-i18n="nav_booking">📅 बुकिंग</button>
-  <button type="button" class="nav-btn" data-section="payment" data-i18n="nav_payment">💳 पेमेंट</button>
-  <button type="button" class="nav-btn" data-section="reviews" data-i18n="nav_reviews">⭐ रिव्ह्यूज</button>
-  <button type="button" class="nav-btn active" data-section="profile" data-i18n="nav_profile">👤 प्रोफाईल</button>
-  <button type="button" class="nav-btn" data-section="contact" data-i18n="nav_contact">📞 संपर्क</button>
-  <span class="nav-lang">
-    <span class="nav-lang-icon">🌐</span>
-    <select id="langSelect" aria-label="Language / भाषा">
+    <select id="langSelect" class="topbar-lang" aria-label="Language / भाषा">
       <option value="en">English</option>
       <option value="mr">मराठी</option>
       <option value="hi">हिंदी</option>
     </select>
-  </span>
-</nav>
+    <a class="topbar-btn topbar-call" href="tel:+919870020674" aria-label="कॉल करा"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a>
+    <button type="button" class="topbar-btn" id="shareBtn" aria-label="शेअर करा"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button>
+  </div>
+</header>
 
+<main id="appMain">
 <div id="notifBanner" class="confirm-banner" hidden></div>
 
 <!-- ===== HOME ===== -->
 <div class="page-section" id="section-home" hidden>
-
-  <section class="home-menu">
-    <div class="home-menu-top">
-      <div class="discount-badge" data-i18n="discount_badge">सर्व टेस्टवर 30% ते 70% सवलत</div>
-      <h1 data-i18n="home_menu_heading">काय करायचंय?</h1>
+  <section class="home">
+    <div class="home-hero">
+      <svg class="home-hero-drop" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5s7 8.3 7 13.3a7 7 0 1 1-14 0c0-5 7-13.3 7-13.3Z"/></svg>
+      <span class="home-hero-badge" data-i18n="discount_badge">सर्व टेस्टवर 30% ते 70% सवलत</span>
+      <h1 data-i18n="hero_title">घरबसल्या ब्लड टेस्ट, कमी किमतीत</h1>
+      <p data-i18n="hero_sub">मोफत होम सॅम्पल कलेक्शन. रिपोर्ट WhatsApp, ईमेल किंवा हार्ड कॉपीमध्ये.</p>
+      <button type="button" class="btn btn-primary btn-block jump-to" data-section="booking" data-i18n="hero_cta_book">आत्ता बुक करा</button>
     </div>
 
-    <div class="menu-tiles">
-      <button type="button" class="menu-tile jump-to" data-section="profile">
-        <span class="menu-tile-icon">👤</span>
-        <span class="menu-tile-label" data-i18n="nav_profile_label">प्रोफाइल</span>
-      </button>
-      <button type="button" class="menu-tile jump-to" data-section="booking">
-        <span class="menu-tile-icon">🩸</span>
-        <span class="menu-tile-label" data-i18n="nav_book_label">टेस्ट बुक</span>
-      </button>
+    <div class="quick-grid">
       <button type="button" class="menu-tile jump-to" data-section="tests">
-        <span class="menu-tile-icon">💰</span>
+        <span class="menu-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.600 7.600a2 2 0 0 1 0 2.800z"/><circle cx="7.500" cy="7.500" r="1.200"/></svg></span>
         <span class="menu-tile-label" data-i18n="nav_ratelist_label">टेस्ट रेट लिस्ट</span>
       </button>
+      <button type="button" class="menu-tile jump-to" data-section="payment">
+        <span class="menu-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.300-4.300"/></svg></span>
+        <span class="menu-tile-label" data-i18n="tile_status">बुकिंग स्थिती</span>
+      </button>
       <button type="button" class="menu-tile jump-to" data-section="reviews">
-        <span class="menu-tile-icon">⭐</span>
+        <span class="menu-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3l2.700 5.600 6.100.9-4.400 4.300 1 6.100L12 17l-5.400 2.900 1-6.100L3.200 9.500l6.100-.9z"/></svg></span>
         <span class="menu-tile-label" data-i18n="nav_reviews_label">Review</span>
       </button>
-      <button type="button" class="menu-tile jump-to" data-section="contact">
-        <span class="menu-tile-icon">📞</span>
-        <span class="menu-tile-label" data-i18n="nav_contact_label">Contact</span>
-      </button>
+      <a class="menu-tile" href="https://wa.me/919870020674?text=Namaskar%2C%20mala%20blood%20test%20booking%20baddal%20mahiti%20havi%20aahe" target="_blank" rel="noopener">
+        <span class="menu-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.800 7L3 21l2-5.200A8 8 0 1 1 21 12z"/></svg></span>
+        <span class="menu-tile-label" data-i18n="tile_whatsapp">WhatsApp</span>
+      </a>
     </div>
 
-    <a href="https://wa.me/919870020674?text=Namaskar%2C%20mala%20blood%20test%20booking%20baddal%20mahiti%20havi%20aahe" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block" style="margin-top:18px" data-i18n="btn_whatsapp_ask">WhatsApp वर विचारा</a>
+    <div class="home-row-head">
+      <h2 class="home-h" data-i18n="popular_heading">लोकप्रिय टेस्ट</h2>
+      <button type="button" class="link-btn jump-to" data-section="tests" data-i18n="see_all">सर्व पहा</button>
+    </div>
+    <div class="popular-row" id="popularTests"></div>
   </section>
-
 </div>
 
 <!-- ===== TEST LIST ===== -->
@@ -121,19 +118,20 @@
   </div>
 </div>
 
-<!-- ===== CART / SELECTED (नेहमी दिसणारी पट्टी) ===== -->
-<div class="cart-bar" id="cartBar" hidden>
-  <span id="cartSummary">0 टेस्ट निवडल्या</span>
-  <button type="button" class="btn btn-primary btn-sm jump-to" data-section="booking" data-i18n="cart_book_btn">बुक करा →</button>
-</div>
-
 <!-- ===== BOOKING FORM ===== -->
 <div class="page-section" id="section-booking" hidden>
   <section class="booking" id="booking">
     <h2 data-i18n="booking_heading">बुकिंग फॉर्म</h2>
-    <p class="section-sub" data-i18n="booking_sub">खालील माहिती भरा — बुकिंग झाल्यावर तुम्हाला व आम्हाला दोघांनाही कन्फर्मेशन मिळेल.</p>
 
-    <form id="bookingForm">
+    <form id="bookingForm" novalidate>
+      <ol class="bprog" id="bookingProgress" aria-label="Steps">
+        <li data-step="1" class="on"><span>1</span><b data-i18n="bstep1">टेस्ट</b></li>
+        <li data-step="2"><span>2</span><b data-i18n="bstep2">पत्ता</b></li>
+        <li data-step="3"><span>3</span><b data-i18n="bstep3">वेळ व पेमेंट</b></li>
+      </ol>
+
+      <!-- ===== STEP 1: टेस्ट ===== -->
+      <div class="bstep" data-step="1">
       <div class="selected-tests-box" id="selectedTestsBox">
         <strong data-i18n="selected_tests_label">निवडलेल्या टेस्ट:</strong>
         <div id="selectedTestsList" class="selected-list">कोणतीही टेस्ट निवडलेली नाही — <button type="button" class="link-btn jump-to" data-section="tests">टेस्ट लिस्टमधून निवडा</button> किंवा खाली टाईप करा.</div>
@@ -143,44 +141,65 @@
         <input type="text" id="manualTest" placeholder="उदा. Full Body Checkup" />
       </label>
 
+      <label><span data-i18n="label_prescription">डॉक्टरचे प्रिस्क्रिप्शन (असल्यास, ऐच्छिक)</span>
+        <input type="file" id="prescription" accept="image/*,.pdf" />
+      </label>
+
+      <div class="bstep-nav"><button type="button" class="btn btn-primary btn-block step-next" data-i18n="step_next">पुढे →</button></div>
+      </div>
+
+      <!-- ===== STEP 2: माहिती व पत्ता ===== -->
+      <div class="bstep" data-step="2" hidden>
       <label><span data-i18n="label_fullname">तुमचे पूर्ण नाव *</span>
-        <input type="text" id="fullName" required placeholder="पूर्ण नाव" data-i18n-placeholder="placeholder_fullname" />
+        <input type="text" id="fullName" required autocomplete="name" placeholder="पूर्ण नाव" data-i18n-placeholder="placeholder_fullname" />
       </label>
 
       <label><span data-i18n="label_phone">मोबाईल नंबर *</span>
-        <input type="tel" id="phone" required pattern="[0-9]{10}" placeholder="10 अंकी मोबाईल नंबर" data-i18n-placeholder="placeholder_phone" />
+        <input type="tel" id="phone" required inputmode="numeric" autocomplete="tel-national" pattern="[0-9]{10}" placeholder="10 अंकी मोबाईल नंबर" data-i18n-placeholder="placeholder_phone" />
       </label>
       <p class="returning-note" id="returningPatientNote" hidden></p>
 
-      <label><span data-i18n="label_altphone">पर्यायी संपर्क नंबर</span>
-        <input type="tel" id="altPhone" placeholder="घरचा/दुसरा नंबर (ऐच्छिक)" data-i18n-placeholder="placeholder_altphone" />
-      </label>
-
       <label><span data-i18n="label_address">पूर्ण पत्ता *</span>
-        <textarea id="address" required placeholder="घर/फ्लॅट नं, इमारत, एरिया, शहर, पिनकोड" data-i18n-placeholder="placeholder_address"></textarea>
+        <textarea id="address" rows="2" required placeholder="घर/फ्लॅट नं, इमारत, एरिया, शहर, पिनकोड" data-i18n-placeholder="placeholder_address"></textarea>
       </label>
 
       <label><span data-i18n="label_city">शहर *</span>
         <select id="city" required></select>
       </label>
 
-      <div class="location-row">
-        <button type="button" id="getLocationBtn" class="btn btn-outline btn-sm" data-i18n="btn_location">📍 माझे सध्याचे लोकेशन जोडा (ऐच्छिक)</button>
-        <span id="locationStatus"></span>
+      <details class="more-details">
+        <summary data-i18n="more_details">अधिक माहिती (ऐच्छिक)</summary>
+        <label><span data-i18n="label_altphone">पर्यायी संपर्क नंबर</span>
+          <input type="tel" id="altPhone" inputmode="numeric" placeholder="घरचा/दुसरा नंबर (ऐच्छिक)" data-i18n-placeholder="placeholder_altphone" />
+        </label>
+        <label><span data-i18n="label_doctor">रेफरन्स डॉक्टर किंवा स्वतः</span>
+          <input type="text" id="doctor" placeholder="डॉ. चे नाव लिहा, किंवा 'स्वतः' असे लिहा" data-i18n-placeholder="placeholder_doctor" />
+        </label>
+        <div class="location-row">
+          <button type="button" id="getLocationBtn" class="btn btn-outline btn-sm" data-i18n="btn_location">📍 माझे सध्याचे लोकेशन जोडा (ऐच्छिक)</button>
+          <span id="locationStatus"></span>
+        </div>
+      </details>
+
+      <div class="bstep-nav two"><button type="button" class="btn btn-outline step-back" data-i18n="step_back">← मागे</button><button type="button" class="btn btn-primary step-next" data-i18n="step_next">पुढे →</button></div>
       </div>
 
-      <label><span data-i18n="label_doctor">रेफरन्स डॉक्टर किंवा स्वतः</span>
-        <input type="text" id="doctor" placeholder="डॉ. चे नाव लिहा, किंवा 'स्वतः' असे लिहा" data-i18n-placeholder="placeholder_doctor" />
+      <!-- ===== STEP 3: वेळ, रिपोर्ट, पेमेंट ===== -->
+      <div class="bstep" data-step="3" hidden>
+      <label><span data-i18n="label_collection_date">सॅम्पल कलेक्शनचा दिवस *</span>
+        <input type="date" id="collectionDate" required />
       </label>
 
-      <div class="two-col">
-        <label><span data-i18n="label_collection_date">सॅम्पल कलेक्शनचा दिवस *</span>
-          <input type="date" id="collectionDate" required />
-        </label>
-        <label><span data-i18n="label_collection_time">वेळ *</span>
-          <input type="time" id="collectionTime" required />
-        </label>
+      <span class="field-label" data-i18n="label_collection_slot">वेळ निवडा *</span>
+      <div class="slot-grid" id="slotGrid">
+        <button type="button" class="slot-btn" data-slot="7:00 AM – 10:00 AM" data-start="7">7 AM – 10 AM</button>
+        <button type="button" class="slot-btn" data-slot="10:00 AM – 1:00 PM" data-start="10">10 AM – 1 PM</button>
+        <button type="button" class="slot-btn" data-slot="1:00 PM – 4:00 PM" data-start="13">1 PM – 4 PM</button>
+        <button type="button" class="slot-btn" data-slot="4:00 PM – 7:00 PM" data-start="16">4 PM – 7 PM</button>
+        <button type="button" class="slot-btn" data-slot="7:00 PM – 9:00 PM" data-start="19">7 PM – 9 PM</button>
       </div>
+      <input type="hidden" id="collectionTime" value="" />
+      <p class="form-note slot-note" id="slotNote" data-i18n="slot_note">रविवारी सॅम्पल कलेक्शन दुपारी 1 पर्यंत.</p>
 
       <label data-i18n="label_report_mode">रिपोर्ट कसा हवा? *</label>
       <div class="radio-row">
@@ -188,6 +207,8 @@
         <label class="radio-pill"><input type="checkbox" name="reportMode" value="WhatsApp" checked /> <span data-i18n="report_whatsapp">WhatsApp</span></label>
         <label class="radio-pill"><input type="checkbox" name="reportMode" value="Email" /> <span data-i18n="report_email">ईमेल</span></label>
       </div>
+
+      
 
       <label id="emailFieldWrap" hidden><span data-i18n="label_email">ईमेल आयडी</span>
         <input type="email" id="email" placeholder="report@example.com" />
@@ -199,22 +220,19 @@
         <label class="radio-pill"><input type="radio" name="paymentMethod" value="UPI" /> <span data-i18n="payment_upi">UPI</span></label>
       </div>
       <div id="upiPayBox" class="upi-pay-box" hidden>
-        <img id="upiQrImg" src="./icons/qr.png" alt="UPI QR" />
+        <img id="upiQrImg" src="./icons/qr.png?v=20261009" alt="UPI QR" width="200" height="269" decoding="async" data-fallbacks="./icons/qr.png" data-fail="text" data-fail-text="QR लोड झाला नाही — UPI ID वापरा: enterprises60658@nyes" onerror="window.kpImgFail&&kpImgFail(this)" />
         <a id="upiPayLink" href="#" class="btn btn-whatsapp btn-block" data-i18n="pay_via_upi">UPI अ‍ॅपने पे करा →</a>
         <p class="upi-id-text">UPI ID: <span id="upiIdText">enterprises60658@nyes</span></p>
       </div>
-
-      <label><span data-i18n="label_prescription">डॉक्टरचे प्रिस्क्रिप्शन (असल्यास, ऐच्छिक)</span>
-        <input type="file" id="prescription" accept="image/*,.pdf" />
-      </label>
 
       <label class="checkbox-row">
         <input type="checkbox" id="consent" required />
         <span data-i18n="consent_text">वरील सर्व माहिती बरोबर आहे व मी सॅम्पल कलेक्शनसाठी संपर्क करण्यास संमती देतो.</span>
       </label>
 
-      <button type="submit" class="btn btn-primary btn-block" data-i18n="btn_confirm_booking">✅ बुकिंग कन्फर्म करा</button>
       <p class="form-note" data-i18n="booking_form_note">बुकिंगनंतर WhatsApp विंडो उघडेल — तिथे फक्त "Send" दाबा, म्हणजे आमच्याकडे लगेच बुकिंग पोहोचेल.</p>
+      <div class="bstep-nav two"><button type="button" class="btn btn-outline step-back" data-i18n="step_back">← मागे</button><button type="submit" class="btn btn-primary" data-i18n="btn_confirm_booking">✅ बुकिंग कन्फर्म करा</button></div>
+      </div>
     </form>
 
     <div id="confirmBox" class="confirm-box" hidden></div>
@@ -224,19 +242,20 @@
 <!-- ===== PAYMENT ===== -->
 <div class="page-section" id="section-payment" hidden>
   <section class="payment">
-    <h2 data-i18n="payment_heading">ऑनलाइन पेमेंट (ऐच्छिक)</h2>
-    <p class="section-sub" data-i18n="payment_sub">सॅम्पल कलेक्शनच्या वेळी कॅश किंवा खालील QR कोड स्कॅन करून UPI ने पेमेंट करू शकता.</p>
-    <div class="qr-box">
-      <img id="mainQrImg" src="./icons/qr.png" alt="UPI Payment QR - Kalyan Pathlab" />
-      <p>UPI ID: <strong id="mainUpiIdText">enterprises60658@nyes</strong></p>
-    </div>
+    <h2 data-i18n="payment_heading">पेमेंट व बुकिंग स्थिती</h2>
 
     <div class="status-check-box">
       <h3 data-i18n="status_check_heading">माझी बुकिंग स्थिती / रिपोर्ट पहा</h3>
       <p class="section-sub" data-i18n="status_check_sub">बुकिंगच्या वेळी दिलेला मोबाईल नंबर टाका.</p>
-      <input type="tel" id="statusPhoneInput" placeholder="10 अंकी मोबाईल नंबर" pattern="[0-9]{10}" data-i18n-placeholder="placeholder_phone" />
+      <input type="tel" id="statusPhoneInput" inputmode="numeric" placeholder="10 अंकी मोबाईल नंबर" pattern="[0-9]{10}" data-i18n-placeholder="placeholder_phone" />
       <button type="button" id="statusCheckBtn" class="btn btn-primary btn-block" style="margin-top:10px;" data-i18n="status_check_btn">स्थिती तपासा</button>
       <div id="statusResultWrap"></div>
+    </div>
+
+    <div class="qr-box">
+      <p class="qr-title" data-i18n="payment_sub">सॅम्पल कलेक्शनच्या वेळी कॅश किंवा खालील QR कोड स्कॅन करून UPI ने पेमेंट करू शकता.</p>
+      <img id="mainQrImg" src="./icons/qr.png?v=20261009" alt="UPI Payment QR - Kalyan Pathlab" width="200" height="269" decoding="async" data-fallbacks="./icons/qr.png" data-fail="text" data-fail-text="QR लोड झाला नाही — UPI ID वापरा: enterprises60658@nyes" onerror="window.kpImgFail&&kpImgFail(this)" />
+      <p>UPI ID: <strong id="mainUpiIdText">enterprises60658@nyes</strong></p>
     </div>
   </section>
 </div>
@@ -294,139 +313,14 @@
   </section>
 </div>
 
-<!-- ===== MY PROFILE ===== -->
-<div class="page-section" id="section-profile">
-  <section class="payment">
-    <h2 data-i18n="profile_heading">माझी प्रोफाईल</h2>
-    <p class="section-sub" data-i18n="profile_sub">तुमचा मोबाईल नंबर टाका — प्रोफाईल असेल तर दिसेल, नसेल तर नवीन तयार करा.</p>
-
-    <div id="familyProfilesBox" class="status-check-box" hidden>
-      <h3 data-i18n="family_heading">👪 या डिव्हाइसवरील प्रोफाईल्स</h3>
-      <div id="familyProfilesList"></div>
-      <p class="swipe-hint" data-i18n="swipe_hint">← स्वाइप करून प्रोफाईल बदला →</p>
-      <button type="button" id="addFamilyBtn" class="btn btn-outline btn-block" style="margin-top:10px" data-i18n="family_add_btn">+ नवीन व्यक्ती जोडा</button>
-    </div>
-
-    <div class="status-check-box" id="profileLoginBox">
-      <input type="tel" id="profilePhoneInput" placeholder="10 अंकी मोबाईल नंबर" pattern="[0-9]{10}" data-i18n-placeholder="placeholder_phone" />
-      <button type="button" id="profileLoadBtn" class="btn btn-primary btn-block" style="margin-top:10px;" data-i18n="btn_continue">पुढे जा</button>
-      <button type="button" id="guestModeBtn" class="link-btn" style="display:block;text-align:center;margin-top:10px" data-i18n="guest_mode_btn">Guest म्हणून पुढे जा →</button>
-      <p id="profileSyncStatus" class="section-sub" style="margin-top:8px"></p>
-
-      <!-- Login: existing profile with a password already set -->
-      <div id="loginPasswordStep" hidden style="margin-top:14px">
-        <label><span data-i18n="password_label">पासवर्ड</span>
-          <input type="password" id="loginPasswordField" autocomplete="current-password" />
-        </label>
-        <button type="button" id="loginSubmitBtn" class="btn btn-primary btn-block" style="margin-top:10px" data-i18n="btn_login">Login</button>
-        <button type="button" id="forgotPasswordLink" class="link-btn" style="display:block;text-align:center;margin-top:10px" data-i18n="forgot_password_link">पासवर्ड विसरलात?</button>
-        <p id="loginError" class="section-sub" style="color:var(--red-dark)" hidden></p>
-        <button type="button" class="link-btn back-step" style="display:block;text-align:center;margin-top:10px" data-i18n="back_to_start">← मागे जा</button>
-      </div>
-
-      <!-- Forgot password step 1: request code -->
-      <div id="forgotStep1" hidden style="margin-top:14px">
-        <p class="section-sub" data-i18n="forgot_step1_note">तुमच्या रजिस्टर्ड ईमेलवर एक Reset Code पाठवला जाईल.</p>
-        <button type="button" id="sendResetCodeBtn" class="btn btn-primary btn-block" data-i18n="btn_send_reset_code">Reset Code पाठवा</button>
-        <p id="forgotStep1Error" class="section-sub" style="color:var(--red-dark)" hidden></p>
-        <button type="button" class="link-btn back-step" style="display:block;text-align:center;margin-top:10px" data-i18n="back_to_login">← Login वर परत जा</button>
-      </div>
-
-      <!-- Forgot password step 2: enter code + new password -->
-      <div id="forgotStep2" hidden style="margin-top:14px">
-        <p class="section-sub" data-i18n="forgot_step2_note">ईमेलमध्ये आलेला 6-अंकी code टाका (15 मिनिटांत वापरा).</p>
-        <label><span data-i18n="reset_code_label">Reset Code</span>
-          <input type="text" id="resetCodeField" inputmode="numeric" maxlength="6" />
-        </label>
-        <label><span data-i18n="new_password_label">नवीन पासवर्ड</span>
-          <input type="password" id="resetPwdField1" autocomplete="new-password" />
-        </label>
-        <label><span data-i18n="confirm_password_label">पासवर्ड पुन्हा टाका</span>
-          <input type="password" id="resetPwdField2" autocomplete="new-password" />
-        </label>
-        <button type="button" id="confirmResetBtn" class="btn btn-primary btn-block" style="margin-top:10px" data-i18n="btn_reset_password">पासवर्ड रिसेट करा</button>
-        <p id="forgotStep2Error" class="section-sub" style="color:var(--red-dark)" hidden></p>
-        <button type="button" class="link-btn back-step" style="display:block;text-align:center;margin-top:10px" data-i18n="back_to_login">← Login वर परत जा</button>
-      </div>
-
-      <div id="profileFormWrap" hidden style="margin-top:18px">
-        <p id="profileIdLine" class="section-sub"></p>
-
-        <!-- shown only for a brand-new profile, or a legacy profile that never set a password -->
-        <div id="authFieldsBlock" hidden>
-          <p class="section-sub" data-i18n="auth_fields_note">पासवर्ड सेट करा — पुढच्या वेळी याच नंबरने login करण्यासाठी लागेल.</p>
-          <label><span data-i18n="profile_email_label">ईमेल (पासवर्ड रिसेटसाठी आवश्यक)</span>
-            <input type="email" id="profileEmailField" placeholder="you@example.com" />
-          </label>
-          <label><span data-i18n="new_password_label">पासवर्ड</span>
-            <input type="password" id="profilePwdField1" autocomplete="new-password" />
-          </label>
-          <label><span data-i18n="confirm_password_label">पासवर्ड पुन्हा टाका</span>
-            <input type="password" id="profilePwdField2" autocomplete="new-password" />
-          </label>
-        </div>
-
-        <div class="profile-photo-row">
-          <div class="profile-photo-preview" id="profilePhotoPreviewWrap">
-            <img id="profilePhotoPreview" src="" alt="" hidden />
-            <span id="profilePhotoPlaceholder">👤</span>
-          </div>
-          <label class="btn btn-outline" for="profilePhotoInput" data-i18n="profile_photo_choose">📷 फोटो निवडा</label>
-          <input type="file" id="profilePhotoInput" accept="image/*" hidden />
-        </div>
-
-        <label><span data-i18n="profile_name_label">पूर्ण नाव</span>
-          <input type="text" id="profileNameField" data-i18n-placeholder="placeholder_fullname" />
-        </label>
-
-        <span class="field-label" data-i18n="profile_gender_label">लिंग</span>
-        <div class="pill-row" id="genderPillRow">
-          <button type="button" class="pill-btn" data-gender="Female"><span>♀</span> <span data-i18n="profile_gender_female">स्त्री</span></button>
-          <button type="button" class="pill-btn" data-gender="Male"><span>♂</span> <span data-i18n="profile_gender_male">पुरुष</span></button>
-          <button type="button" class="pill-btn" data-gender="Other"><span>⚧</span> <span data-i18n="profile_gender_other">इतर</span></button>
-        </div>
-        <input type="hidden" id="profileGenderField" />
-
-        <label><span data-i18n="profile_age_label">वय</span>
-          <input type="number" id="profileAgeField" min="0" max="120" />
-        </label>
-
-        <span class="field-label" data-i18n="profile_relation_label">नातं (Self / कुटुंबातील व्यक्ती)</span>
-        <div class="pill-row" id="relationPillRow">
-          <button type="button" class="pill-btn active" data-relation="Self" data-i18n="relation_self">Self</button>
-          <button type="button" class="pill-btn" data-relation="Spouse" data-i18n="relation_spouse">Spouse</button>
-          <button type="button" class="pill-btn" data-relation="Mother" data-i18n="relation_mother">Mother</button>
-          <button type="button" class="pill-btn" data-relation="Father" data-i18n="relation_father">Father</button>
-          <button type="button" class="pill-btn" data-relation="Son" data-i18n="relation_son">Son</button>
-          <button type="button" class="pill-btn" data-relation="Daughter" data-i18n="relation_daughter">Daughter</button>
-          <button type="button" class="pill-btn" data-relation="Other" data-i18n="relation_other">Other</button>
-        </div>
-        <input type="hidden" id="profileRelationField" value="Self" />
-
-        <label><span data-i18n="profile_address_label">पत्ता</span>
-          <input type="text" id="profileAddressField" data-i18n-placeholder="placeholder_address" />
-        </label>
-        <label><span data-i18n="profile_city_label">शहर</span>
-          <input type="text" id="profileCityField" data-i18n-placeholder="placeholder_city" />
-        </label>
-        <button type="button" id="profileSaveBtn" class="btn btn-primary btn-block" style="margin-top:14px" data-i18n="profile_save_btn">प्रोफाईल सेव्ह करा</button>
-        <button type="button" id="switchProfileBtn" class="link-btn" style="display:block;text-align:center;margin-top:10px" data-i18n="switch_profile_btn">← दुसरी प्रोफाईल / नवीन व्यक्ती</button>
-        <button type="button" id="logoutBtn" class="btn btn-block" style="margin-top:10px;background:#fde8e8;color:#a1235a" data-i18n="logout_btn">🔓 Logout</button>
-      </div>
-
-      <div id="profileHistorySection" style="margin-top:22px">
-        <h3 data-i18n="profile_history_heading">📋 माझा टेस्ट इतिहास</h3>
-        <div id="profileHistoryList"></div>
-      </div>
-    </div>
-  </section>
-</div>
-
 <!-- ===== CONTACT / FOOTER ===== -->
 <div class="page-section" id="section-contact" hidden>
   <footer>
-    <img src="./icons/logo.png" alt="Kalyan Pathlab" class="footer-logo" />
+    <img src="./icons/logo.png?v=20261009" alt="Kalyan Pathlab" class="footer-logo" width="66" height="66" decoding="async" data-fallbacks="./icons/logo.png|./icons/admin-logo.png" data-fail="logo" onerror="window.kpImgFail&&kpImgFail(this)" />
     <p class="footer-tag" data-i18n="tagline">संस्कार फाउंडेशन संचलित · Care For Quality</p>
+
+    <strong class="footer-cities-h" data-i18n="cities_heading">या शहरांत मोफत होम सर्विस</strong>
+    <div class="chip-row footer-cities" id="cityChips"></div>
 
     <div class="footer-grid">
       <div>
@@ -453,10 +347,27 @@
   </footer>
 </div>
 
-<div id="toast" class="toast" hidden></div>
+</main>
 
-<script src="./i18n.js"></script>
-<script src="./tests-data.js"></script>
-<script src="./app.js"></script>
+<!-- ===== CART / SELECTED (निवडलेल्या टेस्टची पट्टी — टॅब बारच्या वर) ===== -->
+<div class="cart-bar" id="cartBar" hidden>
+  <span id="cartSummary">0 टेस्ट निवडल्या</span>
+  <button type="button" class="btn btn-primary btn-sm jump-to" data-section="booking" data-i18n="cart_book_btn">बुक करा →</button>
+</div>
+
+<!-- ===== BOTTOM TAB BAR ===== -->
+<nav class="tabbar" id="mainNav" aria-label="Main">
+  <button type="button" class="nav-btn" data-section="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span data-i18n="tab_home">मुख्यपृष्ठ</span></button>
+  <button type="button" class="nav-btn" data-section="tests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3"/></svg><span data-i18n="tab_tests">टेस्ट</span></button>
+  <button type="button" class="nav-btn nav-book" data-section="booking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg><span data-i18n="tab_book">बुकिंग</span></button>
+  <button type="button" class="nav-btn" data-section="payment"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span data-i18n="tab_status">स्थिती</span></button>
+  <button type="button" class="nav-btn" data-section="contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.800 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span data-i18n="tab_contact">संपर्क</span></button>
+</nav>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="./i18n.js?v=20261009"></script>
+<script src="./tests-data.js?v=20261009"></script>
+<script src="./app.js?v=20261009"></script>
 </body>
 </html>

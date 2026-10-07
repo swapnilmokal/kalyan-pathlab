@@ -77,24 +77,33 @@ async function shareApp() {
 });
 
 /* ---------- Tab navigation (एका वेळी एकच सेक्शन दिसतं) ---------- */
-const SECTION_IDS = ["home", "tests", "booking", "payment", "reviews", "profile", "contact"];
-function showSection(name) {
+const SECTION_IDS = ["home", "tests", "booking", "payment", "reviews", "contact"];
+let currentSection = "home";
+function scrollMainTop(instant) {
+  const main = document.getElementById("appMain");
+  if (main) main.scrollTo({ top: 0, behavior: instant ? "auto" : "smooth" });
+}
+function showSection(name, instant, fromPop) {
   SECTION_IDS.forEach((id) => {
     const el = document.getElementById(`section-${id}`);
     if (el) el.hidden = id !== name;
   });
   document.querySelectorAll(".nav-btn").forEach((b) => {
-    b.classList.toggle("active", b.dataset.section === name);
+    const on = b.dataset.section === name;
+    b.classList.toggle("active", on);
+    if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
   });
-  if (name === "booking" && typeof prefillBookingFromProfile === "function") prefillBookingFromProfile();
-  // सेक्शन बदलल्यावर तो नक्की वरती (sticky topbar/nav च्या खाली) दिसावा म्हणून
-  // window.scrollTo ऐवजी त्याच सेक्शनला थेट scrollIntoView करतो — जुन्या स्क्रोल
-  // पोझिशनमुळे नवीन सेक्शन अर्धवट/लपलेला दिसण्याची शक्यता यामुळे राहत नाही.
-  requestAnimationFrame(() => {
-    const target = document.getElementById(`section-${name}`);
-    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
+  document.body.dataset.sec = name;
+  // मोबाईल "Back" बटण: मागच्या स्क्रीनवर जातं (अ‍ॅप एकदम बंद होत नाही)
+  if (!fromPop && name !== currentSection) history.pushState({ s: name }, "");
+  currentSection = name;
+  scrollMainTop(instant);
 }
+window.addEventListener("popstate", (e) => {
+  const s = (e.state && e.state.s) || "home";
+  if (document.getElementById("testModal") && !document.getElementById("testModal").hidden) closeTestModal();
+  showSection(s, true, true);
+});
 document.getElementById("mainNav").addEventListener("click", (e) => {
   const btn = e.target.closest(".nav-btn");
   if (btn) showSection(btn.dataset.section);
@@ -106,6 +115,16 @@ document.addEventListener("click", (e) => {
 
 /* ---------- Register service worker ---------- */
 if ("serviceWorker" in navigator) {
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  // नवीन आवृत्ती आली की (बुकिंग सुरू नसेल तर) अ‍ॅप एकदाच आपोआप रिफ्रेश होतं
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloaded) return;
+    if (typeof selectedTests !== "undefined" && selectedTests.length > 0) return;
+    if (typeof bookingStep !== "undefined" && bookingStep > 1) return;
+    reloaded = true;
+    location.reload();
+  });
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").catch(() => {});
   });
@@ -139,6 +158,14 @@ const CAT_ICONS = {
   hormone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6.5" r="2.3"/><circle cx="18" cy="6.5" r="2.3"/><circle cx="12" cy="18" r="2.3"/><path d="M7.7 8.2 10.5 16M16.3 8.2 13.5 16"/></svg>',
   blood: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5s7 8.3 7 13.3a7 7 0 1 1-14 0c0-5 7-13.3 7-13.3Z"/></svg>',
   body: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><path d="M6 21l2-9h8l2 9M9 12V8h6v4"/></svg>',
+  vial: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v14.500a2 2 0 0 0 4 0V3"/><path d="M10 10h4M10 13h4"/></svg>',
+  cardio: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7.200-4.500-9.700-9.200A5.400 5.400 0 0 1 12 6.300a5.400 5.400 0 0 1 9.700 5.500C19.200 16.500 12 21 12 21Z"/><path d="M5.500 12.500h3l1.500-3 3 6 1.500-3h3"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5.500c0 4.800-3 8.200-7 9.500-4-1.300-7-4.700-7-9.500V6z"/><path d="M9 12l2.200 2.200L15.500 10"/></svg>',
+  bone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6.500" r="2.200"/><circle cx="9" cy="4.200" r="1.800"/><circle cx="18" cy="17.500" r="2.200"/><circle cx="15" cy="19.800" r="1.800"/><path d="M7.600 8 16.400 16"/></svg>',
+  cup: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8M9 3v2.500h6V3M7 7.500h10l-1 12.300a1 1 0 0 1-1 .9H9a1 1 0 0 1-1-.9z"/><path d="M8.200 13.500h7.600"/></svg>',
+  timer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.500" r="7"/><path d="M12 9.500v4l2.500 1.800M9.500 3h5"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.600 5.600 6.100.9-4.400 4.300 1 6.100L12 17l-5.400 2.900 1-6.100L3.200 9.500l6.100-.9z"/></svg>',
+  grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6.500" height="6.500" rx="1.500"/><rect x="13.500" y="4" width="6.500" height="6.500" rx="1.500"/><rect x="4" y="13.500" width="6.500" height="6.500" rx="1.500"/><rect x="13.500" y="13.500" width="6.500" height="6.500" rx="1.500"/></svg>',
   tube: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v7l-4.3 8a2 2 0 0 0 1.8 2.9h9a2 2 0 0 0 1.8-2.9L14 10V3"/></svg>'
 };
 const CAT_ICON_RULES = [
@@ -155,7 +182,31 @@ const CAT_ICON_RULES = [
   { kw: ["full body", "checkup", "package"], icon: "body", bg: "#e6ecff", fg: "#0b4ea2" },
   { kw: ["blood", "cbc", "anemia", "hemoglobin"], icon: "blood", bg: "#ffe1e6", fg: "#c21f1f" }
 ];
-function categoryVisual(name) {
+/* हर टेस्ट-ग्रुपसाठी वेगळा आयकॉन: आधी ग्रुपच्या id नुसार, नाहीतर नावातील शब्दांनुसार */
+const CAT_ID_VISUALS = {
+  basic:       { icon: "vial",    bg: "#e8f0ff", fg: "#0b4ea2" },
+  anemia:      { icon: "blood",   bg: "#ffe1e6", fg: "#c21f1f" },
+  diabetes:    { icon: "glucose", bg: "#ffe9d6", fg: "#b1560f" },
+  thyroid:     { icon: "thyroid", bg: "#f3e8ff", fg: "#6b21a8" },
+  liver:       { icon: "liver",   bg: "#ffe8d6", fg: "#b1560f" },
+  kidney:      { icon: "kidney",  bg: "#f4ead9", fg: "#8a5a1f" },
+  lipid:       { icon: "cardio",  bg: "#ffe1e6", fg: "#b3123f" },
+  cardiac:     { icon: "cardio",  bg: "#ffe1e6", fg: "#b3123f" },
+  vitamins:    { icon: "capsule", bg: "#e3f7ea", fg: "#12793f" },
+  infection:   { icon: "thermo",  bg: "#ffe1e1", fg: "#c21f1f" },
+  hormones:    { icon: "hormone", bg: "#ffe3f0", fg: "#b3126e" },
+  markers:     { icon: "shield",  bg: "#e0f4f7", fg: "#0b7285" },
+  autoimmune:  { icon: "bone",    bg: "#eee8ff", fg: "#5b3fc4" },
+  urine:       { icon: "cup",     bg: "#fff6d9", fg: "#a3790a" },
+  coagulation: { icon: "timer",   bg: "#fde7e7", fg: "#a12424" },
+  packages:    { icon: "body",    bg: "#e6ecff", fg: "#0b4ea2" },
+  special:     { icon: "star",    bg: "#fff4d6", fg: "#a36b00" },
+  other:       { icon: "tube",    bg: "#eceff6", fg: "#4a5072" }
+};
+function categoryVisual(cat) {
+  const id = cat && typeof cat === "object" ? cat.id : "";
+  if (id && CAT_ID_VISUALS[id]) return CAT_ID_VISUALS[id];
+  const name = cat && typeof cat === "object" ? (cat.name || cat.id) : cat;
   const s = String(name || "").toLowerCase();
   for (const rule of CAT_ICON_RULES) { if (rule.kw.some(k => s.includes(k))) return rule; }
   return { icon: "tube", bg: "#e8f0ff", fg: "#0b4ea2" };
@@ -192,9 +243,9 @@ function canonicalCategory(rawCategory, testName) {
 function renderCategoryTabs() {
   const wrap = document.getElementById("categoryTabs");
   wrap.innerHTML =
-    `<button data-cat="all"><span class="cat-icon-badge" style="background:#e8f0ff;color:#0b4ea2">${CAT_ICONS.tube}</span><span class="cat-tile-label">${t("cat_all")}</span></button>` +
+    `<button data-cat="all"><span class="cat-icon-badge" style="background:#e8f0ff;color:#0b4ea2">${CAT_ICONS.grid}</span><span class="cat-tile-label">${t("cat_all")}</span></button>` +
     TEST_CATEGORIES.map((c) => {
-      const v = categoryVisual(c.name || c.id);
+      const v = categoryVisual(c);
       return `<button data-cat="${c.id}"><span class="cat-icon-badge" style="background:${v.bg};color:${v.fg}">${CAT_ICONS[v.icon]}</span><span class="cat-tile-label">${translateCategoryName(c)}</span></button>`;
     }).join("");
 }
@@ -285,6 +336,7 @@ function toggleTest(name, price) {
   else selectedTests.push({ name, price });
   updateCartBar();
   updateUpiLink();
+  if (typeof renderPopularTests === "function") renderPopularTests();
 }
 
 function renderSelected() {
@@ -454,6 +506,14 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
     showToast(t("toast_select_report_mode"));
     return;
   }
+  if (!time) {
+    showToast(t("toast_select_slot"));
+    return;
+  }
+  if (date < todayLocalStr()) {
+    showToast(t("toast_past_date"));
+    return;
+  }
 
   const testNames = selectedTests.map((s) => s.name);
   if (manualTest) testNames.push(manualTest);
@@ -500,7 +560,6 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
 
   localStorage.setItem("kp_phone", phone);
   localStorage.setItem("kp_last_status", "Pending Confirmation");
-  syncProfileFromBooking(phone, fullName, address, city); // बुकिंग = आपोआप प्रोफाईल सेव्ह/अपडेट (Sheet + या डिव्हाइसवर)
 
   const appUrl = window.location.href.split("?")[0].split("#")[0];
   const box = document.getElementById("confirmBox");
@@ -510,14 +569,24 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
     ${lookedUpPatient ? `<p>🆔 ${t("your_patient_id") || "Patient ID"}: <strong>${lookedUpPatient.patientId}</strong></p>` : `<p style="font-size:0.85rem;color:var(--muted);">${t("new_patient_id_note") || "तुमचा Patient ID पुढच्या बुकिंगपासून दिसेल."}</p>`}
     <p>${t("confirm_box_text")}</p>
     <a href="${waLink}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block">${t("confirm_box_wa_btn")}</a>
+    <button type="button" id="copyDetailsBtn" class="btn btn-outline btn-block" style="margin-top:8px;">${t("btn_copy_details")}</button>
     <p style="margin-top:10px;">${t("confirm_box_or_call")} <a href="tel:+919870020674">98700 20674</a></p>
     <p class="form-note" style="margin-top:12px;">${t("app_link_note")}<br /><a href="${appUrl}">${appUrl}</a></p>
     <button type="button" id="newBookingBtn" class="link-btn" style="display:block; margin:14px auto 0;">${t("new_booking_btn")}</button>
   `;
   box.scrollIntoView({ behavior: "smooth", block: "center" });
   document.getElementById("newBookingBtn").addEventListener("click", () => location.reload());
-  // पेशंटला WhatsApp बटण दाबायला पुरेसा वेळ मिळावा म्हणून थोडा वेळ थांबून अ‍ॅप आपोआप रिफ्रेश होतं
-  setTimeout(() => location.reload(), 14000);
+  document.getElementById("copyDetailsBtn").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(waMsg); }
+    catch (_) {
+      const ta = document.createElement("textarea"); ta.value = waMsg; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); } catch (__) {}
+      ta.remove();
+    }
+    showToast(t("toast_copied"));
+  });
+  e.target.hidden = true; // फॉर्म लपवून कन्फर्मेशन तसंच राहू देतो (आपोआप रिफ्रेश होत नाही)
+  document.getElementById("bookingProgress").hidden = true;
 
   e.target.reset();
   lookedUpPatient = null;
@@ -573,6 +642,15 @@ function renderReviews(list) {
   document.getElementById("avgRating").textContent = avg;
   document.getElementById("avgStars").textContent = starString(Math.round(avg));
   document.getElementById("reviewCount").textContent = `(${list.length} ${t("review_word")})`;
+  const hr = document.getElementById("homeReviews");
+  if (hr) {
+    hr.innerHTML = list.slice(-5).reverse().map((r) => `
+      <div class="pop-card home-review">
+        <span class="stars">${starString(r.rating)}</span>
+        <span class="home-review-text">${escapeHtml(r.feedback)}</span>
+        <span class="review-meta">— ${escapeHtml(r.name)}</span>
+      </div>`).join("");
+  }
 }
 
 function escapeHtml(str) {
@@ -669,6 +747,7 @@ function onLanguageChanged() {
   if (!document.getElementById("testModal").hidden && currentModalCat) openTestModal(currentModalCat);
   renderSelected();
   updateCartBar();
+  if (typeof renderPopularTests === "function") renderPopularTests();
   if (typeof allReviews !== "undefined") renderReviews(allReviews);
   if (typeof reviewPanel !== "undefined" && typeof openReviewBtn !== "undefined") {
     openReviewBtn.textContent = reviewPanel.hidden ? t("btn_write_review") : t("btn_close_review");
@@ -698,6 +777,7 @@ function fetchLiveTests() {
       });
       TEST_CATEGORIES = grouped;
       renderCategoryTabs();
+      renderPopularTests();
     })
     .catch(() => {}); // इंटरनेट/लिंक प्रॉब्लेम असल्यास built-in यादी तशीच राहते
 }
@@ -722,6 +802,13 @@ function statusLabel(status) {
   return { cls: s.cls, text: s[currentLang] || s.en };
 }
 
+function statusTimeline(status) {
+  if (status === "Cancelled") return `<div class="tl-cancel">✖ ${t("tl_cancelled")}</div>`;
+  const level = status === "Completed" ? 3 : status === "Confirmed" ? 2 : 1;
+  const steps = [t("tl_received"), t("tl_confirmed"), t("tl_completed")];
+  return `<ol class="tl">${steps.map((s, i) => `<li class="${i + 1 < level ? "done" : i + 1 === level ? "now" : ""}"><span>${i + 1 <= level ? "✓" : i + 1}</span><b>${s}</b></li>`).join("")}</ol>`;
+}
+
 function renderStatusResults(bookings) {
   const wrap = document.getElementById("statusResultWrap");
   if (!bookings || bookings.length === 0) {
@@ -733,6 +820,7 @@ function renderStatusResults(bookings) {
       const s = statusLabel(b.status);
       return `<div class="status-result-card">
         <span class="status-pill ${s.cls}">${s.text}</span>
+        ${statusTimeline(b.status)}
         <div class="booking-meta">🧪 ${escapeHtml(b.tests || "-")}</div>
         <div class="booking-meta">📅 ${escapeHtml(String(b.date || ""))} ${escapeHtml(String(b.time || ""))}</div>
         ${b.reportLink ? `<a href="${b.reportLink}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block" style="margin-top:10px;">${t("download_report")}</a>` : ""}
@@ -776,569 +864,132 @@ function checkForStatusUpdate() {
 }
 
 
-/* =========================================================
-   MY PROFILE / LOGIN — phone-number login, offline-first cache,
-   background sync, photo upload, and multi-profile (family member)
-   switching so more than one person can use the same device.
-   ========================================================= */
-const PROFILE_CACHE_KEY = "kp_profile_cache";      // last-loaded profile for the CURRENT active phone
-const PROFILE_PENDING_KEY = "kp_profile_pending";  // queued save, waiting for internet
-const FAMILY_KEY = "kp_family_profiles";           // [{phone,name,photo}] remembered on this device
-const ACTIVE_PHONE_KEY = "kp_phone";               // which family member is active right now
-let selectedPhotoBase64 = null;
-let selectedPhotoType = null;
-
-function getFamilyProfiles() {
-  try { return JSON.parse(localStorage.getItem(FAMILY_KEY) || "[]"); } catch (e) { return []; }
-}
-function saveFamilyProfiles(list) { localStorage.setItem(FAMILY_KEY, JSON.stringify(list)); }
-function upsertFamilyProfile(phone, name, photo, relation) {
-  const list = getFamilyProfiles();
-  const i = list.findIndex(p => p.phone === phone);
-  const entry = { phone, name: name || "", photo: photo || "", relation: relation || "Self" };
-  if (i > -1) list[i] = { ...list[i], ...entry }; else list.push(entry);
-  saveFamilyProfiles(list);
-  renderFamilyChips();
-}
-
-function initials(name) { const s = String(name || "?").trim(); return s ? s.charAt(0).toUpperCase() : "?"; }
-
-function updateTopBadge(name, photo) {
-  const wrap = document.getElementById("topProfileAvatarWrap");
-  if (!wrap) return;
-  wrap.innerHTML = photo ? `<img src="${photo}" alt="">` : (name ? initials(name) : "👤");
-}
-
-function renderFamilyChips() {
-  const list = getFamilyProfiles();
-  const box = document.getElementById("familyProfilesBox");
-  const wrap = document.getElementById("familyProfilesList");
-  if (!box || !wrap) return;
-  if (list.length === 0) { box.hidden = true; return; }
-  box.hidden = false;
-  const activePhone = localStorage.getItem(ACTIVE_PHONE_KEY);
-  wrap.innerHTML = list.map(p => `
-    <div class="family-chip${p.phone === activePhone ? " active-chip" : ""}" data-phone="${p.phone}">
-      <div class="family-chip-avatar">${p.photo ? `<img src="${p.photo}" alt="">` : initials(p.name)}</div>
-      <div class="family-chip-info"><strong>${p.name || t("profile_new_line")}</strong><span>${p.relation && p.relation !== "Self" ? p.relation + " · " : ""}📞 ${p.phone}</span></div>
-    </div>`).join("");
-  wrap.querySelectorAll(".family-chip").forEach(chip => chip.addEventListener("click", () => {
-    const phone = chip.dataset.phone;
-    document.getElementById("profilePhoneInput").value = phone;
-    document.getElementById("profileLoginBox").hidden = false;
-    loadProfileForPhone(phone, false);
-  }));
-}
-
-/* ---- Swipe gesture: swipe left/right on the profile card to switch
-   between family members saved on this device (real touch detection,
-   not just a horizontally-scrolling list). ---- */
-function switchToAdjacentProfile(direction) {
-  const list = getFamilyProfiles();
-  if (list.length < 2) return;
-  const activePhone = localStorage.getItem(ACTIVE_PHONE_KEY);
-  let idx = list.findIndex(p => p.phone === activePhone);
-  if (idx === -1) idx = 0;
-  idx = (idx + direction + list.length) % list.length;
-  const next = list[idx];
-  document.getElementById("profilePhoneInput").value = next.phone;
-  document.getElementById("profileLoginBox").hidden = false;
-  loadProfileForPhone(next.phone, false);
-  showToast(`${next.name || t("profile_new_line")}`);
-}
-function enableSwipeToSwitchProfile(el) {
-  if (!el) return;
-  let startX = 0, startY = 0, tracking = false;
-  el.addEventListener("touchstart", e => {
-    if (e.touches.length !== 1) return;
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    tracking = true;
-  }, { passive: true });
-  el.addEventListener("touchend", e => {
-    if (!tracking) return;
-    tracking = false;
-    const endX = e.changedTouches[0].clientX;
-    const endY = e.changedTouches[0].clientY;
-    const dx = endX - startX;
-    const dy = endY - startY;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-      switchToAdjacentProfile(dx < 0 ? 1 : -1); // डावीकडे स्वाइप = पुढची प्रोफाईल, उजवीकडे = मागची
-    }
-  }, { passive: true });
-}
-enableSwipeToSwitchProfile(document.getElementById("profileFormWrap"));
-enableSwipeToSwitchProfile(document.getElementById("familyProfilesBox"));
-
-function getAllCachedProfiles() {
-  try { return JSON.parse(localStorage.getItem(PROFILE_CACHE_KEY) || "{}"); } catch (e) { return {}; }
-}
-function cacheProfileLocally(phone, profile) {
-  const all = getAllCachedProfiles();
-  all[phone] = profile;
-  localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(all));
-  localStorage.setItem(ACTIVE_PHONE_KEY, phone);
-  upsertFamilyProfile(phone, profile.name, profile.photo, profile.relation);
-  updateTopBadge(profile.name, profile.photo);
-}
-function getCachedProfile(phone) {
-  const all = getAllCachedProfiles();
-  return all[phone] || null;
-}
-function fillProfileForm(p) {
-  document.getElementById("profileFormWrap").hidden = false;
-  document.getElementById("profileNameField").value = p.name || "";
-  document.getElementById("profileAgeField").value = p.age || "";
-  document.getElementById("profileAddressField").value = p.address || "";
-  document.getElementById("profileCityField").value = p.city || "";
-  setPillValue("genderPillRow", "profileGenderField", "gender", p.gender || "");
-  setPillValue("relationPillRow", "profileRelationField", "relation", p.relation || "Self");
-  const img = document.getElementById("profilePhotoPreview");
-  const placeholder = document.getElementById("profilePhotoPlaceholder");
-  if (p.photo) { img.src = p.photo; img.hidden = false; placeholder.hidden = true; }
-  else { img.hidden = true; placeholder.hidden = false; }
-  selectedPhotoBase64 = null; selectedPhotoType = null; /* reset — only re-upload if user picks a NEW file */
-}
-function setPillValue(rowId, hiddenId, dataAttr, value) {
-  const row = document.getElementById(rowId);
-  if (!row) return;
-  row.querySelectorAll(".pill-btn").forEach(b => b.classList.toggle("active", b.dataset[dataAttr] === value));
-  document.getElementById(hiddenId).value = value;
-}
-document.getElementById("genderPillRow").addEventListener("click", e => {
-  const btn = e.target.closest(".pill-btn");
-  if (!btn) return;
-  setPillValue("genderPillRow", "profileGenderField", "gender", btn.dataset.gender);
-});
-document.getElementById("relationPillRow").addEventListener("click", e => {
-  const btn = e.target.closest(".pill-btn");
-  if (!btn) return;
-  setPillValue("relationPillRow", "profileRelationField", "relation", btn.dataset.relation);
-});
-function setSyncStatus(msg) {
-  const el = document.getElementById("profileSyncStatus");
-  if (el) el.textContent = msg || "";
-}
-
-let profileLoadToken = 0; // जलद profile-switch मध्ये जुनं (उशिरा आलेलं) उत्तर टाकून द्यायला
-function loadProfileForPhone(phone, silent) {
-  const myToken = ++profileLoadToken;
-  const cached = getCachedProfile(phone);
-  if (cached) {
-    fillProfileForm(cached);
-    document.getElementById("profileIdLine").textContent = cached.patientId ? `${t("profile_found_line")} ${cached.patientId}` : t("profile_new_line");
-    setSyncStatus(t("profile_offline_copy"));
-    updateTopBadge(cached.name, cached.photo);
-    localStorage.setItem(ACTIVE_PHONE_KEY, phone);
-    renderFamilyChips();
-  }
-  const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
-  if (!canReachServer) { if (!cached && !silent) showToast(t("network_weak")); return; }
-  fetch(`${CONFIG.appsScriptUrl}?action=profile&phone=${phone}`)
-    .then(res => res.json())
-    .then(data => {
-      if (myToken !== profileLoadToken) return; // यादरम्यान दुसरी profile उघडली गेली — हे जुनं उत्तर दुर्लक्षित
-      document.getElementById("profileFormWrap").hidden = false;
-      const idLine = document.getElementById("profileIdLine");
-      if (data.found) {
-        idLine.textContent = `${t("profile_found_line")} ${data.patientId}`;
-        fillProfileForm(data);
-        cacheProfileLocally(phone, data);
-        setSyncStatus(t("profile_synced_status"));
-        updateTopBadge(data.name, data.photo);
-        renderFamilyChips();
-      } else if (!cached) {
-        idLine.textContent = t("profile_new_line");
-        fillProfileForm({});
-        setSyncStatus("");
-      }
-      loadHealthHistory(phone);
-    })
-    .catch(() => { if (myToken === profileLoadToken && !cached && !silent) showToast(t("network_weak")); });
-}
-
-/* ---------- Password hashing (client-side, phone acts as per-user salt) ----------
-   Plaintext password never leaves the device — only SHA-256(phone+":"+password)
-   is ever sent or stored. Not bank-grade (no server pepper), but a real,
-   meaningful layer beyond "anyone who knows a phone number can see the profile". */
-async function hashPassword(phone, password) {
-  const enc = new TextEncoder().encode(phone + ":" + password);
-  const buf = await crypto.subtle.digest("SHA-256", enc);
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
-}
-let pendingAuthPhone = null;
-
-function resetAuthUI() {
-  document.getElementById("loginPasswordStep").hidden = true;
-  document.getElementById("forgotStep1").hidden = true;
-  document.getElementById("forgotStep2").hidden = true;
-  document.getElementById("profileFormWrap").hidden = true;
-  document.getElementById("authFieldsBlock").hidden = true;
-  document.getElementById("profileLoadBtn").hidden = false;
-  document.getElementById("guestModeBtn").hidden = false;
-  document.getElementById("loginError").hidden = true;
-  document.getElementById("forgotStep1Error").hidden = true;
-  document.getElementById("forgotStep2Error").hidden = true;
-  document.getElementById("profilePhoneInput").value = "";
-  document.getElementById("profileIdLine").textContent = "";
-  setSyncStatus("");
-  document.getElementById("profileHistoryList").innerHTML = "";
-  renderFamilyChips();
-}
-document.querySelectorAll(".back-step").forEach(btn => btn.addEventListener("click", resetAuthUI));
-
-document.getElementById("profileLoadBtn").addEventListener("click", async () => {
-  const phone = document.getElementById("profilePhoneInput").value.trim();
-  if (!/^[0-9]{10}$/.test(phone)) { showToast(t("toast_invalid_phone")); return; }
-  const knownOnDevice = getFamilyProfiles().some(p => p.phone === phone);
-  if (knownOnDevice) { loadProfileForPhone(phone, false); return; } // या डिव्हाइसवर आधीच login केलेला आहे — पासवर्ड परत नको
-  pendingAuthPhone = phone;
-  const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
-  if (!canReachServer) { showToast(t("network_weak")); return; }
-  const btn = document.getElementById("profileLoadBtn");
-  btn.disabled = true;
-  try {
-    const res = await fetch(`${CONFIG.appsScriptUrl}?action=profileExists&phone=${phone}`);
-    const data = await res.json();
-    if (!data.found) {
-      document.getElementById("profileLoadBtn").hidden = true;
-      document.getElementById("guestModeBtn").hidden = true;
-      document.getElementById("authFieldsBlock").hidden = false;
-      document.getElementById("profileFormWrap").hidden = false;
-      document.getElementById("profileIdLine").textContent = t("profile_new_line");
-      fillProfileForm({});
-    } else if (!data.hasPassword) {
-      const res2 = await fetch(`${CONFIG.appsScriptUrl}?action=profile&phone=${phone}`);
-      const pd = await res2.json();
-      document.getElementById("profileLoadBtn").hidden = true;
-      document.getElementById("guestModeBtn").hidden = true;
-      document.getElementById("authFieldsBlock").hidden = false;
-      document.getElementById("profileFormWrap").hidden = false;
-      document.getElementById("profileIdLine").textContent = pd.found ? `${t("profile_found_line")} ${pd.patientId}` : t("profile_new_line");
-      fillProfileForm(pd.found ? pd : {});
-      loadHealthHistory(phone);
-    } else {
-      document.getElementById("profileLoadBtn").hidden = true;
-      document.getElementById("guestModeBtn").hidden = true;
-      document.getElementById("loginPasswordStep").hidden = false;
-      document.getElementById("loginPasswordField").value = "";
-      document.getElementById("loginPasswordField").focus();
-    }
-  } catch (e) {
-    showToast(t("network_weak"));
-  } finally {
-    btn.disabled = false;
-  }
-});
-
-document.getElementById("loginSubmitBtn").addEventListener("click", async () => {
-  const phone = pendingAuthPhone;
-  const password = document.getElementById("loginPasswordField").value;
-  if (!password) { showToast(t("toast_enter_password")); return; }
-  document.getElementById("loginError").hidden = true;
-  const hash = await hashPassword(phone, password);
-  try {
-    const res = await fetch(`${CONFIG.appsScriptUrl}?action=login&phone=${phone}&hash=${hash}`);
-    const data = await res.json();
-    if (data.success) {
-      document.getElementById("loginPasswordStep").hidden = true;
-      document.getElementById("profileFormWrap").hidden = false;
-      document.getElementById("profileIdLine").textContent = `${t("profile_found_line")} ${data.profile.patientId}`;
-      fillProfileForm(data.profile);
-      cacheProfileLocally(phone, data.profile);
-      setSyncStatus(t("profile_synced_status"));
-      loadHealthHistory(phone);
-      showToast(t("login_success_toast"));
-    } else {
-      document.getElementById("loginError").textContent = t("wrong_password_error");
-      document.getElementById("loginError").hidden = false;
-    }
-  } catch (e) { showToast(t("network_weak")); }
-});
-document.getElementById("loginPasswordField").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("loginSubmitBtn").click(); });
-
-document.getElementById("forgotPasswordLink").addEventListener("click", () => {
-  document.getElementById("loginPasswordStep").hidden = true;
-  document.getElementById("forgotStep1").hidden = false;
-});
-document.getElementById("sendResetCodeBtn").addEventListener("click", async () => {
-  const phone = pendingAuthPhone;
-  document.getElementById("forgotStep1Error").hidden = true;
-  try {
-    const res = await fetch(`${CONFIG.appsScriptUrl}?action=requestReset&phone=${phone}`);
-    const data = await res.json();
-    if (data.success) {
-      document.getElementById("forgotStep1").hidden = true;
-      document.getElementById("forgotStep2").hidden = false;
-      showToast(t("reset_code_sent_toast"));
-    } else {
-      document.getElementById("forgotStep1Error").textContent = data.reason === "no_email" ? t("no_email_on_file_error") : t("network_weak");
-      document.getElementById("forgotStep1Error").hidden = false;
-    }
-  } catch (e) { showToast(t("network_weak")); }
-});
-document.getElementById("confirmResetBtn").addEventListener("click", async () => {
-  const phone = pendingAuthPhone;
-  const code = document.getElementById("resetCodeField").value.trim();
-  const p1 = document.getElementById("resetPwdField1").value;
-  const p2 = document.getElementById("resetPwdField2").value;
-  document.getElementById("forgotStep2Error").hidden = true;
-  if (!code) { showToast(t("toast_enter_code")); return; }
-  if (p1.length < 4) { showToast(t("password_too_short")); return; }
-  if (p1 !== p2) { showToast(t("password_mismatch")); return; }
-  const hash = await hashPassword(phone, p1);
-  try {
-    const res = await fetch(`${CONFIG.appsScriptUrl}?action=confirmReset&phone=${phone}&code=${code}&hash=${hash}`);
-    const data = await res.json();
-    if (data.success) {
-      document.getElementById("forgotStep2").hidden = true;
-      document.getElementById("profileFormWrap").hidden = false;
-      document.getElementById("profileIdLine").textContent = `${t("profile_found_line")} ${data.profile.patientId}`;
-      fillProfileForm(data.profile);
-      cacheProfileLocally(phone, data.profile);
-      setSyncStatus(t("profile_synced_status"));
-      loadHealthHistory(phone);
-      notifyLabWhatsAppPasswordChanged(data.profile.name, phone);
-      showToast(t("password_reset_success_toast"));
-    } else {
-      const key = data.reason === "wrong_code" ? "wrong_reset_code_error" : data.reason === "expired" ? "reset_code_expired_error" : "network_weak";
-      document.getElementById("forgotStep2Error").textContent = t(key);
-      document.getElementById("forgotStep2Error").hidden = false;
-    }
-  } catch (e) { showToast(t("network_weak")); }
-});
-
-/* पासवर्ड बदलल्याची सूचना लॅबच्या WhatsApp वर (ईमेल आधीच सर्व्हरकडून आपोआप गेलेला असतो) */
-function notifyLabWhatsAppPasswordChanged(name, phone) {
-  const msg = `🔑 पासवर्ड बदलला — Kalyan Pathlab\nनाव: ${name || "-"}\nमोबाईल: ${phone}`;
-  window.open(`https://wa.me/919870020674?text=${encodeURIComponent(msg)}`, "_blank");
-}
-
-document.getElementById("guestModeBtn").addEventListener("click", () => {
-  showSection("home");
-  showToast(t("guest_mode_toast"));
-});
-
-document.getElementById("switchProfileBtn").addEventListener("click", resetAuthUI);
-document.getElementById("addFamilyBtn").addEventListener("click", () => {
-  resetAuthUI();
-  document.getElementById("profilePhoneInput").focus();
-});
-
-/* ---- Photo picker ---- */
-document.getElementById("profilePhotoInput").addEventListener("change", async e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const MAX_SIZE = 3 * 1024 * 1024; // 3MB
-  if (file.size > MAX_SIZE) { showToast(t("photo_too_large")); e.target.value = ""; return; }
-  selectedPhotoBase64 = await fileToBase64(file);
-  selectedPhotoType = file.type;
-  const img = document.getElementById("profilePhotoPreview");
-  const placeholder = document.getElementById("profilePhotoPlaceholder");
-  img.src = `data:${file.type};base64,${selectedPhotoBase64}`;
-  img.hidden = false;
-  placeholder.hidden = true;
-});
-
-document.getElementById("profileSaveBtn").addEventListener("click", async () => {
-  const phone = document.getElementById("profilePhoneInput").value.trim();
-  if (!/^[0-9]{10}$/.test(phone)) { showToast(t("toast_invalid_phone")); return; }
-
-  // पहिल्यांदाच profile बनवत असाल / जुनी profile ला password सेट करत असाल — दोन्हीत हे field दिसतं
-  const settingPassword = !document.getElementById("authFieldsBlock").hidden;
-  let email = "", pwdHash = "";
-  if (settingPassword) {
-    email = document.getElementById("profileEmailField").value.trim();
-    const p1 = document.getElementById("profilePwdField1").value;
-    const p2 = document.getElementById("profilePwdField2").value;
-    if (!email || !/^\S+@\S+\.\S+$/.test(email)) { showToast(t("valid_email_required")); return; }
-    if (p1.length < 4) { showToast(t("password_too_short")); return; }
-    if (p1 !== p2) { showToast(t("password_mismatch")); return; }
-    pwdHash = await hashPassword(phone, p1);
-  }
-
-  const existingCached = getCachedProfile(phone) || {};
-  const profile = {
-    name: document.getElementById("profileNameField").value.trim(),
-    age: document.getElementById("profileAgeField").value,
-    gender: document.getElementById("profileGenderField").value,
-    relation: document.getElementById("profileRelationField").value || "Self",
-    address: document.getElementById("profileAddressField").value.trim(),
-    city: document.getElementById("profileCityField").value.trim(),
-    photo: selectedPhotoBase64 ? `data:${selectedPhotoType};base64,${selectedPhotoBase64}` : (existingCached.photo || "")
-  };
-  cacheProfileLocally(phone, profile); /* saved on this device immediately — never lost, works offline */
-  const payload = { type: "profile", phone, name: profile.name, age: profile.age, gender: profile.gender, relation: profile.relation, address: profile.address, city: profile.city };
-  if (selectedPhotoBase64) { payload.photoBase64 = selectedPhotoBase64; payload.photoType = selectedPhotoType; }
-  const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
-  if (!canReachServer) {
-    localStorage.setItem(PROFILE_PENDING_KEY, JSON.stringify(payload));
-    showToast(t("profile_saved_offline_toast"));
-    setSyncStatus(t("profile_offline_copy"));
-    return;
-  }
-  fetch(CONFIG.appsScriptUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) })
-    .then(() => {
-      showToast(t("profile_saved_toast"));
-      setSyncStatus(t("profile_synced_status"));
-      localStorage.removeItem(PROFILE_PENDING_KEY);
-    })
-    .catch(() => {
-      localStorage.setItem(PROFILE_PENDING_KEY, JSON.stringify(payload));
-      showToast(t("profile_saved_offline_toast"));
-      setSyncStatus(t("profile_offline_copy"));
-    });
-
-  if (settingPassword) {
-    fetch(CONFIG.appsScriptUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "setPassword", phone, hash: pwdHash, email }) })
-      .then(() => showToast(t("password_set_toast")))
-      .catch(() => {});
-    document.getElementById("authFieldsBlock").hidden = true;
-  }
-});
-
-function syncPendingProfile() {
-  const raw = localStorage.getItem(PROFILE_PENDING_KEY);
-  const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
-  if (!raw || !canReachServer) return;
-  fetch(CONFIG.appsScriptUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: raw })
-    .then(() => {
-      localStorage.removeItem(PROFILE_PENDING_KEY);
-      showToast(t("profile_sync_done_toast"));
-      setSyncStatus(t("profile_synced_status"));
-    })
-    .catch(() => {});
-}
-window.addEventListener("online", syncPendingProfile);
-
-/* ---- Top header badge → tap to jump to Profile tab ---- */
-/* ---- Top header quick-switch dropdown (profile switching accessible from anywhere) ---- */
-function renderProfileSwitchDropdown() {
-  const list = getFamilyProfiles();
-  const dd = document.getElementById("profileSwitchDropdown");
-  const activePhone = localStorage.getItem(ACTIVE_PHONE_KEY);
-  dd.innerHTML =
-    list.map(p => `
-      <div class="psd-chip${p.phone === activePhone ? " current" : ""}" data-phone="${p.phone}">
-        <div class="psd-avatar">${p.photo ? `<img src="${p.photo}" alt="">` : initials(p.name)}</div>
-        <div class="psd-info"><strong>${p.name || t("profile_new_line")}</strong><span>${p.relation && p.relation !== "Self" ? p.relation + " · " : ""}📞 ${p.phone}</span></div>
-      </div>`).join("") +
-    `<div class="psd-add" id="psdAddNew">+ ${t("family_add_btn")}</div>` +
-    (activePhone ? `<div class="psd-add" id="psdLogout" style="color:#a1235a">🔓 ${t("logout_btn")}</div>` : "");
-  dd.querySelectorAll(".psd-chip").forEach(chip => chip.addEventListener("click", () => {
-    const phone = chip.dataset.phone;
-    document.getElementById("profilePhoneInput").value = phone;
-    document.getElementById("profileLoginBox").hidden = false;
-    loadProfileForPhone(phone, false);
-    closeProfileSwitchDropdown();
-    showSection("profile");
-  }));
-  document.getElementById("psdAddNew").addEventListener("click", () => {
-    closeProfileSwitchDropdown();
-    showSection("profile");
-    document.getElementById("addFamilyBtn").click();
-  });
-  const psdLogout = document.getElementById("psdLogout");
-  if (psdLogout) psdLogout.addEventListener("click", () => {
-    closeProfileSwitchDropdown();
-    logoutUser();
-  });
-}
-
-/* ---- Logout: ends the current session on this device but keeps the
-   saved family profiles so logging back in is quick. ---- */
-function logoutUser() {
-  localStorage.removeItem(ACTIVE_PHONE_KEY);
-  updateTopBadge("", "");
-  resetAuthUI();
-  showSection("home");
-  showToast(t("logout_success_toast"));
-}
-document.getElementById("logoutBtn").addEventListener("click", logoutUser);
-function closeProfileSwitchDropdown() { document.getElementById("profileSwitchDropdown").hidden = true; }
-document.getElementById("topProfileBadge").addEventListener("click", (e) => {
-  e.stopPropagation();
-  const list = getFamilyProfiles();
-  if (list.length === 0) { showSection("profile"); return; }
-  const dd = document.getElementById("profileSwitchDropdown");
-  if (!dd.hidden) { closeProfileSwitchDropdown(); return; }
-  renderProfileSwitchDropdown();
-  dd.hidden = false;
-});
-document.addEventListener("click", (e) => {
-  const dd = document.getElementById("profileSwitchDropdown");
-  if (!dd.hidden && !e.target.closest(".profile-switch-dropdown") && !e.target.closest("#topProfileBadge")) closeProfileSwitchDropdown();
-});
-
-/* ---- Simple, real "health record" = their own past bookings/tests, not fabricated data ---- */
-function loadHealthHistory(phone) {
-  const box = document.getElementById("profileHistoryList");
-  if (!box) return;
-  const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
-  if (!canReachServer) { box.innerHTML = `<p class="section-sub">${t("network_weak")}</p>`; return; }
-  fetch(`${CONFIG.appsScriptUrl}?action=bookingStatus&phone=${phone}`)
-    .then(res => res.json())
-    .then(data => {
-      const list = data.bookings || [];
-      if (list.length === 0) { box.innerHTML = `<p class="section-sub">${t("no_booking_found")}</p>`; return; }
-      box.innerHTML = list.map(b => `
-        <div class="history-row">
-          <strong>${escapeHtmlLocal(b.tests || "-")}</strong>
-          <div class="section-sub">📅 ${escapeHtmlLocal(String(b.date || ""))} · ${escapeHtmlLocal(b.status || "")}${b.amount ? " · ₹" + b.amount : ""}</div>
-        </div>`).join("");
-    })
-    .catch(() => { box.innerHTML = `<p class="section-sub">${t("network_weak")}</p>`; });
-}
+/* ---------- HTML escape (टेस्ट लिस्ट व स्टेटस कार्ड्ससाठी) ---------- */
 function escapeHtmlLocal(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
-/* Booking = auto profile save/update (so a profile is never "missing"
-   after someone books, even if they never opened the Profile tab). */
-function syncProfileFromBooking(phone, name, address, city) {
-  if (!/^[0-9]{10}$/.test(phone)) return;
-  const existing = getCachedProfile(phone) || {};
-  const profile = {
-    name: name || existing.name || "",
-    age: existing.age || "",
-    gender: existing.gender || "",
-    relation: existing.relation || "Self",
-    address: address || existing.address || "",
-    city: city || existing.city || "",
-    photo: existing.photo || ""
-  };
-  cacheProfileLocally(phone, profile);
-  const canReachServer = navigator.onLine && CONFIG.appsScriptUrl && !CONFIG.appsScriptUrl.startsWith("PASTE_");
-  const payload = { type: "profile", phone, name: profile.name, age: profile.age, gender: profile.gender, relation: profile.relation, address: profile.address, city: profile.city };
-  if (!canReachServer) { localStorage.setItem(PROFILE_PENDING_KEY, JSON.stringify(payload)); return; }
-  fetch(CONFIG.appsScriptUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) }).catch(() => {
-    localStorage.setItem(PROFILE_PENDING_KEY, JSON.stringify(payload));
+/* ---------- जुना प्रोफाईल डेटा (असल्यास) या डिव्हाइसवरून साफ करणे ---------- */
+["kp_profile_cache", "kp_profile_pending", "kp_family_profiles"].forEach((k) => localStorage.removeItem(k));
+
+/* ---------- Home: लोकप्रिय टेस्ट (Quick add) ---------- */
+const POPULAR_KEYWORDS = ["complete blood count", "hba1c", "thyroid profile", "lipid profile", "liver function", "kidney function", "vitamin d", "full body"];
+function renderPopularTests() {
+  const wrap = document.getElementById("popularTests");
+  if (!wrap) return;
+  const all = [];
+  TEST_CATEGORIES.forEach((cat) => cat.tests.forEach((x) => all.push(x)));
+  const picked = [];
+  POPULAR_KEYWORDS.forEach((kw) => {
+    const hit = all.find((x) => x.name.toLowerCase().includes(kw) && !picked.includes(x));
+    if (hit) picked.push(hit);
   });
+  wrap.innerHTML = picked.slice(0, 6).map((x) => {
+    const added = selectedTests.some((s) => s.name === x.name);
+    const off = x.mrp > x.price ? Math.round((1 - x.price / x.mrp) * 100) : 0;
+    return `<div class="pop-card">
+      <span class="pop-name">${escapeHtmlLocal(x.name)}</span>
+      <div class="pop-bottom">
+        <div class="pop-price"><b>₹${x.price}</b>${x.mrp > x.price ? `<s>₹${x.mrp}</s>` : ""}${off ? `<em>${off}% off</em>` : ""}</div>
+        <button type="button" class="test-add-btn ${added ? "added" : ""}" data-name="${encodeURIComponent(x.name)}" data-price="${x.price}" aria-label="Add">${added ? "✓" : "+"}</button>
+      </div>
+    </div>`;
+  }).join("");
+  wireTestAddButtons(wrap, renderPopularTests);
+}
+renderPopularTests();
+history.replaceState({ s: "home" }, "");
+showSection("home", true, true); // अ‍ॅप नेहमी होम पेजवरून सुरू होतं
+
+
+/* =====================================================================
+   BOOKING: 3 टप्प्यांचा फॉर्म + आजची/पुढची तारीख + वेळेचे स्लॉट
+   ===================================================================== */
+function todayLocalStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-/* Auto-login: if a phone is remembered on this device, load that
-   profile right away (front-end shows name/photo without asking
-   again), and render the family-member switcher. */
-document.addEventListener("DOMContentLoaded", () => {
-  renderFamilyChips();
-  const savedPhone = localStorage.getItem(ACTIVE_PHONE_KEY);
-  if (savedPhone) {
-    document.getElementById("profilePhoneInput").value = savedPhone;
-    loadProfileForPhone(savedPhone, true);
+let bookingStep = 1;
+function showBookingStep(n) {
+  bookingStep = n;
+  document.querySelectorAll(".bstep").forEach((el) => { el.hidden = Number(el.dataset.step) !== n; });
+  document.querySelectorAll("#bookingProgress li").forEach((li) => {
+    const s = Number(li.dataset.step);
+    li.classList.toggle("on", s === n);
+    li.classList.toggle("done", s < n);
+  });
+  if (n === 3) refreshSlots();
+  scrollMainTop(false);
+}
+
+function validateBookingStep(n) {
+  if (n === 1) {
+    if (selectedTests.length === 0 && !document.getElementById("manualTest").value.trim()) {
+      showToast(t("toast_select_test"));
+      return false;
+    }
+    return true;
   }
-  syncPendingProfile();
+  const wrap = document.querySelector(`.bstep[data-step="${n}"]`);
+  for (const f of wrap.querySelectorAll("input, select, textarea")) {
+    if (!f.checkValidity()) { f.reportValidity(); return false; }
+  }
+  return true;
+}
+
+document.querySelectorAll(".step-next").forEach((b) => b.addEventListener("click", () => {
+  if (validateBookingStep(bookingStep)) showBookingStep(bookingStep + 1);
+}));
+document.querySelectorAll(".step-back").forEach((b) => b.addEventListener("click", () => showBookingStep(bookingStep - 1)));
+// Enter दाबल्यावर फॉर्म सबमिट होण्याऐवजी पुढच्या टप्प्यावर जावं
+document.getElementById("bookingForm").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && bookingStep < 3 && e.target.tagName === "INPUT") {
+    e.preventDefault();
+    if (validateBookingStep(bookingStep)) showBookingStep(bookingStep + 1);
+  }
+});
+// "सलग टप्पे" फक्त पूर्ण झालेल्या टप्प्यावर परत जाण्यासाठी क्लिक करता येतात
+document.getElementById("bookingProgress").addEventListener("click", (e) => {
+  const li = e.target.closest("li");
+  if (li && Number(li.dataset.step) < bookingStep) showBookingStep(Number(li.dataset.step));
 });
 
-/* ---- Auto-fill the booking form from the active profile (no re-typing) ---- */
-function prefillBookingFromProfile() {
-  const phone = localStorage.getItem(ACTIVE_PHONE_KEY);
-  if (!phone) return;
-  const cached = getCachedProfile(phone);
-  if (!cached) return;
-  const phoneField = document.getElementById("phone");
-  const nameField = document.getElementById("fullName");
-  const addressField = document.getElementById("address");
-  const cityField = document.getElementById("city");
-  if (phoneField && !phoneField.value) phoneField.value = phone;
-  if (nameField && !nameField.value && cached.name) nameField.value = cached.name;
-  if (addressField && !addressField.value && cached.address) addressField.value = cached.address;
-  if (cityField && !cityField.value && cached.city) cityField.value = cached.city;
+/* ---- तारीख: मागची निवडता येत नाही; वेळेचे स्लॉट ---- */
+const dateInput = document.getElementById("collectionDate");
+function refreshDateMin() {
+  const today = todayLocalStr();
+  dateInput.min = today;
+  if (dateInput.value && dateInput.value < today) dateInput.value = "";
 }
+function refreshSlots() {
+  refreshDateMin();
+  const slots = document.querySelectorAll(".slot-btn");
+  const val = dateInput.value;
+  const now = new Date();
+  const isToday = val === todayLocalStr();
+  const isSunday = val ? new Date(val + "T00:00:00").getDay() === 0 : false;
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  slots.forEach((b) => {
+    const start = Number(b.dataset.start);
+    let off = !val; // आधी तारीख निवडा
+    if (isSunday && start >= 13) off = true;                 // रविवार: दुपारी 1 नंतर बंद
+    if (isToday && start * 60 <= nowMin + 60) off = true;    // आजसाठी: किमान 1 तास आधी
+    b.disabled = off;
+    if (off && b.classList.contains("on")) { b.classList.remove("on"); document.getElementById("collectionTime").value = ""; }
+  });
+}
+dateInput.addEventListener("change", refreshSlots);
+document.getElementById("slotGrid").addEventListener("click", (e) => {
+  const b = e.target.closest(".slot-btn");
+  if (!b || b.disabled) return;
+  document.querySelectorAll(".slot-btn").forEach((x) => x.classList.toggle("on", x === b));
+  document.getElementById("collectionTime").value = b.dataset.slot;
+});
+refreshDateMin();
+refreshSlots();
+
+/* ---------- स्थिती पेज: मागच्या बुकिंगचा मोबाईल नंबर आपोआप भरतो ---------- */
+(() => {
+  const saved = localStorage.getItem("kp_phone");
+  const inp = document.getElementById("statusPhoneInput");
+  if (saved && inp && !inp.value) inp.value = saved;
+})();
