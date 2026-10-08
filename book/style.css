@@ -388,3 +388,33 @@ input,select,textarea{min-height:46px;}
 .more-details[open] summary::after{content:"▴";}
 .category-tabs .cat-icon-badge{width:48px; height:48px; border-radius:14px;}
 .category-tabs .cat-icon-badge svg{width:27px; height:27px;}
+
+
+/* ---------- कलेक्शन चार्ज बॉक्स, पॉप-अप, इन्स्टॉल बॅनर ---------- */
+.cart-info{display:flex; flex-direction:column; line-height:1.25; min-width:0;}
+.cart-info small{font-size:0.74rem; font-weight:600; color:#ffd7d9;}
+.cart-info small.ok{color:#9af0b8;}
+.policy-note{margin:0; font-size:0.82rem; color:var(--muted); line-height:1.45; background:#f1f4ff; border-radius:10px; padding:9px 12px;}
+.charge-box{border-radius:12px; padding:10px 14px; border:1.5px solid var(--line); background:var(--card); font-size:0.92rem;}
+.charge-box.warn{border-color:#f5c26b; background:#fff9ea;}
+.charge-box.ok{border-color:#9edcb5; background:#effaf3;}
+.cb-row{display:flex; justify-content:space-between; gap:10px; padding:3px 0;}
+.cb-row.ok{color:#12793f; font-weight:700;}
+.cb-row.total{border-top:1px dashed var(--line); margin-top:5px; padding-top:7px; font-size:1.02rem; color:var(--navy);}
+.cb-row s{color:var(--muted); font-weight:500;}
+.cb-hint{font-size:0.8rem; color:#9a6200; font-weight:600; padding:2px 0 4px;}
+
+.dlg-backdrop{position:fixed; inset:0; z-index:90; background:rgba(11,20,64,0.55); display:flex; align-items:center; justify-content:center; padding:20px; animation:fadeIn .15s ease;}
+.dlg{width:100%; max-width:380px; background:#fff; border-radius:20px; padding:22px 18px 16px; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.3);}
+.dlg-ico{width:52px; height:52px; margin:0 auto 10px; border-radius:50%; background:#fff4d6; color:#a36b00; font-weight:800; font-size:1.6rem; display:flex; align-items:center; justify-content:center;}
+.dlg h3{margin:0 0 8px; font-size:1.15rem; color:var(--navy);}
+.dlg p{margin:0 0 16px; font-size:0.94rem; line-height:1.55; color:var(--text);}
+.dlg-actions{display:flex; flex-direction:column; gap:8px;}
+.dlg-actions .btn{margin-top:0; width:100%;}
+
+.install-banner{flex:none; display:flex; align-items:center; gap:10px; padding:10px 12px; background:#fff; border-top:1px solid var(--line); box-shadow:0 -6px 18px rgba(11,20,64,0.12); z-index:46; animation:slideUp .25s ease;}
+.install-ico{width:44px; height:44px; border-radius:12px; flex:none;}
+.install-text{flex:1; min-width:0; display:flex; flex-direction:column; line-height:1.25;}
+.install-text strong{font-size:0.9rem; color:var(--navy);}
+.install-text small{font-size:0.74rem; color:var(--muted);}
+.install-close{flex:none; width:44px; height:44px; border:0; background:none; font-size:1.1rem; color:var(--muted); cursor:pointer; border-radius:50%;}

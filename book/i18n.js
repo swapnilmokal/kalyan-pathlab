@@ -24,18 +24,18 @@ const TRANSLATIONS = {
   hero_title_line1: { mr: "तुमची तपासणी,", hi: "आपकी जांच,", en: "Your test," },
   hero_title_line2: { mr: "घरबसल्या व विश्वासाने.", hi: "घर बैठे और भरोसे के साथ।", en: "at home, with trust." },
   hero_sub: {
-    mr: "रक्त तपासणी, फुल बॉडी चेकअप — अचूक रिपोर्ट्स, वाजवी दरात. सॅम्पल कलेक्शनसाठी घरी येण्याची सेवा पूर्ण मोफत.",
-    hi: "रक्त जांच, फुल बॉडी चेकअप — सटीक रिपोर्ट, उचित दरों में। सैंपल कलेक्शन के लिए घर आने की सेवा पूरी तरह मुफ्त।",
-    en: "Blood tests, full body checkups — accurate reports at fair prices. Home sample collection is completely free."
+    mr: "रक्त तपासणी, फुल बॉडी चेकअप — अचूक रिपोर्ट्स, वाजवी दरात. ₹499 वरील बिलावर घरी सॅम्पल कलेक्शन मोफत (त्याखालील बिलावर ₹100 चार्ज).",
+    hi: "रक्त जांच, फुल बॉडी चेकअप — सटीक रिपोर्ट, उचित दरों में। ₹499 से ऊपर के बिल पर घर पर सैंपल कलेक्शन मुफ्त (इससे कम पर ₹100 चार्ज)।",
+    en: "Blood tests, full body checkups — accurate reports at fair prices. Home sample collection is free on bills of ₹499 and above (₹100 charge below that)."
   },
   btn_book_now: { mr: "🩸 आत्ताच बुकिंग करा", hi: "🩸 अभी बुकिंग करें", en: "🩸 Book Now" },
   btn_whatsapp_ask: { mr: "WhatsApp वर विचारा", hi: "WhatsApp पर पूछें", en: "Ask on WhatsApp" },
   btn_share_friend: { mr: "👥 मित्राला पाठवा", hi: "👥 दोस्त को भेजें", en: "👥 Send to a Friend" },
   stat_tests: { mr: "टेस्ट व प्रोफाइल्स", hi: "टेस्ट व प्रोफाइल", en: "Tests & Profiles" },
-  stat_cities: { mr: "शहरांत मोफत होम सर्विस", hi: "शहरों में मुफ्त होम सर्विस", en: "Cities with Free Home Service" },
+  stat_cities: { mr: "शहरांत होम सर्विस", hi: "शहरों में होम सर्विस", en: "Cities with Home Service" },
   stat_lines: { mr: "डायरेक्ट फोन लाईन्स", hi: "डायरेक्ट फोन लाइनें", en: "Direct Phone Lines" },
 
-  cities_heading: { mr: "मोफत होम सॅम्पल कलेक्शन — या शहरांत", hi: "मुफ्त होम सैंपल कलेक्शन — इन शहरों में", en: "Free Home Sample Collection — In These Cities" },
+  cities_heading: { mr: "होम सॅम्पल कलेक्शन — या शहरांत", hi: "होम सैंपल कलेक्शन — इन शहरों में", en: "Home Sample Collection — In These Cities" },
 
   about_heading: { mr: "स्थानिक, काळजीपूर्वक व सहज उपलब्ध.", hi: "स्थानीय, सावधानीपूर्वक और आसानी से उपलब्ध।", en: "Local, careful, and easily accessible." },
   about_para: {
@@ -278,6 +278,26 @@ const TRANSLATIONS = {
   tl_cancelled: { mr: "ही बुकिंग रद्द झाली आहे", hi: "यह बुकिंग रद्द हो गई है", en: "This booking was cancelled" },
   btn_copy_details: { mr: "📋 बुकिंग तपशील कॉपी करा", hi: "📋 बुकिंग विवरण कॉपी करें", en: "📋 Copy booking details" },
   toast_copied: { mr: "तपशील कॉपी झाला ✓", hi: "विवरण कॉपी हुआ ✓", en: "Details copied ✓" },
+  /* ---------- कलेक्शन चार्ज (₹499 नियम) ---------- */
+  charge_policy: { mr: "₹499 पेक्षा कमी बिलावर ₹100 होम कलेक्शन चार्ज लागतो. ₹499 किंवा जास्त बिलावर कलेक्शन चार्ज माफ.", hi: "₹499 से कम के बिल पर ₹100 होम कलेक्शन चार्ज लगता है। ₹499 या उससे ज्यादा के बिल पर कलेक्शन चार्ज माफ।", en: "A ₹100 home collection charge applies on bills below ₹499. Collection charge is waived on bills of ₹499 or more." },
+  charge_line_sub: { mr: "टेस्ट रक्कम", hi: "टेस्ट राशि", en: "Tests total" },
+  charge_line_charge: { mr: "होम कलेक्शन चार्ज", hi: "होम कलेक्शन चार्ज", en: "Home collection charge" },
+  charge_line_waived: { mr: "होम कलेक्शन चार्ज — माफ ✓", hi: "होम कलेक्शन चार्ज — माफ ✓", en: "Home collection charge — waived ✓" },
+  charge_line_total: { mr: "एकूण रक्कम", hi: "कुल राशि", en: "Total payable" },
+  charge_modal_title: { mr: "₹100 कलेक्शन चार्ज लागेल", hi: "₹100 कलेक्शन चार्ज लगेगा", en: "₹100 collection charge applies" },
+  charge_modal_body: { mr: "तुमचं टेस्ट बिल ₹{sub} आहे. ₹499 पेक्षा कमी बिलावर ₹100 होम कलेक्शन चार्ज लागतो, म्हणून एकूण ₹{total} होईल. आणखी ₹{more} च्या टेस्ट जोडल्यास कलेक्शन चार्ज माफ होईल.", hi: "आपका टेस्ट बिल ₹{sub} है। ₹499 से कम के बिल पर ₹100 होम कलेक्शन चार्ज लगता है, इसलिए कुल ₹{total} होगा। ₹{more} के और टेस्ट जोड़ने पर कलेक्शन चार्ज माफ हो जाएगा।", en: "Your tests total ₹{sub}. A ₹100 home collection charge applies on bills below ₹499, so the total will be ₹{total}. Add ₹{more} more of tests and the collection charge is waived." },
+  charge_btn_add: { mr: "आणखी टेस्ट जोडा", hi: "और टेस्ट जोड़ें", en: "Add more tests" },
+  charge_btn_continue: { mr: "ठीक आहे, पुढे जा", hi: "ठीक है, आगे बढ़ें", en: "OK, continue" },
+  toast_charge_waived: { mr: "अभिनंदन! ₹499 वरील बिलावर कलेक्शन चार्ज माफ ✓", hi: "बधाई! ₹499 से ऊपर के बिल पर कलेक्शन चार्ज माफ ✓", en: "Great! Collection charge waived on bills of ₹499+ ✓" },
+  toast_charge_applies: { mr: "बिल ₹499 पेक्षा कमी — ₹100 कलेक्शन चार्ज लागेल", hi: "बिल ₹499 से कम — ₹100 कलेक्शन चार्ज लगेगा", en: "Bill is below ₹499 — ₹100 collection charge applies" },
+  cart_note_charge: { mr: "+₹100 कलेक्शन चार्ज · ₹{more} जोडल्यास माफ", hi: "+₹100 कलेक्शन चार्ज · ₹{more} जोड़ने पर माफ", en: "+₹100 collection · add ₹{more} to waive" },
+  cart_note_waived: { mr: "✓ कलेक्शन चार्ज माफ", hi: "✓ कलेक्शन चार्ज माफ", en: "✓ Collection charge waived" },
+  /* ---------- अ‍ॅप इन्स्टॉल ---------- */
+  install_title: { mr: "Kalyan Pathlab अ‍ॅप इन्स्टॉल करा", hi: "Kalyan Pathlab ऐप इंस्टॉल करें", en: "Install the Kalyan Pathlab app" },
+  install_sub: { mr: "होम स्क्रीनवर अ‍ॅप — जलद बुकिंग, ऑफलाइनही उघडतं", hi: "होम स्क्रीन पर ऐप — तेज़ बुकिंग, ऑफलाइन भी खुलता है", en: "App on your home screen — faster booking, opens offline too" },
+  install_ios: { mr: "iPhone: खालच्या Share बटणावर टॅप करा, मग 'Add to Home Screen' निवडा.", hi: "iPhone: नीचे Share बटन दबाएं, फिर 'Add to Home Screen' चुनें।", en: "iPhone: tap the Share button below, then choose 'Add to Home Screen'." },
+  btn_install: { mr: "इन्स्टॉल करा", hi: "इंस्टॉल करें", en: "Install" },
+  btn_install_app: { mr: "📲 अ‍ॅप इन्स्टॉल करा", hi: "📲 ऐप इंस्टॉल करें", en: "📲 Install app" },
   /* ---------- बुकिंग टप्पे व स्लॉट ---------- */
   bstep1: { mr: "टेस्ट", hi: "टेस्ट", en: "Tests" },
   bstep2: { mr: "पत्ता", hi: "पता", en: "Address" },
@@ -292,10 +312,10 @@ const TRANSLATIONS = {
   home_reviews_all: { mr: "सर्व रिव्ह्यू पहा", hi: "सभी रिव्यू देखें", en: "See all reviews" },
   /* ---------- नवीन होम पेज ---------- */
   hero_title: { mr: "घरबसल्या ब्लड टेस्ट, कमी किमतीत", hi: "घर बैठे ब्लड टेस्ट, कम कीमत में", en: "Blood tests at home, at lower prices" },
-  hero_sub: { mr: "मोफत होम सॅम्पल कलेक्शन. रिपोर्ट WhatsApp, ईमेल किंवा हार्ड कॉपीमध्ये.", hi: "मुफ्त होम सैंपल कलेक्शन। रिपोर्ट WhatsApp, ईमेल या हार्ड कॉपी में।", en: "Free home sample collection. Reports on WhatsApp, email or hard copy." },
+  hero_sub: { mr: "₹499 वरील बिलावर मोफत होम सॅम्पल कलेक्शन. रिपोर्ट WhatsApp, ईमेल किंवा हार्ड कॉपीमध्ये.", hi: "₹499 से ऊपर के बिल पर मुफ्त होम सैंपल कलेक्शन। रिपोर्ट WhatsApp, ईमेल या हार्ड कॉपी में।", en: "Free home sample collection on bills of ₹499 and above. Reports on WhatsApp, email or hard copy." },
   hero_cta_book: { mr: "आत्ता बुक करा", hi: "अभी बुक करें", en: "Book now" },
   hero_cta_rates: { mr: "रेट लिस्ट पहा", hi: "रेट लिस्ट देखें", en: "View rates" },
-  trust_free: { mr: "मोफत होम कलेक्शन", hi: "मुफ्त होम कलेक्शन", en: "Free home collection" },
+  trust_free: { mr: "₹499+ वर मोफत कलेक्शन", hi: "₹499+ पर मुफ्त कलेक्शन", en: "Free collection ₹499+" },
   trust_off: { mr: "30–70% सवलत", hi: "30–70% छूट", en: "30–70% off" },
   trust_report: { mr: "रिपोर्ट WhatsApp वर", hi: "रिपोर्ट WhatsApp पर", en: "Reports on WhatsApp" },
   popular_heading: { mr: "लोकप्रिय टेस्ट", hi: "लोकप्रिय टेस्ट", en: "Popular tests" },
@@ -306,7 +326,7 @@ const TRANSLATIONS = {
   step2_d: { mr: "सॅम्पल कलेक्शनचा दिवस व वेळ सांगा.", hi: "सैंपल कलेक्शन का दिन और समय बताएं।", en: "Tell us the day and time for collection." },
   step3_t: { mr: "घरी सॅम्पल, मग रिपोर्ट", hi: "घर पर सैंपल, फिर रिपोर्ट", en: "Sample at home, then report" },
   step3_d: { mr: "आमचा टेक्निशियन घरी येतो. रिपोर्ट तुम्हाला पाठवतो.", hi: "हमारा टेक्नीशियन घर आता है। रिपोर्ट आपको भेजते हैं।", en: "Our technician visits you. We send the report." },
-  cities_heading: { mr: "या शहरांत मोफत होम सर्विस", hi: "इन शहरों में मुफ्त होम सर्विस", en: "Free home service in" },
+  cities_heading: { mr: "या शहरांत होम सॅम्पल कलेक्शन", hi: "इन शहरों में होम सैंपल कलेक्शन", en: "Home sample collection in" },
   tile_status: { mr: "बुकिंग स्थिती", hi: "बुकिंग स्थिति", en: "Booking status" },
   home_menu_heading: { mr: "काय करायचंय?", hi: "क्या करना है?", en: "What would you like to do?" },
   nav_profile_label: { mr: "प्रोफाइल", hi: "प्रोफाइल", en: "Profile" },

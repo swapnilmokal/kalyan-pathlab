@@ -295,6 +295,7 @@ function renderBookings(filterText = "") {
         ${b.status === "Pending Confirmation" ? `<button type="button" class="mini-btn approve" data-row="${b.rowNum}" data-bstatus="Confirmed">${t("btn_confirm_booking")}</button>` : ""}
         ${b.status !== "Completed" && b.status !== "Cancelled" ? `<button type="button" class="mini-btn approve" data-row="${b.rowNum}" data-bstatus="Completed">${t("btn_mark_completed")}</button>` : ""}
         ${b.status !== "Cancelled" && b.status !== "Completed" ? `<button type="button" class="mini-btn reject" data-row="${b.rowNum}" data-bstatus="Cancelled">${t("btn_cancel_booking")}</button>` : ""}
+        ${(b.status === "Confirmed" || b.status === "Completed") ? `<button type="button" class="mini-btn bill-btn" data-billrow="${b.rowNum}">🧾 ${t("ib_btn_bill")}</button>` : ""}
       </div>
       <label class="report-upload-row">
         <span class="mini-btn approve">${t("upload_report")}</span>
@@ -303,6 +304,9 @@ function renderBookings(filterText = "") {
     </div>`;
   }).join("");
 
+  wrap.querySelectorAll("[data-billrow]").forEach(b => b.addEventListener("click", () => {
+    if (typeof openInvoiceFromBooking === "function") openInvoiceFromBooking(Number(b.dataset.billrow));
+  }));
   wrap.querySelectorAll("[data-bstatus]").forEach(b => b.addEventListener("click", () => {
     postAdminAction({ action: "updateBookingStatus", rowNum: Number(b.dataset.row), status: b.dataset.bstatus });
   }));
@@ -716,6 +720,7 @@ function renderBillsList(filterText) {
       <div class="bill-card-actions">
         <button type="button" class="mini-btn whatsapp share-wa" data-row="${b.rowNum}">💬 ${t("whatsapp_share")}</button>
         <button type="button" class="mini-btn email share-email" data-row="${b.rowNum}">✉️ ${t("email_share")}</button>
+        <button type="button" class="mini-btn bill-btn print-bill" data-row="${b.rowNum}">🖨 ${t("ib_print_bill")}</button>
       </div>
     </div>`).join("");
   wrap.querySelectorAll(".edit-bill").forEach(el => el.addEventListener("click", () => {
@@ -730,6 +735,9 @@ function renderBillsList(filterText) {
     renderBillLines(); calcBillTotals();
     document.getElementById("billForm").hidden = false;
     document.getElementById("billForm").scrollIntoView({ behavior: "smooth", block: "start" });
+  }));
+  wrap.querySelectorAll(".print-bill").forEach(el => el.addEventListener("click", () => {
+    if (typeof openInvoiceFromBill === "function") openInvoiceFromBill(Number(el.dataset.row));
   }));
   wrap.querySelectorAll(".delete-bill").forEach(el => el.addEventListener("click", () => {
     if (!confirm(t("confirm_delete_bill"))) return;

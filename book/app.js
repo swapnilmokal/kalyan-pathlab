@@ -38,8 +38,20 @@ function fetchSettings() {
     .catch(() => {});
 }
 
+/* ---------- कलेक्शन चार्ज नियम: ₹499 पेक्षा कमी बिलावर ₹100; ₹499 किंवा जास्त = माफ ---------- */
+const FREE_COLLECTION_MIN = 499;
+const COLLECTION_CHARGE = 100;
+let lastSubtotal = 0;
+let chargeAckSub = -1;
+function calcTotals() {
+  const subtotal = selectedTests.reduce((sum, s) => sum + (Number(s.price) || 0), 0);
+  const charge = subtotal > 0 && subtotal < FREE_COLLECTION_MIN ? COLLECTION_CHARGE : 0;
+  return { subtotal, charge, waived: subtotal >= FREE_COLLECTION_MIN, total: subtotal + charge, more: Math.max(0, FREE_COLLECTION_MIN - subtotal) };
+}
+function fillTpl(str, vals) { return String(str).replace(/\{(\w+)\}/g, (_, k) => (vals[k] !== undefined ? vals[k] : "")); }
+
 function updateUpiLink() {
-  const total = selectedTests.reduce((sum, t) => sum + t.price, 0);
+  const total = calcTotals().total;
   const params = new URLSearchParams({ pa: liveSettings.upiId, pn: "Kalyan Pathlab", cu: "INR" });
   if (total > 0) params.set("am", total);
   document.getElementById("upiPayLink").href = `upi://pay?${params.toString()}`;
@@ -362,17 +374,42 @@ function renderSelected() {
   });
 }
 
+function updateChargeBox() {
+  const box = document.getElementById("chargeBox");
+  if (!box) return;
+  const c = calcTotals();
+  if (c.subtotal === 0) { box.hidden = true; return; }
+  box.hidden = false;
+  box.className = "charge-box " + (c.waived ? "ok" : "warn");
+  box.innerHTML =
+    `<div class="cb-row"><span>${t("charge_line_sub")}</span><b>₹${c.subtotal}</b></div>` +
+    (c.waived
+      ? `<div class="cb-row ok"><span>${t("charge_line_waived")}</span><b><s>₹${COLLECTION_CHARGE}</s> ₹0</b></div>`
+      : `<div class="cb-row"><span>${t("charge_line_charge")}</span><b>+₹${c.charge}</b></div><div class="cb-hint">${fillTpl(t("cart_note_charge"), { more: c.more })}</div>`) +
+    `<div class="cb-row total"><span>${t("charge_line_total")}</span><b>₹${c.total}</b></div>`;
+}
+
 function updateCartBar() {
   const bar = document.getElementById("cartBar");
   const summary = document.getElementById("cartSummary");
+  const note = document.getElementById("cartNote");
+  const c = calcTotals();
+  // ₹499 च्या सीमेवरून वर/खाली गेल्यावर संदेश
+  if (lastSubtotal > 0 && c.subtotal > 0) {
+    if (lastSubtotal < FREE_COLLECTION_MIN && c.subtotal >= FREE_COLLECTION_MIN) showToast(t("toast_charge_waived"));
+    else if (lastSubtotal >= FREE_COLLECTION_MIN && c.subtotal < FREE_COLLECTION_MIN) showToast(t("toast_charge_applies"));
+  }
+  lastSubtotal = c.subtotal;
+  updateChargeBox();
   if (selectedTests.length === 0) {
     bar.hidden = true;
     return;
   }
   bar.hidden = false;
-  const total = selectedTests.reduce((sum, s) => sum + s.price, 0);
   const countWord = currentLang === "en" ? `${selectedTests.length} tests selected` : currentLang === "hi" ? `${selectedTests.length} टेस्ट चयनित` : `${selectedTests.length} टेस्ट निवडल्या`;
-  summary.textContent = `${countWord} · ₹${total}`;
+  summary.textContent = `${countWord} · ₹${c.total}`;
+  note.textContent = c.waived ? t("cart_note_waived") : fillTpl(t("cart_note_charge"), { more: c.more });
+  note.className = c.waived ? "ok" : "";
 }
 
 /* ---------- Search ---------- */
@@ -517,7 +554,8 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
 
   const testNames = selectedTests.map((s) => s.name);
   if (manualTest) testNames.push(manualTest);
-  const total = selectedTests.reduce((sum, s) => sum + s.price, 0);
+  const totals = calcTotals();
+  const total = totals.total;
 
   const payload = {
     type: "booking",
@@ -526,7 +564,9 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
     location: capturedLocation,
     doctor, date, time, reportMode, email, paymentMethod,
     tests: testNames.join(", "),
-    estimatedTotal: total
+    estimatedTotal: total,
+    subtotal: totals.subtotal,
+    collectionCharge: totals.charge
   };
 
   // WhatsApp confirmation message (customer taps Send once — lab receives it instantly)
@@ -541,7 +581,8 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
     `📞 मोबाईल: ${phone}\n` +
     `📍 पत्ता: ${address}, ${city}\n\n` +
     `🧪 टेस्ट/पॅकेज:\n${testNames.map(n => `   • ${n}`).join("\n") || "   -"}\n\n` +
-    `💰 अंदाजे रक्कम: ₹${total}\n` +
+    (totals.subtotal > 0 ? `🧾 टेस्ट रक्कम: ₹${totals.subtotal}\n🏠 होम कलेक्शन चार्ज: ${totals.charge > 0 ? "₹" + totals.charge : "माफ ✓"}\n` : ``) +
+    `💰 अंदाजे एकूण रक्कम: ₹${total}\n` +
     `📅 कलेक्शन: ${date}, ${time}\n` +
     `🩺 डॉक्टर रेफरन्स: ${doctor}\n` +
     `📄 रिपोर्ट हवा: ${reportMode}` +
@@ -937,14 +978,18 @@ function validateBookingStep(n) {
 }
 
 document.querySelectorAll(".step-next").forEach((b) => b.addEventListener("click", () => {
-  if (validateBookingStep(bookingStep)) showBookingStep(bookingStep + 1);
+  if (!validateBookingStep(bookingStep)) return;
+  if (bookingStep === 1) askChargePopup(() => showBookingStep(2));
+  else showBookingStep(bookingStep + 1);
 }));
 document.querySelectorAll(".step-back").forEach((b) => b.addEventListener("click", () => showBookingStep(bookingStep - 1)));
 // Enter दाबल्यावर फॉर्म सबमिट होण्याऐवजी पुढच्या टप्प्यावर जावं
 document.getElementById("bookingForm").addEventListener("keydown", (e) => {
   if (e.key === "Enter" && bookingStep < 3 && e.target.tagName === "INPUT") {
     e.preventDefault();
-    if (validateBookingStep(bookingStep)) showBookingStep(bookingStep + 1);
+    if (!validateBookingStep(bookingStep)) return;
+    if (bookingStep === 1) askChargePopup(() => showBookingStep(2));
+    else showBookingStep(bookingStep + 1);
   }
 });
 // "सलग टप्पे" फक्त पूर्ण झालेल्या टप्प्यावर परत जाण्यासाठी क्लिक करता येतात
@@ -992,4 +1037,73 @@ refreshSlots();
   const saved = localStorage.getItem("kp_phone");
   const inp = document.getElementById("statusPhoneInput");
   if (saved && inp && !inp.value) inp.value = saved;
+})();
+
+
+/* =====================================================================
+   कलेक्शन चार्ज पॉप-अप (₹499 पेक्षा कमी बिल)
+   ===================================================================== */
+let chargeContinueCb = null;
+function closeChargeModal() { const m = document.getElementById("chargeModal"); if (m) m.hidden = true; chargeContinueCb = null; }
+function askChargePopup(onContinue) {
+  const c = calcTotals();
+  if (c.charge === 0 || chargeAckSub === c.subtotal) { onContinue(); return; }
+  document.getElementById("chargeModalBody").textContent = fillTpl(t("charge_modal_body"), { sub: c.subtotal, total: c.total, more: c.more });
+  chargeContinueCb = onContinue;
+  document.getElementById("chargeModal").hidden = false;
+  document.getElementById("chargeContinue").focus();
+}
+document.getElementById("chargeContinue").addEventListener("click", () => {
+  const cb = chargeContinueCb; chargeAckSub = calcTotals().subtotal; closeChargeModal(); if (cb) cb();
+});
+document.getElementById("chargeAddMore").addEventListener("click", () => { closeChargeModal(); showSection("tests"); });
+document.getElementById("chargeModal").addEventListener("click", (e) => { if (e.target.id === "chargeModal") closeChargeModal(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeChargeModal(); });
+// कार्ट पट्टीतून "बुक करा" दाबल्यावरही चार्जची माहिती दिसावी
+document.getElementById("cartBookBtn").addEventListener("click", () => askChargePopup(() => showSection("booking")));
+// भाषा बदलल्यावर चार्ज बॉक्स/पट्टी पुन्हा तयार
+
+/* =====================================================================
+   अ‍ॅप इन्स्टॉल (PWA) — पहिल्यांदा उघडल्यावर इन्स्टॉल पर्याय
+   ===================================================================== */
+(() => {
+  const banner = document.getElementById("installBanner");
+  const btn = document.getElementById("installBtn");
+  const close = document.getElementById("installClose");
+  const contactBtn = document.getElementById("installBtnContact");
+  const KEY = "kp_install_dismissed";
+  const isStandalone = () => window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  let deferred = null;
+
+  const recentlyDismissed = () => { const t0 = Number(localStorage.getItem(KEY) || 0); return t0 && Date.now() - t0 < 7 * 24 * 3600 * 1000; };
+  function show() {
+    if (isStandalone() || recentlyDismissed() || !banner) return;
+    if (isIOS && !deferred) {
+      document.getElementById("installSub").textContent = t("install_ios");
+      btn.hidden = true;
+    }
+    banner.hidden = false;
+  }
+  function hide(remember) { banner.hidden = true; if (remember) localStorage.setItem(KEY, String(Date.now())); }
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferred = e;
+    if (contactBtn && !isStandalone()) contactBtn.hidden = false;
+    setTimeout(show, 1500);
+  });
+  // iPhone Safari मध्ये beforeinstallprompt नसतो — सूचना दाखवतो
+  if (isIOS && !isStandalone()) setTimeout(show, 2500);
+
+  async function doInstall() {
+    if (!deferred) { if (isIOS) { banner.hidden = false; document.getElementById("installSub").textContent = t("install_ios"); } return; }
+    deferred.prompt();
+    try { await deferred.userChoice; } catch (_) {}
+    deferred = null; hide(false); if (contactBtn) contactBtn.hidden = true;
+  }
+  btn.addEventListener("click", doInstall);
+  if (contactBtn) contactBtn.addEventListener("click", doInstall);
+  close.addEventListener("click", () => hide(true));
+  window.addEventListener("appinstalled", () => { hide(false); if (contactBtn) contactBtn.hidden = true; });
 })();
