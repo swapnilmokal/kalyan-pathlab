@@ -1,12 +1,15 @@
-name: Unzip book.zip
+name: Unzip update zip
 
-# रिपोच्या मुख्य (root) फोल्डरमध्ये book.zip upload केली की ही फाईल आपोआप चालते,
-# zip उघडते, आतल्या फाईल्स book/ फोल्डरमध्ये टाकते (जुन्या बदलते) आणि zip काढून टाकते.
+# रिपोच्या मुख्य (root) फोल्डरमध्ये कोणतीही .zip फाईल upload केली की ही आपोआप चालते:
+#  - zip मधला "book" फोल्डर -> रिपोतल्या book/ मध्ये जातो (जुन्या फाईल्स बदलतात)
+#  - zip मधला "root-redirect/admin.html" -> रिपोच्या मुख्य फोल्डरमधला admin.html बदलतो (जुनी admin लिंक नव्या admin कडे नेते)
+#  - "apps-script", "github-workflow" असे बाकीचे फोल्डर GitHub वर कधीच जात नाहीत
+#  - शेवटी zip फाईल काढून टाकली जाते
 on:
   push:
     branches: [main]
     paths:
-      - "book.zip"
+      - "*.zip"
   workflow_dispatch:
 
 permissions:
@@ -14,7 +17,7 @@ permissions:
   pages: write
 
 concurrency:
-  group: unzip-book
+  group: unzip-update
   cancel-in-progress: false
 
 jobs:
@@ -24,23 +27,37 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Unzip and copy into book/
+      - name: Unzip and copy
         run: |
-          if [ ! -f book.zip ]; then
-            echo "book.zip सापडली नाही — काही करायचं नाही."
+          shopt -s nullglob
+          zips=(*.zip)
+          if [ ${#zips[@]} -eq 0 ]; then
+            echo "कोणतीही zip सापडली नाही — काही करायचं नाही."
             exit 0
           fi
-          rm -rf /tmp/unz && mkdir /tmp/unz
-          unzip -q -o book.zip -d /tmp/unz
-          rm -rf /tmp/unz/__MACOSX
-          SRC=/tmp/unz
-          # zip च्या आत एकच "book" फोल्डर असेल तर त्याच्या आतल्या फाईल्स वापरा
-          if [ -d /tmp/unz/book ] && [ "$(ls -A /tmp/unz | wc -l)" -eq 1 ]; then
-            SRC=/tmp/unz/book
-          fi
-          mkdir -p book
-          cp -a "$SRC"/. book/
-          rm -f book.zip
+          for ZIP in "${zips[@]}"; do
+            echo "=== $ZIP ==="
+            rm -rf /tmp/unz && mkdir /tmp/unz
+            unzip -q -o "$ZIP" -d /tmp/unz
+            rm -rf /tmp/unz/__MACOSX
+            mkdir -p book
+            if [ -d /tmp/unz/book ]; then
+              cp -a /tmp/unz/book/. book/
+            else
+              # जुनी (सपाट) zip: apps-script, github-workflow, root-redirect आणि README वगळून बाकी सर्व book/ मध्ये
+              for item in /tmp/unz/*; do
+                name=$(basename "$item")
+                case "$name" in
+                  apps-script|github-workflow|root-redirect|README*|*.txt) continue ;;
+                esac
+                cp -a "$item" book/
+              done
+            fi
+            if [ -f /tmp/unz/root-redirect/admin.html ]; then
+              cp -f /tmp/unz/root-redirect/admin.html ./admin.html
+            fi
+            rm -f "$ZIP"
+          done
           echo "--- book/ मधील फाईल्स ---"
           ls -la book
 
@@ -52,7 +69,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "कोणताही बदल नाही."
           else
-            git commit -m "Update book app from book.zip"
+            git commit -m "Update app from zip"
             git push
           fi
 
