@@ -426,3 +426,7 @@ input,select,textarea{min-height:46px;}
 .rep-banner{position:relative; padding-right:34px;}
 .rep-banner strong{display:block; margin-bottom:2px; color:#12793f;}
 .rep-close{position:absolute; top:-4px; right:-8px; width:44px; height:44px; border:0; background:none; font-size:1.05rem; color:var(--muted); cursor:pointer;}
+
+.btn-cancel{background:#fff; color:#a12424; border:1.5px solid #e6b3b3;}
+.btn-cancel:active{background:#fde8e8;}
+.cancel-booking-btn{margin-top:10px;}

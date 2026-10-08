@@ -1,9 +1,10 @@
 {
+  "id": "/kalyan-pathlab/book/index.html",
   "name": "Kalyan Pathlab - Blood Test Booking",
   "short_name": "Kalyan Pathlab",
   "description": "Kalyan Pathlab (run by Sanskar Foundation) - Online blood test booking, price list, and home sample collection",
   "start_url": "./index.html",
-  "scope": "./",
+  "scope": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",

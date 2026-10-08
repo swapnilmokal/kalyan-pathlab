@@ -430,7 +430,15 @@ document.getElementById("saveTestBtn").addEventListener("click", () => {
   document.getElementById("addTestForm").hidden = true;
 });
 
+const _recentPosts = {};
 function postAdminAction(extra, successMsg) {
+  // तेच बटण पटापट दोनदा दाबल्यास शीटमध्ये दुसरी नोंद/अपडेट जाऊ नये
+  const _key = JSON.stringify(extra);
+  if (_key.length < 600) {
+    const _now = Date.now();
+    if (_recentPosts[_key] && _now - _recentPosts[_key] < 3000) return;
+    _recentPosts[_key] = _now;
+  }
   fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "adminAction", ...extra }) })
     .then(() => { showToast(successMsg || t("saved_refreshing")); setTimeout(loadData, 900); });
 }

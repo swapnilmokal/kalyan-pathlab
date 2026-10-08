@@ -540,11 +540,20 @@
     const tests = inv.lines.map((l) => ({ name: l.name, mrp: num(l.mrp) || num(l.rate), b2c: num(l.rate), b2b: num(l.costB2b), collection: 0, report: 0 }));
     if (c.coll > 0) tests.push({ name: CHARGE_LINE_NAME, mrp: c.coll, b2c: c.coll, b2b: 0, collection: 0, report: 0 });
     const mrp = tests.reduce((a, x) => a + x.mrp, 0), b2c = tests.reduce((a, x) => a + x.b2c, 0), b2b = tests.reduce((a, x) => a + x.b2b, 0);
-    postAdminAction({
-      action: "addBill", billNo: inv.billNo, date: inv.date, patient: inv.patient.name.trim(), tests,
-      mrp, b2c, b2b, collection: 0, report: 0, discount: mrp - b2c, profit: b2c - b2b
-    }, t("ib_saved"));
+    const payload = { billNo: inv.billNo, date: inv.date, patient: inv.patient.name.trim(), tests, mrp, b2c, b2b, collection: 0, report: 0, discount: mrp - b2c, profit: b2c - b2b };
+    // त्याच पेशंटचं त्याच दिवसाचं तेच बिल आधीच असेल तर नवी नोंद न करता तीच अपडेट करा (शीटमध्ये डुप्लिकेट नको)
+    const key = (x) => String(x.patient).trim().toLowerCase() + "|" + String(x.date).slice(0, 10);
+    const names = (arr) => (arr || []).map((x) => norm(x.name)).filter((n) => n !== norm(CHARGE_LINE_NAME)).sort().join("|");
+    const existing = (ALL_DATA.bills || []).find((x) => key(x) === key(payload) && names(x.tests) === names(tests) && /^B2C-/.test(String(x.billNo)));
+    if (existing) {
+      payload.billNo = existing.billNo; inv.billNo = existing.billNo;
+      if (existing.rowNum >= 2) postAdminAction({ action: "updateBill", rowNum: existing.rowNum, ...payload }, t("ib_saved"));
+    } else {
+      postAdminAction({ action: "addBill", ...payload }, t("ib_saved"));
+      (ALL_DATA.bills = ALL_DATA.bills || []).push({ rowNum: -1, ...payload });   // लगेच पुन्हा उघडलं तरी डुप्लिकेट होऊ नये
+    }
   }
+
 
   /* क्लायंट लॅबचे तपशील + आपल्या लॅबचे तपशील Google Sheet मध्ये सेव्ह (पुढच्या वेळी आपोआप दिसतात) */
   function syncToSheet() {
@@ -616,7 +625,7 @@
     return `
     <div class="inv-page">
       <div class="inv-head">
-        <img class="inv-logo" src="./icons/logo.png?v=20261011" alt="Kalyan Pathlab" width="86" height="86" data-fallbacks="./icons/logo.png|./icons/admin-logo.png" data-fail="logo" onerror="window.kpImgFail&&kpImgFail(this)" />
+        <img class="inv-logo" src="./icons/logo.png?v=20261012" alt="Kalyan Pathlab" width="86" height="86" data-fallbacks="./icons/logo.png|./icons/admin-logo.png" data-fail="logo" onerror="window.kpImgFail&&kpImgFail(this)" />
         <div class="inv-lab">
           <div class="inv-lab-name">${esc(LAB.name.toUpperCase())}</div>
           <div class="inv-lab-sub">${esc(LAB.sub)} · ${esc(LAB.managed)}</div>

@@ -513,8 +513,10 @@ document.getElementById("phone").addEventListener("blur", () => {
 });
 
 /* ---------- Booking form submit ---------- */
+let bookingSubmitting = false;
 document.getElementById("bookingForm").addEventListener("submit", (e) => {
   e.preventDefault();
+  if (bookingSubmitting) return;   // दोनदा टॅप केल्यास बुकिंग दोनदा नोंदवली जाऊ नये
 
   const manualTest = document.getElementById("manualTest").value.trim();
   const fullName = document.getElementById("fullName").value.trim();
@@ -557,6 +559,8 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
   const totals = calcTotals();
   const total = totals.total;
 
+  bookingSubmitting = true;
+  const submitBtn = e.target.querySelector('button[type="submit"]'); if (submitBtn) submitBtn.disabled = true;
   const payload = {
     type: "booking",
     timestamp: new Date().toLocaleString("en-IN"),
@@ -884,9 +888,11 @@ function renderStatusResults(bookings) {
         <div class="booking-meta">🧪 ${escapeHtml(b.tests || "-")}</div>
         <div class="booking-meta">📅 ${escapeHtml(String(b.date || ""))} ${escapeHtml(String(b.time || ""))}</div>
         ${b.reportLink ? reportButtonsHtml(b.reportLink) : ""}
+        ${b.rowNum && (b.status === "Pending Confirmation" || b.status === "Confirmed") ? `<button type="button" class="btn btn-cancel btn-block cancel-booking-btn" data-row="${b.rowNum}" data-tests="${escapeHtml(b.tests || "")}" data-when="${escapeHtml(String(b.date || "") + " " + String(b.time || ""))}">❌ ${t("btn_cancel_booking")}</button>` : ""}
       </div>`;
     })
     .join("");
+  wrap.querySelectorAll(".cancel-booking-btn").forEach((btn) => btn.addEventListener("click", () => askCancelBooking(btn)));
 }
 
 document.getElementById("statusCheckBtn").addEventListener("click", () => {
@@ -1136,3 +1142,42 @@ document.getElementById("cartBookBtn").addEventListener("click", () => askCharge
   close.addEventListener("click", () => hide(true));
   window.addEventListener("appinstalled", () => { hide(false); if (contactBtn) contactBtn.hidden = true; });
 })();
+
+
+/* =====================================================================
+   पेशंटकडून बुकिंग रद्द करणे (Pending / Confirmed असतानाच)
+   ===================================================================== */
+let cancelBusy = false;
+function askCancelBooking(btn) {
+  const row = Number(btn.dataset.row);
+  document.getElementById("cancelModalBody").textContent = `${btn.dataset.tests} — ${btn.dataset.when}`;
+  const m = document.getElementById("cancelModal");
+  m.hidden = false;
+  m.dataset.row = String(row);
+  document.getElementById("cancelKeep").focus();
+}
+function closeCancelModal() { const m = document.getElementById("cancelModal"); if (m) m.hidden = true; }
+document.getElementById("cancelKeep").addEventListener("click", closeCancelModal);
+document.getElementById("cancelModal").addEventListener("click", (e) => { if (e.target.id === "cancelModal") closeCancelModal(); });
+document.getElementById("cancelConfirm").addEventListener("click", async () => {
+  if (cancelBusy) return;
+  const phone = document.getElementById("statusPhoneInput").value.trim();
+  const rowNum = Number(document.getElementById("cancelModal").dataset.row);
+  if (!/^[0-9]{10}$/.test(phone) || !rowNum || !CONFIG.appsScriptUrl || CONFIG.appsScriptUrl.startsWith("PASTE_")) return;
+  cancelBusy = true;
+  closeCancelModal();
+  try {
+    await fetch(CONFIG.appsScriptUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "cancelBooking", rowNum, phone }) });
+    showToast(t("toast_cancel_sent"));
+    setTimeout(async () => {
+      try {
+        const res = await fetch(`${CONFIG.appsScriptUrl}?action=bookingStatus&phone=${phone}`);
+        const data = await res.json();
+        renderStatusResults(data.bookings);
+        const b = (data.bookings || []).find((x) => x.rowNum === rowNum);
+        showToast(b && b.status === "Cancelled" ? t("toast_cancel_done") : t("toast_cancel_pending"));
+      } catch (_) { showToast(t("network_weak")); }
+      cancelBusy = false;
+    }, 2200);
+  } catch (_) { showToast(t("network_weak")); cancelBusy = false; }
+});
