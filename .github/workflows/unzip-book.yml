@@ -1,0 +1,79 @@
+name: Unzip update zip
+
+# रिपोच्या मुख्य (root) फोल्डरमध्ये कोणतीही .zip फाईल upload केली की ही आपोआप चालते:
+#  - zip मधला "book" फोल्डर -> रिपोतल्या book/ मध्ये जातो (जुन्या फाईल्स बदलतात)
+#  - zip मधला "root-redirect/admin.html" -> रिपोच्या मुख्य फोल्डरमधला admin.html बदलतो (जुनी admin लिंक नव्या admin कडे नेते)
+#  - "apps-script", "github-workflow" असे बाकीचे फोल्डर GitHub वर कधीच जात नाहीत
+#  - शेवटी zip फाईल काढून टाकली जाते
+on:
+  push:
+    branches: [main]
+    paths:
+      - "*.zip"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: unzip-update
+  cancel-in-progress: false
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Unzip and copy
+        run: |
+          shopt -s nullglob
+          zips=(*.zip)
+          if [ ${#zips[@]} -eq 0 ]; then
+            echo "कोणतीही zip सापडली नाही — काही करायचं नाही."
+            exit 0
+          fi
+          for ZIP in "${zips[@]}"; do
+            echo "=== $ZIP ==="
+            rm -rf /tmp/unz && mkdir /tmp/unz
+            unzip -q -o "$ZIP" -d /tmp/unz
+            rm -rf /tmp/unz/__MACOSX
+            mkdir -p book
+            if [ -d /tmp/unz/book ]; then
+              cp -a /tmp/unz/book/. book/
+            else
+              # जुनी (सपाट) zip: apps-script, github-workflow, root-redirect आणि README वगळून बाकी सर्व book/ मध्ये
+              for item in /tmp/unz/*; do
+                name=$(basename "$item")
+                case "$name" in
+                  apps-script|github-workflow|root-redirect|README*|*.txt) continue ;;
+                esac
+                cp -a "$item" book/
+              done
+            fi
+            if [ -f /tmp/unz/root-redirect/admin.html ]; then
+              cp -f /tmp/unz/root-redirect/admin.html ./admin.html
+            fi
+            rm -f "$ZIP"
+          done
+          echo "--- book/ मधील फाईल्स ---"
+          ls -la book
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "कोणताही बदल नाही."
+          else
+            git commit -m "Update app from zip"
+            git push
+          fi
+
+      - name: Trigger GitHub Pages build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
