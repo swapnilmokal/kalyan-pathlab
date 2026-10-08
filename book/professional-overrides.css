@@ -1,0 +1,49 @@
+
+/* Kalyan Pathlab — Professional UI polish
+   Add after ./style.css:
+   <link rel="stylesheet" href="./professional-overrides.css">
+*/
+:root{
+  --kp-navy:#0b1440;
+  --kp-blue:#183b8f;
+  --kp-red:#ef232b;
+  --kp-gold:#ffb400;
+  --kp-bg:#f5f7fb;
+}
+html{scroll-behavior:smooth}
+body{font-synthesis:none}
+.topbar-logo,.footer-logo,.pin-lock-logo,.admin-logo{
+  object-fit:contain;
+  background:#fff;
+  padding:3px;
+}
+.menu-tile-icon{
+  width:46px;height:46px;display:grid;place-items:center;
+  border-radius:14px;background:#eef2ff;
+  font-size:1.55rem;line-height:1;
+}
+.menu-tile{
+  min-height:88px;
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;
+}
+.menu-tile:hover{
+  transform:translateY(-2px);
+  border-color:#cbd5f3;
+  box-shadow:0 10px 24px rgba(11,20,64,.10);
+}
+.home-hero{
+  box-shadow:0 14px 32px rgba(11,20,64,.16);
+}
+.btn{min-height:46px}
+input,textarea,select{
+  min-height:46px;
+  border-radius:12px;
+}
+.nav-btn svg{width:24px;height:24px}
+.nav-btn{gap:3px}
+.pop-card{min-height:148px}
+.test-modal-sheet{border-top-left-radius:22px;border-top-right-radius:22px}
+.confirm-box{border-radius:14px}
+@media (min-width:721px){
+  .page-section{max-width:760px}
+}
