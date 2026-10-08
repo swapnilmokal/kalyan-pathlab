@@ -236,3 +236,6 @@ img{color:transparent; font-size:0;}
   #invSheet{transform:none !important;box-shadow:none !important;width:210mm !important}
   .inv-page{width:210mm !important;min-height:296mm !important;height:296mm;padding:10mm 12mm 8mm !important;page-break-after:avoid}
 }
+
+.ib-warn{background:#fff4d6;color:#8a5a00;border-radius:8px;padding:6px 10px;font-size:.78rem;font-weight:600}
+.ib-field input[type=date]{min-height:44px}

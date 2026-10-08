@@ -298,6 +298,9 @@ const TRANSLATIONS = {
   install_ios: { mr: "iPhone: खालच्या Share बटणावर टॅप करा, मग 'Add to Home Screen' निवडा.", hi: "iPhone: नीचे Share बटन दबाएं, फिर 'Add to Home Screen' चुनें।", en: "iPhone: tap the Share button below, then choose 'Add to Home Screen'." },
   btn_install: { mr: "इन्स्टॉल करा", hi: "इंस्टॉल करें", en: "Install" },
   btn_install_app: { mr: "📲 अ‍ॅप इन्स्टॉल करा", hi: "📲 ऐप इंस्टॉल करें", en: "📲 Install app" },
+  report_download: { mr: "रिपोर्ट डाउनलोड करा", hi: "रिपोर्ट डाउनलोड करें", en: "Download report" },
+  report_view: { mr: "रिपोर्ट पहा", hi: "रिपोर्ट देखें", en: "View report" },
+  report_ready: { mr: "तुमचा रिपोर्ट तयार आहे", hi: "आपकी रिपोर्ट तैयार है", en: "Your report is ready" },
   /* ---------- बुकिंग टप्पे व स्लॉट ---------- */
   bstep1: { mr: "टेस्ट", hi: "टेस्ट", en: "Tests" },
   bstep2: { mr: "पत्ता", hi: "पता", en: "Address" },

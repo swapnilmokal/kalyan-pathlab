@@ -77,6 +77,14 @@
     ib_err_name: { en: "Enter patient name.", mr: "पेशंटचे नाव टाका.", hi: "मरीज़ का नाम डालें।" },
     ib_err_lines: { en: "Add at least one test.", mr: "किमान एक टेस्ट जोडा.", hi: "कम से कम एक टेस्ट जोड़ें।" },
     ib_err_client: { en: "Enter client / organisation name.", mr: "क्लायंट / संस्थेचे नाव टाका.", hi: "क्लाइंट / संस्था का नाम डालें।" },
+    ib_bill_date: { en: "Bill date", mr: "बिलाची तारीख", hi: "बिल की तारीख" },
+    ib_sample_time: { en: "Sample collection time", mr: "सॅम्पल कलेक्शन वेळ", hi: "सैंपल कलेक्शन समय" },
+    ib_saved_clients: { en: "Saved clients (from sheet)", mr: "सेव्ह केलेले क्लायंट (शीटमधून)", hi: "सेव किए क्लाइंट (शीट से)" },
+    ib_pick_client: { en: "— Select saved client —", mr: "— सेव्ह क्लायंट निवडा —", hi: "— सेव क्लाइंट चुनें —" },
+    ib_save_client: { en: "Save / update this client for next time", mr: "हा क्लायंट पुढच्या वेळेसाठी सेव्ह/अपडेट करा", hi: "यह क्लाइंट अगली बार के लिए सेव/अपडेट करें" },
+    ib_client_saved: { en: "Client details saved to sheet ✓", mr: "क्लायंट तपशील शीटमध्ये सेव्ह झाले ✓", hi: "क्लाइंट विवरण शीट में सेव हुए ✓" },
+    ib_lab_saved: { en: "Lab details saved to sheet ✓", mr: "लॅब तपशील शीटमध्ये सेव्ह झाले ✓", hi: "लैब विवरण शीट में सेव हुए ✓" },
+    ib_no_b2b: { en: "B2B rate not set in Test Master — B2C rate used. Edit if needed.", mr: "टेस्ट मास्टरमध्ये B2B दर नाही — B2C दर वापरला आहे. हवा तर बदला.", hi: "टेस्ट मास्टर में B2B दर नहीं है — B2C दर लिया गया। चाहें तो बदलें।" },
     ib_saved: { en: "Bill saved to list ✓", mr: "बिल यादीत सेव्ह झालं ✓", hi: "बिल सूची में सेव हुआ ✓" }
   });
 
@@ -141,6 +149,41 @@
     const m = String(s || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
     return m ? `${m[3]}-${m[2]}-${m[1]}` : String(s || "");
   }
+  const pad2 = (x) => String(x).padStart(2, "0");
+  function toISO(s) {
+    s = String(s || "").trim();
+    let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (m) return `${m[1]}-${pad2(m[2])}-${pad2(m[3])}`;
+    m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/);
+    if (m) return `${m[3]}-${pad2(m[2])}-${pad2(m[1])}`;
+    return "";
+  }
+  const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9\u0900-\u097f]+/g, " ").trim();
+  function findMaster(name) {
+    const n = norm(name);
+    return n ? (ALL_DATA.tests || []).find((m) => norm(m.name) === n) : null;
+  }
+
+  /* ---- B2B क्लायंट लॅब्स + आपल्या लॅबचा प्रोफाईल: Google Sheet ("B2B Clients") + फोनवर कॅश ---- */
+  const CLIENT_CACHE_KEY = "kp_b2b_clients";
+  function localClients() { try { return JSON.parse(localStorage.getItem(CLIENT_CACHE_KEY) || "[]"); } catch (_) { return []; } }
+  function allClients() {
+    const map = {};
+    localClients().forEach((c) => { if (c.name) map[norm(c.name)] = c; });
+    (ALL_DATA.clients || []).filter((c) => (c.type || "CLIENT") === "CLIENT").forEach((c) => { if (c.name) map[norm(c.name)] = c; });   // शीट जिंकते
+    return Object.values(map).sort((x, y) => x.name.localeCompare(y.name));
+  }
+  function rememberClient(c) {
+    const list = localClients().filter((x) => norm(x.name) !== norm(c.name));
+    list.push({ name: c.name, address: c.address, gstin: c.gstin, contact: c.contact, type: "CLIENT" });
+    try { localStorage.setItem(CLIENT_CACHE_KEY, JSON.stringify(list)); } catch (_) {}
+  }
+  function selfProfile() {
+    const row = (ALL_DATA.clients || []).find((c) => c.type === "SELF");
+    const loc = loadProfile();
+    return row ? { gstin: row.gstin || loc.gstin || "", reg: row.regNo || loc.reg || "", sign: row.signatory || loc.sign || "" } : { gstin: loc.gstin || "", reg: loc.reg || "", sign: loc.sign || "" };
+  }
+
   function loadProfile() { try { return JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}"); } catch (_) { return {}; } }
   function saveProfile(p) { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); } catch (_) {} }
 
@@ -207,14 +250,14 @@
 
   function lineFromMaster(m, type) {
     const b2c = num(m.price), b2b = num(m.b2b) || num(m.price);
-    return { name: m.name, mrp: num(m.mrp) || b2c, b2c, b2b, costB2b: num(m.b2b), rate: type === "B2B" ? b2b : b2c, custom: false };
+    return { name: m.name, mrp: num(m.mrp) || b2c, b2c, b2b, costB2b: num(m.b2b), noB2b: !num(m.b2b), rate: type === "B2B" ? b2b : b2c, custom: false };
   }
 
   function baseInv(type) {
-    const prof = loadProfile();
+    const prof = selfProfile();
     return {
       type: type || "B2C", lang: "en", lines: [], collAuto: true, collection: 0, save: true, savedOnce: false,
-      billNo: "", date: todayStr(), bookingRow: null,
+      billNo: "", date: todayStr(), bookingRow: null, saveClient: true,
       patient: { name: "", age: "", gender: "", phone: "", address: "", doctor: "", pid: "", sampleDate: "", sampleTime: "", report: "" },
       client: { name: "", address: "", gstin: "", contact: "" },
       pay: { mode: "Cash", status: "Unpaid" },
@@ -236,7 +279,10 @@
     inv.pay.status = b.status === "Completed" ? "Paid" : "Unpaid";
     const parsed = parseTests(b.tests, ALL_DATA.tests || []);
     inv.lines = parsed.found.map((m) => lineFromMaster(m, "B2C"));
-    parsed.leftovers.forEach((n) => inv.lines.push({ name: n, mrp: 0, b2c: 0, b2b: 0, costB2b: 0, rate: 0, custom: true }));
+    parsed.leftovers.forEach((n) => {
+      const m = findMaster(n);   // थोडं वेगळं लिहिलेलं नाव असेल तरी मास्टरशी जुळवा
+      inv.lines.push(m ? lineFromMaster(m, "B2C") : { name: n, mrp: 0, b2c: 0, b2b: 0, costB2b: 0, rate: 0, custom: true });
+    });
     inv.collection = autoCollection();
     inv.billNo = nextBillNo("B2C");
     showModal();
@@ -259,7 +305,8 @@
     let coll = 0;
     (bill.tests || []).forEach((x) => {
       if (new RegExp("sample collection charge", "i").test(x.name || "")) { coll += num(x.b2c); return; }
-      inv.lines.push({ name: x.name, mrp: num(x.mrp), b2c: num(x.b2c), b2b: num(x.b2b), costB2b: num(x.b2b), rate: num(x.b2c), custom: true });
+      const m = findMaster(x.name);
+      inv.lines.push({ name: x.name, mrp: num(x.mrp), b2c: num(x.b2c), b2b: m ? (num(m.b2b) || num(m.price)) : num(x.b2b), costB2b: num(x.b2b), noB2b: m ? !num(m.b2b) : false, rate: num(x.b2c), custom: !m });
     });
     inv.collAuto = false; inv.collection = coll;
     showModal();
@@ -314,7 +361,10 @@
         <select data-f="lang"><option value="en" ${inv.lang === "en" ? "selected" : ""}>English</option><option value="mr" ${inv.lang === "mr" ? "selected" : ""}>मराठी</option><option value="hi" ${inv.lang === "hi" ? "selected" : ""}>हिंदी</option></select>
       </label>
 
+      ${fld(t("ib_bill_date"), "date", toISO(inv.date) || todayStr(), { type: "date" })}
+
       ${isB2B ? `<h4 class="ib-h">${t("ib_client")}</h4>
+        ${allClients().length ? `<label class="ib-field"><span>${t("ib_saved_clients")}</span><select id="ibClientPick"><option value="">${t("ib_pick_client")}</option>${allClients().map((x) => `<option value="${esc(x.name)}" ${norm(x.name) === norm(c.name) ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>` : ""}
         ${fld(t("ib_client_name"), "client.name", c.name)}
         ${fld(t("ib_client_addr"), "client.address", c.address, { area: true })}
         <div class="ib-row">${fld(t("ib_client_gstin"), "client.gstin", c.gstin)}${fld(t("ib_client_contact"), "client.contact", c.contact)}</div>` : ""}
@@ -324,7 +374,8 @@
       <div class="ib-row">${fld(t("ib_age"), "patient.age", p.age, { inputmode: "numeric" })}
         <label class="ib-field"><span>${t("ib_gender")}</span><select data-f="patient.gender">
           ${["", "Male", "Female", "Other"].map((g) => `<option value="${g}" ${p.gender === g ? "selected" : ""}>${g || "—"}</option>`).join("")}</select></label></div>
-      <div class="ib-row">${fld(t("ib_mobile"), "patient.phone", p.phone, { type: "tel", inputmode: "numeric" })}${fld(t("ib_sample_date"), "patient.sampleDate", p.sampleDate)}</div>
+      <div class="ib-row">${fld(t("ib_mobile"), "patient.phone", p.phone, { type: "tel", inputmode: "numeric" })}${fld(t("ib_sample_date"), "patient.sampleDate", toISO(p.sampleDate), { type: "date" })}</div>
+      ${fld(t("ib_sample_time"), "patient.sampleTime", p.sampleTime)}
       ${fld(t("ib_addr"), "patient.address", p.address, { area: true })}
       ${fld(t("ib_doc"), "patient.doctor", p.doctor)}
 
@@ -349,7 +400,7 @@
         ${fld(t("ib_lab_sign"), "lab.sign", inv.lab.sign)}
       </details>
 
-      ${isB2B ? `<p class="ib-hint">${t("ib_b2b_nosave")}</p>` : `<label class="ib-check"><input type="checkbox" id="ibSave" ${inv.save && !inv.savedOnce ? "checked" : ""} ${inv.savedOnce ? "disabled" : ""}/> <span>${t("ib_save_list")}</span></label>`}
+      ${isB2B ? `<label class="ib-check"><input type="checkbox" id="ibSaveClient" ${inv.saveClient ? "checked" : ""}/> <span>${t("ib_save_client")}</span></label><p class="ib-hint">${t("ib_b2b_nosave")}</p>` : `<label class="ib-check"><input type="checkbox" id="ibSave" ${inv.save && !inv.savedOnce ? "checked" : ""} ${inv.savedOnce ? "disabled" : ""}/> <span>${t("ib_save_list")}</span></label>`}
       <button type="button" class="btn btn-block" id="ibPreview" style="background:var(--navy);color:#fff;margin-top:6px">${t("ib_preview")}</button>`;
     renderLines();
   }
@@ -366,6 +417,7 @@
           <label><span>${t("ib_rate")}</span><input type="number" min="0" inputmode="numeric" data-li="${i}" data-lk="rate" value="${num(l.rate)}"></label>
           <button type="button" class="ib-x" data-rm="${i}" aria-label="Remove">✕</button>
         </div>
+        ${isB2B && l.noB2b && !l.custom ? `<div class="ib-warn">⚠ ${t("ib_no_b2b")}</div>` : ""}
       </div>`).join("");
     renderTotals();
   }
@@ -392,7 +444,14 @@
 
   function onInput(e) {
     const el = e.target;
-    if (el.dataset.f) { setPath(el.dataset.f, el.value); return; }
+    if (el.id === "ibClientPick") { fillClient(el.value); return; }
+    if (el.id === "ibSaveClient") { inv.saveClient = el.checked; return; }
+    if (el.dataset.f) {
+      setPath(el.dataset.f, el.value);
+      // क्लायंटचं नाव सेव्ह केलेल्या नावाशी जुळलं तर बाकी तपशील आपोआप भरा
+      if (el.dataset.f === "client.name" && e.type === "change") fillClient(el.value, true);
+      return;
+    }
     if (el.dataset.li !== undefined) {
       const i = Number(el.dataset.li), k = el.dataset.lk;
       inv.lines[i][k] = num(el.value);
@@ -412,6 +471,15 @@
     }
   }
 
+  function fillClient(name, onlyIfEmpty) {
+    const c = allClients().find((x) => norm(x.name) === norm(name));
+    if (!c) return;
+    const cur = inv.client;
+    if (onlyIfEmpty && (cur.address || cur.gstin || cur.contact)) return;
+    inv.client = { name: c.name, address: c.address || "", gstin: c.gstin || "", contact: c.contact || "" };
+    renderBody();
+  }
+
   function onClick(e) {
     const el = e.target;
     const typeBtn = el.closest("[data-type]");
@@ -420,7 +488,14 @@
       if (type === inv.type) return;
       inv.type = type;
       inv.billNo = nextBillNo(type);
-      inv.lines.forEach((l) => { if (!l.custom) l.rate = type === "B2B" ? l.b2b : l.b2c; });
+      inv.lines.forEach((l) => {
+        if (l.custom) {
+          const m = findMaster(l.name);
+          if (m) { Object.assign(l, lineFromMaster(m, type)); l.custom = false; }
+          return;
+        }
+        l.rate = type === "B2B" ? l.b2b : l.b2c;   // B2B निवडल्यावर टेस्ट मास्टरचा B2B दर आपोआप
+      });
       inv.collAuto = true; inv.collection = autoCollection();
       renderBody();
       return;
@@ -471,11 +546,34 @@
     }, t("ib_saved"));
   }
 
+  /* क्लायंट लॅबचे तपशील + आपल्या लॅबचे तपशील Google Sheet मध्ये सेव्ह (पुढच्या वेळी आपोआप दिसतात) */
+  function syncToSheet() {
+    const prevSelf = selfProfile();
+    const selfChanged = prevSelf.gstin !== (inv.lab.gstin || "") || prevSelf.reg !== (inv.lab.reg || "") || prevSelf.sign !== (inv.lab.sign || "");
+    if (selfChanged && (inv.lab.gstin || inv.lab.reg || inv.lab.sign)) {
+      const rows = (ALL_DATA.clients = ALL_DATA.clients || []).filter((x) => x.type !== "SELF");
+      rows.push({ name: LAB.name, gstin: inv.lab.gstin, regNo: inv.lab.reg, signatory: inv.lab.sign, type: "SELF" });
+      ALL_DATA.clients = rows;
+      postAdminAction({ action: "saveClient", clientType: "SELF", name: LAB.name, gstin: inv.lab.gstin, regNo: inv.lab.reg, signatory: inv.lab.sign }, t("ib_lab_saved"));
+    }
+    if (inv.type === "B2B" && inv.saveClient && inv.client.name.trim()) {
+      const c = inv.client;
+      const old = allClients().find((x) => norm(x.name) === norm(c.name));
+      const same = old && (old.address || "") === (c.address || "") && (old.gstin || "") === (c.gstin || "") && (old.contact || "") === (c.contact || "");
+      if (!same) {
+        rememberClient(c);
+        postAdminAction({ action: "saveClient", clientType: "CLIENT", name: c.name.trim(), address: c.address, gstin: c.gstin, contact: c.contact }, t("ib_client_saved"));
+      }
+    }
+  }
+
   function doPreview() {
     if (!inv.patient.name.trim()) { showToast(t("ib_err_name")); return; }
     if (inv.type === "B2B" && !inv.client.name.trim()) { showToast(t("ib_err_client")); return; }
     if (inv.lines.length === 0) { showToast(t("ib_err_lines")); return; }
+    inv.date = toISO(inv.date) || todayStr();
     saveProfile({ gstin: inv.lab.gstin, reg: inv.lab.reg, sign: inv.lab.sign });
+    syncToSheet();
     if (inv.type === "B2C" && inv.save && !inv.savedOnce) { saveToBills(); inv.savedOnce = true; }
     showInvoice();
   }
@@ -518,7 +616,7 @@
     return `
     <div class="inv-page">
       <div class="inv-head">
-        <img class="inv-logo" src="./icons/logo.png?v=20261010" alt="Kalyan Pathlab" width="86" height="86" data-fallbacks="./icons/logo.png|./icons/admin-logo.png" data-fail="logo" onerror="window.kpImgFail&&kpImgFail(this)" />
+        <img class="inv-logo" src="./icons/logo.png?v=20261011" alt="Kalyan Pathlab" width="86" height="86" data-fallbacks="./icons/logo.png|./icons/admin-logo.png" data-fail="logo" onerror="window.kpImgFail&&kpImgFail(this)" />
         <div class="inv-lab">
           <div class="inv-lab-name">${esc(LAB.name.toUpperCase())}</div>
           <div class="inv-lab-sub">${esc(LAB.sub)} · ${esc(LAB.managed)}</div>

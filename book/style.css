@@ -418,3 +418,11 @@ input,select,textarea{min-height:46px;}
 .install-text strong{font-size:0.9rem; color:var(--navy);}
 .install-text small{font-size:0.74rem; color:var(--muted);}
 .install-close{flex:none; width:44px; height:44px; border:0; background:none; font-size:1.1rem; color:var(--muted); cursor:pointer; border-radius:50%;}
+
+
+/* ---------- Report: डाउनलोड / पहा ---------- */
+.report-actions{display:flex; gap:8px; margin-top:10px;}
+.report-actions .btn{flex:1; margin-top:0; padding:11px 8px; font-size:0.9rem;}
+.rep-banner{position:relative; padding-right:34px;}
+.rep-banner strong{display:block; margin-bottom:2px; color:#12793f;}
+.rep-close{position:absolute; top:-4px; right:-8px; width:44px; height:44px; border:0; background:none; font-size:1.05rem; color:var(--muted); cursor:pointer;}

@@ -850,6 +850,25 @@ function statusTimeline(status) {
   return `<ol class="tl">${steps.map((s, i) => `<li class="${i + 1 < level ? "done" : i + 1 === level ? "now" : ""}"><span>${i + 1 <= level ? "✓" : i + 1}</span><b>${s}</b></li>`).join("")}</ol>`;
 }
 
+/* ---------- रिपोर्ट: पहा + डाउनलोड (Google Drive लिंकवरून थेट डाउनलोड) ---------- */
+function driveFileId(url) {
+  const m = String(url || "").match(/\/d\/([A-Za-z0-9_-]+)/) || String(url || "").match(/[?&]id=([A-Za-z0-9_-]+)/);
+  return m ? m[1] : "";
+}
+function reportLinks(url) {
+  const id = driveFileId(url);
+  return id
+    ? { view: `https://drive.google.com/file/d/${id}/view`, dl: `https://drive.google.com/uc?export=download&id=${id}` }
+    : { view: url, dl: url };
+}
+function reportButtonsHtml(url) {
+  const l = reportLinks(url);
+  return `<div class="report-actions">
+    <a class="btn btn-whatsapp" href="${escapeHtmlLocal(l.dl)}" rel="noopener" download>⬇ ${t("report_download")}</a>
+    <a class="btn btn-outline" href="${escapeHtmlLocal(l.view)}" target="_blank" rel="noopener">👁 ${t("report_view")}</a>
+  </div>`;
+}
+
 function renderStatusResults(bookings) {
   const wrap = document.getElementById("statusResultWrap");
   if (!bookings || bookings.length === 0) {
@@ -864,7 +883,7 @@ function renderStatusResults(bookings) {
         ${statusTimeline(b.status)}
         <div class="booking-meta">🧪 ${escapeHtml(b.tests || "-")}</div>
         <div class="booking-meta">📅 ${escapeHtml(String(b.date || ""))} ${escapeHtml(String(b.time || ""))}</div>
-        ${b.reportLink ? `<a href="${b.reportLink}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block" style="margin-top:10px;">${t("download_report")}</a>` : ""}
+        ${b.reportLink ? reportButtonsHtml(b.reportLink) : ""}
       </div>`;
     })
     .join("");
@@ -893,6 +912,16 @@ function checkForStatusUpdate() {
       if (!data.bookings || data.bookings.length === 0) return;
       const latest = data.bookings[0];
       const lastSeen = localStorage.getItem("kp_last_status");
+      // रिपोर्ट तयार असेल तर वरती कायमस्वरूपी बॅनर (✕ दाबेपर्यंत) — Download + पहा
+      const withReport = data.bookings.find((x) => x.reportLink);
+      if (withReport && localStorage.getItem("kp_report_dismissed") !== withReport.reportLink) {
+        const banner = document.getElementById("notifBanner");
+        banner.hidden = false;
+        banner.innerHTML = `<div class="rep-banner"><strong>📄 ${t("report_ready")}</strong>${reportButtonsHtml(withReport.reportLink)}<button type="button" class="rep-close" aria-label="Close">✕</button></div>`;
+        banner.querySelector(".rep-close").addEventListener("click", () => { localStorage.setItem("kp_report_dismissed", withReport.reportLink); banner.hidden = true; });
+        localStorage.setItem("kp_last_status", latest.status);
+        return;
+      }
       if (latest.status !== lastSeen && (latest.status === "Confirmed" || latest.status === "Completed")) {
         const s = statusLabel(latest.status);
         const banner = document.getElementById("notifBanner");
