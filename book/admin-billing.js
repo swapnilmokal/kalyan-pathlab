@@ -9,20 +9,11 @@
 (function () {
   "use strict";
 
+  const LAB = KPInv.LAB;
   const FREE_MIN = 499;      // ₹499 किंवा जास्त = कलेक्शन चार्ज माफ
   const CHARGE = 100;        // ₹499 पेक्षा कमी = ₹100
   const CHARGE_LINE_NAME = "Home Sample Collection Charges";
   const PROFILE_KEY = "kp_lab_profile";
-
-  const LAB = {
-    name: "Kalyan Pathlab",
-    sub: "Pathology Services",
-    managed: "Managed by Sanskar Foundation",
-    address: "Shop No. 3, 1st Floor, Parvati Apartment, Tisgaon Naka, Kalyan East – 421306",
-    phone: "98700 20674 | 88281 11774",
-    email: "kalyan.pathlab.21@gmail.com",
-    hours: "Mon–Sat 7:00 AM – 9:00 PM · Sun 8:00 AM – 1:00 PM"
-  };
 
   /* ---------- Admin UI translations (en / mr / hi) ---------- */
   Object.assign(TRANSLATIONS, {
@@ -68,7 +59,10 @@
     ib_b2b_nosave: { en: "B2B invoices are for printing only — not added to profit stats.", mr: "B2B इनव्हॉइस फक्त प्रिंटसाठी — प्रॉफिट आकडेवारीत जोडले जात नाहीत.", hi: "B2B इनवॉइस केवल प्रिंट के लिए — प्रॉफिट आँकड़ों में नहीं जुड़ते।" },
     ib_preview: { en: "Preview & Print", mr: "प्रीव्ह्यू व प्रिंट", hi: "प्रीव्यू व प्रिंट" },
     ib_back_edit: { en: "← Edit", mr: "← एडिट", hi: "← एडिट" },
-    ib_print: { en: "🖨 Print / Save PDF", mr: "🖨 प्रिंट / PDF सेव्ह", hi: "🖨 प्रिंट / PDF सेव" },
+    ib_print: { en: "🖨 Print", mr: "🖨 प्रिंट", hi: "🖨 प्रिंट" },
+    ib_report_shared: { en: "Report shared by patient", mr: "पेशंटने रिपोर्ट शेअर केला", hi: "मरीज़ ने रिपोर्ट शेयर की" },
+    ib_pdf: { en: "⬇ PDF", mr: "⬇ PDF", hi: "⬇ PDF" },
+    ib_share: { en: "📤 Share", mr: "📤 शेअर", hi: "📤 शेयर" },
     ib_wa: { en: "💬 WhatsApp", mr: "💬 WhatsApp", hi: "💬 WhatsApp" },
     ib_sub: { en: "Sub-total", mr: "उप-एकूण", hi: "उप-कुल" },
     ib_coll_line: { en: "Collection charge", mr: "कलेक्शन चार्ज", hi: "कलेक्शन चार्ज" },
@@ -87,58 +81,6 @@
     ib_no_b2b: { en: "B2B rate not set in Test Master — B2C rate used. Edit if needed.", mr: "टेस्ट मास्टरमध्ये B2B दर नाही — B2C दर वापरला आहे. हवा तर बदला.", hi: "टेस्ट मास्टर में B2B दर नहीं है — B2C दर लिया गया। चाहें तो बदलें।" },
     ib_saved: { en: "Bill saved to list ✓", mr: "बिल यादीत सेव्ह झालं ✓", hi: "बिल सूची में सेव हुआ ✓" }
   });
-
-  /* ---------- Bill (printed document) labels ---------- */
-  const BL = {
-    en: {
-      title_b2c: "BILL / RECEIPT", title_b2b: "INVOICE", bill_no: "Bill No.", date: "Date", pid: "Patient ID",
-      patient: "Patient Details", name: "Name", agesex: "Age / Sex", mobile: "Mobile", address: "Address", ref: "Referred by",
-      coll: "Collection & Payment", sample: "Sample collection", report: "Report via", pmode: "Payment mode", pstatus: "Payment status",
-      billed: "Billed To", gstin: "GSTIN", contact: "Contact", patient_ref: "Patient / Reference",
-      sr: "#", desc: "Test / Profile", mrp: "MRP (₹)", rate: "Rate (₹)", total_mrp: "Total MRP", discount: "Discount",
-      subtotal: "Sub-total", collection: "Home collection charges", waived: "Waived (bill ₹499+)", net: "NET PAYABLE", words: "Amount in words",
-      paid: "PAID", unpaid: "PAYMENT DUE", terms: "Terms & Notes",
-      t1: "Reports are shared via the selected mode (WhatsApp / Email / Hard copy) after processing.",
-      t2: "Home collection charge of ₹100 applies on bills below ₹499; it is waived for bills of ₹499 and above.",
-      t3: "Charges once paid are non-refundable after sample collection.",
-      t4: "This is a computer-generated bill and is valid with the lab stamp.",
-      t5: "Payment is due as per the agreed terms.",
-      for_lab: "For Kalyan Pathlab", sign: "Authorised Signatory", thanks: "Thank you for choosing Kalyan Pathlab · Care For Quality",
-      upi: "Pay via UPI", regno: "Reg. No.", hours: "Hours", self: "Self"
-    },
-    mr: {
-      title_b2c: "बिल / पावती", title_b2b: "इनव्हॉइस", bill_no: "बिल क्र.", date: "दिनांक", pid: "पेशंट ID",
-      patient: "पेशंट तपशील", name: "नाव", agesex: "वय / लिंग", mobile: "मोबाईल", address: "पत्ता", ref: "रेफर करणारे",
-      coll: "कलेक्शन व पेमेंट", sample: "सॅम्पल कलेक्शन", report: "रिपोर्ट", pmode: "पेमेंट पद्धत", pstatus: "पेमेंट स्थिती",
-      billed: "बिल कोणाला", gstin: "GSTIN", contact: "संपर्क", patient_ref: "पेशंट / संदर्भ",
-      sr: "#", desc: "टेस्ट / प्रोफाईल", mrp: "MRP (₹)", rate: "दर (₹)", total_mrp: "एकूण MRP", discount: "सवलत",
-      subtotal: "उप-एकूण", collection: "होम कलेक्शन चार्ज", waived: "माफ (बिल ₹499+)", net: "एकूण देय", words: "अक्षरी रक्कम",
-      paid: "भरले", unpaid: "पेमेंट बाकी", terms: "अटी व सूचना",
-      t1: "प्रक्रिया पूर्ण झाल्यावर रिपोर्ट निवडलेल्या मार्गाने (WhatsApp / ईमेल / हार्ड कॉपी) दिला जाईल.",
-      t2: "₹499 पेक्षा कमी बिलावर ₹100 होम कलेक्शन चार्ज लागतो; ₹499 किंवा जास्त बिलावर तो माफ आहे.",
-      t3: "भरलेले शुल्क सॅम्पल घेतल्यानंतर परत मिळणार नाही.",
-      t4: "हे संगणकीय बिल असून लॅबच्या स्टॅम्पसह वैध आहे.",
-      t5: "पेमेंट ठरलेल्या अटींनुसार देय आहे.",
-      for_lab: "कल्याण पॅथलॅबसाठी", sign: "अधिकृत स्वाक्षरी", thanks: "Kalyan Pathlab निवडल्याबद्दल धन्यवाद · Care For Quality",
-      upi: "UPI ने पेमेंट", regno: "नोंदणी क्र.", hours: "वेळ", self: "स्वतः"
-    },
-    hi: {
-      title_b2c: "बिल / रसीद", title_b2b: "इनवॉइस", bill_no: "बिल नं.", date: "दिनांक", pid: "मरीज़ ID",
-      patient: "मरीज़ विवरण", name: "नाम", agesex: "उम्र / लिंग", mobile: "मोबाइल", address: "पता", ref: "रेफर",
-      coll: "कलेक्शन व पेमेंट", sample: "सैंपल कलेक्शन", report: "रिपोर्ट", pmode: "पेमेंट तरीका", pstatus: "पेमेंट स्थिति",
-      billed: "बिल किसे", gstin: "GSTIN", contact: "संपर्क", patient_ref: "मरीज़ / संदर्भ",
-      sr: "#", desc: "टेस्ट / प्रोफाइल", mrp: "MRP (₹)", rate: "दर (₹)", total_mrp: "कुल MRP", discount: "छूट",
-      subtotal: "उप-कुल", collection: "होम कलेक्शन चार्ज", waived: "माफ (बिल ₹499+)", net: "कुल देय", words: "शब्दों में राशि",
-      paid: "चुकाया", unpaid: "पेमेंट बाकी", terms: "शर्तें व सूचना",
-      t1: "प्रोसेसिंग के बाद रिपोर्ट चुने गए माध्यम (WhatsApp / ईमेल / हार्ड कॉपी) से दी जाएगी।",
-      t2: "₹499 से कम के बिल पर ₹100 होम कलेक्शन चार्ज लगता है; ₹499 या अधिक पर माफ है।",
-      t3: "चुकाया गया शुल्क सैंपल लेने के बाद वापस नहीं होगा।",
-      t4: "यह कंप्यूटर जनित बिल है और लैब की मुहर के साथ मान्य है।",
-      t5: "भुगतान तय शर्तों के अनुसार देय है।",
-      for_lab: "कल्याण पैथलैब के लिए", sign: "अधिकृत हस्ताक्षरकर्ता", thanks: "Kalyan Pathlab चुनने के लिए धन्यवाद · Care For Quality",
-      upi: "UPI से पेमेंट", regno: "पंजीकरण नं.", hours: "समय", self: "स्वयं"
-    }
-  };
 
   /* ---------- helpers ---------- */
   const esc = (s) => escapeHtml(s);
@@ -186,24 +128,6 @@
 
   function loadProfile() { try { return JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}"); } catch (_) { return {}; } }
   function saveProfile(p) { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); } catch (_) {} }
-
-  function inWords(n) {
-    n = Math.round(Math.abs(n));
-    if (n === 0) return "Zero";
-    const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
-    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
-    const two = (x) => (x < 20 ? ones[x] : tens[Math.floor(x / 10)] + (x % 10 ? " " + ones[x % 10] : ""));
-    const three = (x) => (x >= 100 ? ones[Math.floor(x / 100)] + " Hundred" + (x % 100 ? " " + two(x % 100) : "") : two(x));
-    let out = "";
-    const crore = Math.floor(n / 10000000); n %= 10000000;
-    const lakh = Math.floor(n / 100000); n %= 100000;
-    const thou = Math.floor(n / 1000); n %= 1000;
-    if (crore) out += three(crore) + " Crore ";
-    if (lakh) out += two(lakh) + " Lakh ";
-    if (thou) out += two(thou) + " Thousand ";
-    if (n) out += three(n);
-    return out.trim();
-  }
 
   /* ---------- state ---------- */
   let inv = null;
@@ -588,116 +512,6 @@
   }
 
   /* ---------- the printable invoice ---------- */
-  function stampSVG() {
-    return `<svg class="inv-stamp-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-label="Kalyan Pathlab stamp">
-      <defs>
-        <path id="stTop" d="M 21,60 A 39,39 0 0 1 99,60"/>
-        <path id="stBot" d="M 14,60 A 46,46 0 0 0 106,60"/>
-      </defs>
-      <g fill="none" stroke="#1d3a8a">
-        <circle cx="60" cy="60" r="57" stroke-width="2.6"/>
-        <circle cx="60" cy="60" r="52" stroke-width="0.9"/>
-        <circle cx="60" cy="60" r="29" stroke-width="1.4"/>
-      </g>
-      <g fill="#1d3a8a" font-family="Arial, Helvetica, sans-serif" font-weight="700">
-        <text font-size="9.6" letter-spacing="0.9"><textPath href="#stTop" startOffset="50%" text-anchor="middle">KALYAN PATHLAB</textPath></text>
-        <text font-size="7.4" letter-spacing="1"><textPath href="#stBot" startOffset="50%" text-anchor="middle">PATHOLOGY SERVICES</textPath></text>
-        <text x="17" y="64" font-size="8" text-anchor="middle">★</text>
-        <text x="103" y="64" font-size="8" text-anchor="middle">★</text>
-        <g transform="translate(0,4.500) scale(1,1)"><path d="M60 38s9.500 11 9.500 17.500a9.500 9.500 0 0 1-19 0C50.500 49 60 38 60 38z" fill="#1d3a8a"/>
-        <path d="M60 50v10M55 55h10" stroke="#fff" stroke-width="2.6" stroke-linecap="round" fill="none"/></g>
-              </g>
-    </svg>`;
-  }
-
-  function buildInvoice() {
-    const L = BL[inv.lang] || BL.en;
-    const c = calc();
-    const isB2B = inv.type === "B2B";
-    const p = inv.patient, cl = inv.client, lab = inv.lab;
-    const row = (k, v) => (v ? `<tr><td class="k">${k}</td><td class="v">${esc(v)}</td></tr>` : "");
-    const lines = inv.lines.map((l, i) => `<tr><td class="c">${i + 1}</td><td>${esc(l.name)}</td>${!isB2B ? `<td class="r">${plain(num(l.mrp) || num(l.rate))}</td>` : ""}<td class="r">${plain(num(l.rate))}</td></tr>`).join("");
-    const colSpan = isB2B ? 2 : 3;
-    const sampleStr = [fmtDate(p.sampleDate), p.sampleTime].filter(Boolean).join(", ");
-    const agesex = [p.age ? p.age + " Y" : "", p.gender].filter(Boolean).join(" / ");
-    const upi = (ALL_DATA.settings && ALL_DATA.settings.upiId) || "enterprises60658@nyes";
-    const legal = [lab.gstin ? `GSTIN: ${esc(lab.gstin)}` : "", lab.reg ? `${L.regno}: ${esc(lab.reg)}` : ""].filter(Boolean).join(" &nbsp;|&nbsp; ");
-    return `
-    <div class="inv-page">
-      <div class="inv-head">
-        <img class="inv-logo" src="./icons/logo.png?v=20261012" alt="Kalyan Pathlab" width="86" height="86" data-fallbacks="./icons/logo.png|./icons/admin-logo.png" data-fail="logo" onerror="window.kpImgFail&&kpImgFail(this)" />
-        <div class="inv-lab">
-          <div class="inv-lab-name">${esc(LAB.name.toUpperCase())}</div>
-          <div class="inv-lab-sub">${esc(LAB.sub)} · ${esc(LAB.managed)}</div>
-          <div class="inv-lab-line">${esc(LAB.address)}</div>
-          <div class="inv-lab-line">☎ ${esc(LAB.phone)} &nbsp;|&nbsp; ✉ ${esc(LAB.email)}</div>
-          ${legal ? `<div class="inv-lab-line strong">${legal}</div>` : ""}
-        </div>
-        <div class="inv-title-box">
-          <div class="inv-title">${isB2B ? L.title_b2b : L.title_b2c}</div>
-          <table class="inv-meta">
-            <tr><td>${L.bill_no}</td><td><b>${esc(inv.billNo)}</b></td></tr>
-            <tr><td>${L.date}</td><td><b>${fmtDate(inv.date)}</b></td></tr>
-            ${p.pid ? `<tr><td>${L.pid}</td><td><b>${esc(p.pid)}</b></td></tr>` : ""}
-          </table>
-        </div>
-      </div>
-      <div class="inv-rule"></div>
-
-      <div class="inv-grid">
-        <div class="inv-box">
-          <div class="inv-box-h">${isB2B ? L.billed : L.patient}</div>
-          <table class="inv-kv">
-            ${isB2B
-              ? row(L.name, cl.name) + row(L.address, cl.address) + row(L.gstin, cl.gstin) + row(L.contact, cl.contact) + row(L.patient_ref, [p.name, agesex].filter(Boolean).join(" · "))
-              : row(L.name, p.name) + row(L.agesex, agesex) + row(L.mobile, p.phone) + row(L.address, p.address) + row(L.ref, p.doctor || L.self)}
-          </table>
-        </div>
-        <div class="inv-box">
-          <div class="inv-box-h">${L.coll}</div>
-          <table class="inv-kv">
-            ${row(L.sample, sampleStr) + row(L.report, p.report) + row(L.pmode, inv.pay.mode) + row(L.pstatus, inv.pay.status === "Paid" ? L.paid : L.unpaid)}
-            ${isB2B && p.phone ? row(L.mobile, p.phone) : ""}
-          </table>
-        </div>
-      </div>
-
-      <table class="inv-table">
-        <thead><tr><th class="c" style="width:38px">${L.sr}</th><th>${L.desc}</th>${!isB2B ? `<th class="r" style="width:110px">${L.mrp}</th>` : ""}<th class="r" style="width:110px">${L.rate}</th></tr></thead>
-        <tbody>${lines}</tbody>
-        <tfoot>
-          ${!isB2B ? `<tr><td colspan="${colSpan}" class="r lbl">${L.total_mrp}</td><td class="r">${plain(c.sumMrp)}</td></tr>
-          <tr><td colspan="${colSpan}" class="r lbl">${L.discount}</td><td class="r">− ${plain(c.discount)}</td></tr>` : ""}
-          <tr><td colspan="${colSpan}" class="r lbl">${L.subtotal}</td><td class="r">${plain(c.sumRate)}</td></tr>
-          <tr><td colspan="${colSpan}" class="r lbl">${L.collection}</td><td class="r">${c.coll > 0 ? plain(c.coll) : (c.waived ? `<span class="waived">${L.waived}</span>` : plain(0))}</td></tr>
-          <tr class="net"><td colspan="${colSpan}" class="r">${L.net}</td><td class="r">₹ ${plain(c.net)}</td></tr>
-        </tfoot>
-      </table>
-      <div class="inv-words"><b>${L.words}:</b> Rupees ${esc(inWords(c.net))} Only</div>
-      ${inv.pay.status !== "Paid" ? `<div class="inv-upi">${L.upi}: <b>${esc(upi)}</b></div>` : ""}
-
-      <div class="inv-foot">
-        <div class="inv-terms">
-          <div class="inv-box-h">${L.terms}</div>
-          <ol>
-            <li>${L.t1}</li>
-            ${!isB2B ? `<li>${L.t2}</li>` : `<li>${L.t5}</li>`}
-            <li>${L.t3}</li>
-            <li>${L.t4}</li>
-          </ol>
-        </div>
-        <div class="inv-sign">
-          <div class="inv-stamp">${stampSVG()}</div>
-          <div class="inv-sign-for">${L.for_lab}</div>
-          <div class="inv-sign-line"></div>
-          <div class="inv-sign-name">${esc(lab.sign || L.sign)}</div>
-          ${lab.sign ? `<div class="inv-sign-sub">${L.sign}</div>` : ""}
-        </div>
-      </div>
-      <div class="inv-thanks">${L.thanks}<br><small>${L.hours}: ${esc(LAB.hours)}</small></div>
-    </div>`;
-  }
-
   function ensureOverlay() {
     let o = document.getElementById("invoiceOverlay");
     if (o) return o;
@@ -707,6 +521,8 @@
       <div class="inv-toolbar">
         <button type="button" id="invBack"></button>
         <button type="button" id="invPrint" class="primary"></button>
+        <button type="button" id="invPdf"></button>
+        <button type="button" id="invShare"></button>
         <button type="button" id="invWa"></button>
       </div>
       <div class="inv-scroll"><div id="invScaleWrap"><div id="invSheet"></div></div></div>`;
@@ -714,6 +530,8 @@
     o.querySelector("#invBack").addEventListener("click", () => { o.hidden = true; });
     o.querySelector("#invPrint").addEventListener("click", () => window.print());
     o.querySelector("#invWa").addEventListener("click", shareWhatsApp);
+    o.querySelector("#invPdf").addEventListener("click", downloadPdf);
+    o.querySelector("#invShare").addEventListener("click", sharePdf);
     window.addEventListener("resize", () => { if (!o.hidden) fitSheet(); });
     return o;
   }
@@ -731,13 +549,36 @@
     o.querySelector("#invBack").textContent = t("ib_back_edit");
     o.querySelector("#invPrint").textContent = t("ib_print");
     o.querySelector("#invWa").textContent = t("ib_wa");
-    document.getElementById("invSheet").innerHTML = buildInvoice();
+    o.querySelector("#invPdf").textContent = t("ib_pdf");
+    o.querySelector("#invShare").textContent = t("ib_share");
+    document.getElementById("invSheet").innerHTML = KPInv.html(inv, { upi: upiId() });
     o.hidden = false;
     o.querySelector(".inv-scroll").scrollTop = 0;
     fitSheet();
     // लोगो नंतर लोड झाल्यावर उंची पुन्हा मोजा
     const img = o.querySelector(".inv-logo");
     if (img) img.addEventListener("load", fitSheet);
+  }
+
+  function upiId() { return (ALL_DATA.settings && ALL_DATA.settings.upiId) || "enterprises60658@nyes"; }
+
+  /* ---- PDF फाईल: डाउनलोड + शेअर ---- */
+  async function makePdf() {
+    showToast("PDF…");
+    try { return await KPInv.pdfBlob(inv, { upi: upiId() }); } catch (e) { showToast("PDF error — Print वापरा"); return null; }
+  }
+  function pdfName() { return `${inv.billNo}.pdf`; }
+  async function downloadPdf() {
+    const blob = await makePdf(); if (!blob) return;
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = pdfName();
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+  async function sharePdf() {
+    const blob = await makePdf(); if (!blob) return;
+    const file = new File([blob], pdfName(), { type: "application/pdf" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: pdfName(), text: `${LAB.name} — ${inv.billNo}` }); } catch (_) {}
+    } else { shareWhatsApp(); }
   }
 
   function shareWhatsApp() {

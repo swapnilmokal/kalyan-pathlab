@@ -430,3 +430,77 @@ input,select,textarea{min-height:46px;}
 .btn-cancel{background:#fff; color:#a12424; border:1.5px solid #e6b3b3;}
 .btn-cancel:active{background:#fde8e8;}
 .cancel-booking-btn{margin-top:10px;}
+
+
+/* =====================================================================
+   बुकिंग इतिहास, रिपोर्ट व्ह्यूअर, बास्केट, "जोडली" पट्टी
+   ===================================================================== */
+.hist-head{font-weight:800; color:var(--navy); font-size:1.05rem; margin:16px 0 10px;}
+.hist-summary{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+.hist-summary div{background:linear-gradient(155deg,var(--navy),#1b2a7a); color:#fff; border-radius:14px; padding:10px 6px; text-align:center; display:flex; flex-direction:column;}
+.hist-summary b{font-size:1.35rem; font-family:'Poppins',sans-serif; line-height:1.1;}
+.hist-summary span{font-size:0.72rem; color:#cfd4ee;}
+.hist-filters{display:flex; gap:8px; overflow-x:auto; margin:12px -2px 4px; padding:2px; scrollbar-width:none;}
+.hist-filters::-webkit-scrollbar{display:none;}
+.hist-chip{flex:none; min-height:40px; padding:0 14px; border-radius:999px; border:1.5px solid var(--line); background:#fff; color:var(--navy); font-weight:700; font-size:0.84rem; cursor:pointer;}
+.hist-chip i{font-style:normal; background:#eef1fb; border-radius:999px; padding:1px 7px; margin-left:3px; font-size:0.74rem;}
+.hist-chip.on{background:var(--navy); color:#fff; border-color:var(--navy);}
+.hist-chip.on i{background:rgba(255,255,255,.2);}
+.hist-month{margin:16px 0 8px; font-weight:800; color:var(--muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:.6px; display:flex; align-items:center; gap:8px;}
+.hist-month::after{content:""; flex:1; height:1px; background:var(--line);}
+.hist-card{display:flex; gap:12px; background:#fff; border:1px solid var(--line); border-radius:16px; padding:12px; margin-bottom:10px; box-shadow:var(--shadow);}
+.hist-date{flex:none; width:50px; height:58px; border-radius:12px; background:#eef1fb; color:var(--navy); display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1.1;}
+.hist-date b{font-size:1.35rem; font-family:'Poppins',sans-serif;}
+.hist-date span{font-size:0.68rem; font-weight:800; letter-spacing:.5px; color:var(--red);}
+.hist-main{flex:1; min-width:0;}
+.hist-top{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+.hist-top .status-pill{margin-bottom:0;}
+.hist-amt{font-weight:800; color:var(--navy);}
+.hist-tests{font-weight:700; color:var(--navy); font-size:0.92rem; margin:6px 0 2px; overflow-wrap:anywhere;}
+.hist-meta{font-size:0.8rem; color:var(--muted);}
+.hist-shared{margin-top:8px; font-size:0.78rem; font-weight:700; color:#12793f; background:#e3f7ea; border-radius:8px; padding:5px 10px; display:inline-block;}
+.hist-actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+.hist-btn{flex:1 1 auto; min-height:44px; padding:0 12px; border-radius:12px; border:1.5px solid var(--line); background:#fff; color:var(--navy); font-weight:700; font-size:0.84rem; cursor:pointer;}
+.hist-btn.pri{background:var(--navy); color:#fff; border-color:var(--navy);}
+.hist-btn:active{transform:scale(.97);}
+.hist-card .tl{margin:10px 0 0;}
+.hist-card .tl li{font-size:0.66rem;}
+.hist-card .cancel-booking-btn{margin-top:10px; min-height:44px;}
+
+/* रिपोर्ट व्ह्यूअर */
+.rep-modal{position:fixed; inset:0; z-index:92; background:#f4f5fa; display:flex; flex-direction:column; padding-top:env(safe-area-inset-top);}
+.rep-modal[hidden]{display:none !important;}
+.rep-head{flex:none; display:flex; align-items:center; gap:10px; padding:8px 10px; background:var(--navy); color:#fff;}
+.rep-head button{min-height:44px; padding:0 12px; border:0; border-radius:12px; background:rgba(255,255,255,.14); color:#fff; font-weight:700; cursor:pointer; font-family:inherit;}
+.rep-head strong{flex:1; min-width:0; font-size:0.92rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.rep-frame{position:relative; flex:1; min-height:0; background:#fff;}
+.rep-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+.rep-loading{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:#fff; color:var(--muted); font-weight:600;}
+.rep-loading[hidden]{display:none;}
+.rep-note{flex:none; padding:8px 14px; background:#e3f7ea; color:#12793f; font-weight:700; font-size:0.84rem; text-align:center;}
+.rep-note[hidden]{display:none;}
+.rep-bar{flex:none; display:flex; gap:8px; padding:10px 10px calc(10px + env(safe-area-inset-bottom)); background:#fff; border-top:1px solid var(--line);}
+.rep-bar button{flex:1; min-height:48px; border-radius:12px; border:1.5px solid var(--line); background:#fff; color:var(--navy); font-weight:700; font-size:0.88rem; cursor:pointer; font-family:inherit;}
+.rep-bar button.primary{background:var(--red); border-color:var(--red); color:#fff;}
+
+/* बास्केट + जोडली पट्टी */
+.cart-info{cursor:pointer;}
+.cart-info::before{content:"🧺 "; }
+.bucket-backdrop{align-items:flex-end; padding:0;}
+.bucket-sheet{width:100%; max-width:560px; max-height:82vh; max-height:82dvh; background:#fff; border-radius:20px 20px 0 0; display:flex; flex-direction:column; animation:slideUp .22s ease;}
+.bucket-head{display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--line); color:var(--navy);}
+.bucket-head button{border:0; background:none; width:44px; height:44px; font-size:1.2rem; color:var(--muted); cursor:pointer;}
+.bucket-body{padding:10px 16px; overflow-y:auto; flex:1;}
+.bucket-row{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:0.92rem;}
+.bucket-row span{flex:1; min-width:0; font-weight:600; color:var(--navy);}
+.bucket-row b{color:var(--red-dark);}
+.bucket-row button{width:44px; height:44px; border:0; border-radius:12px; background:#fde8e8; color:#a12424; font-weight:800; cursor:pointer;}
+.bucket-foot{display:flex; gap:8px; padding:12px 16px calc(12px + env(safe-area-inset-bottom)); border-top:1px solid var(--line);}
+.bucket-foot .btn{flex:1; margin-top:0;}
+.add-snack{position:fixed; left:10px; right:10px; bottom:calc(env(safe-area-inset-bottom) + 130px); z-index:60; background:var(--navy); color:#fff; border-radius:16px; padding:10px 12px; display:flex; align-items:center; gap:10px; box-shadow:0 10px 28px rgba(0,0,0,.35); animation:slideUp .22s ease; max-width:540px; margin:0 auto;}
+.add-snack[hidden]{display:none !important;}
+.add-snack-text{flex:1; min-width:0; font-size:0.86rem; line-height:1.3; overflow-wrap:anywhere;}
+.add-snack-text small{color:#cfd4ee;}
+.add-snack-btns{display:flex; flex-direction:column; gap:6px; flex:none;}
+.add-snack-btns button{min-height:44px; padding:0 12px; border:1.5px solid rgba(255,255,255,.4); border-radius:12px; background:transparent; color:#fff; font-weight:700; font-size:0.8rem; cursor:pointer; font-family:inherit;}
+.add-snack-btns button.primary{background:var(--red); border-color:var(--red);}

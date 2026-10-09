@@ -290,6 +290,7 @@ function renderBookings(filterText = "") {
       <div class="booking-links">
         ${b.prescription ? `<a href="${b.prescription}" target="_blank" rel="noopener" class="link-btn">${t("view_prescription")}</a>` : ""}
         ${b.reportLink ? `<a href="${b.reportLink}" target="_blank" rel="noopener" class="link-btn">${t("view_report")}</a>` : ""}
+        ${b.reportShared ? `<span class="shared-tag">📤 ${t("ib_report_shared")}: ${escapeHtml(b.reportShared)}</span>` : ""}
       </div>
       <div class="review-actions">
         ${b.status === "Pending Confirmation" ? `<button type="button" class="mini-btn approve" data-row="${b.rowNum}" data-bstatus="Confirmed">${t("btn_confirm_booking")}</button>` : ""}

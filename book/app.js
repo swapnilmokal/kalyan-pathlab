@@ -106,12 +106,14 @@ function showSection(name, instant, fromPop) {
     if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
   });
   document.body.dataset.sec = name;
+  if (window.kpSaveSection) kpSaveSection(name);
   // मोबाईल "Back" बटण: मागच्या स्क्रीनवर जातं (अ‍ॅप एकदम बंद होत नाही)
   if (!fromPop && name !== currentSection) history.pushState({ s: name }, "");
   currentSection = name;
   scrollMainTop(instant);
 }
 window.addEventListener("popstate", (e) => {
+  if (window.KPDocs && KPDocs.closeIfOpen()) return;   // रिपोर्ट/बिल उघडं असल्यास "Back" ने तेच बंद व्हावं
   const s = (e.state && e.state.s) || "home";
   if (document.getElementById("testModal") && !document.getElementById("testModal").hidden) closeTestModal();
   showSection(s, true, true);
@@ -345,7 +347,7 @@ function renderSearchResults(term) {
 function toggleTest(name, price) {
   const idx = selectedTests.findIndex((s) => s.name === name);
   if (idx >= 0) selectedTests.splice(idx, 1);
-  else selectedTests.push({ name, price });
+  else { selectedTests.push({ name, price }); if (window.kpOnTestAdded) kpOnTestAdded(name); }
   updateCartBar();
   updateUpiLink();
   if (typeof renderPopularTests === "function") renderPopularTests();
@@ -401,6 +403,7 @@ function updateCartBar() {
   }
   lastSubtotal = c.subtotal;
   updateChargeBox();
+  if (window.kpSaveCart) kpSaveCart();
   if (selectedTests.length === 0) {
     bar.hidden = true;
     return;
@@ -560,6 +563,7 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
   const total = totals.total;
 
   bookingSubmitting = true;
+  window.__kpCartLocked = true; try { localStorage.removeItem("kp_cart"); } catch (_) {}
   const submitBtn = e.target.querySelector('button[type="submit"]'); if (submitBtn) submitBtn.disabled = true;
   const payload = {
     type: "booking",
@@ -784,6 +788,7 @@ document.getElementById("reviewForm").addEventListener("submit", (e) => {
 
 /* ---------- भाषा बदलली की JS-generated भाग पुन्हा रेंडर करणे ---------- */
 function onLanguageChanged() {
+  if (window.KPDocs) KPDocs.refresh();
   renderCities();
   renderCategoryTabs();
   if (document.getElementById("testSearch") && document.getElementById("testSearch").value) {
@@ -874,6 +879,7 @@ function reportButtonsHtml(url) {
 }
 
 function renderStatusResults(bookings) {
+  if (window.KPDocs) { KPDocs.render(bookings); return; }
   const wrap = document.getElementById("statusResultWrap");
   if (!bookings || bookings.length === 0) {
     wrap.innerHTML = `<p class="empty-msg" style="text-align:center;color:var(--muted);padding:14px 0;">${t("no_booking_found")}</p>`;
@@ -901,6 +907,7 @@ document.getElementById("statusCheckBtn").addEventListener("click", () => {
     showToast(t("toast_invalid_phone"));
     return;
   }
+  try { localStorage.setItem("kp_phone", phone); } catch (_) {}   // पुढच्या वेळी नंबर आपोआप भरतो
   if (!CONFIG.appsScriptUrl || CONFIG.appsScriptUrl.startsWith("PASTE_")) return;
   fetch(`${CONFIG.appsScriptUrl}?action=bookingStatus&phone=${phone}`)
     .then((res) => res.json())
