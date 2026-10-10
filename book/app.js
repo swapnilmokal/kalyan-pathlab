@@ -1059,7 +1059,7 @@ function refreshSlots() {
   slots.forEach((b) => {
     const start = Number(b.dataset.start);
     let off = !val; // आधी तारीख निवडा
-    if (isSunday && start >= 13) off = true;                 // रविवार: दुपारी 1 नंतर बंद
+    if (isSunday && start < 8) off = true;                   // रविवार: लॅब सकाळी 8 ला उघडते (सकाळी 7–8 स्लॉट बंद)
     if (isToday && start * 60 <= nowMin + 60) off = true;    // आजसाठी: किमान 1 तास आधी
     b.disabled = off;
     if (off && b.classList.contains("on")) { b.classList.remove("on"); document.getElementById("collectionTime").value = ""; }

@@ -317,7 +317,7 @@ const TRANSLATIONS = {
   step_next: { mr: "पुढे →", hi: "आगे →", en: "Next →" },
   step_back: { mr: "← मागे", hi: "← पीछे", en: "← Back" },
   label_collection_slot: { mr: "वेळ निवडा *", hi: "समय चुनें *", en: "Choose a time slot *" },
-  slot_note: { mr: "आधी दिवस निवडा. रविवारी सॅम्पल कलेक्शन दुपारी 1 पर्यंत.", hi: "पहले दिन चुनें। रविवार को सैंपल कलेक्शन दोपहर 1 बजे तक।", en: "Pick a day first. On Sundays, collection runs until 1 PM." },
+  slot_note: { mr: "आधी दिवस निवडा. सॅम्पल कलेक्शन सकाळी 7 ते दुपारी 1 (रविवारी 8 ते 1).", hi: "पहले दिन चुनें। सैंपल कलेक्शन सुबह 7 से दोपहर 1 बजे तक (रविवार को 8 से 1)।", en: "Pick a day first. Sample collection 7 AM to 1 PM (Sundays 8 AM to 1 PM)." },
   toast_select_slot: { mr: "कृपया सॅम्पल कलेक्शनची वेळ निवडा", hi: "कृपया सैंपल कलेक्शन का समय चुनें", en: "Please choose a collection time slot" },
   toast_past_date: { mr: "मागची तारीख निवडता येत नाही", hi: "पिछली तारीख नहीं चुन सकते", en: "You can't pick a past date" },
   home_reviews_heading: { mr: "पेशंट्स काय म्हणतात", hi: "मरीज़ क्या कहते हैं", en: "What patients say" },
