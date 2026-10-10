@@ -504,3 +504,21 @@ input,select,textarea{min-height:46px;}
 .add-snack-btns{display:flex; flex-direction:column; gap:6px; flex:none;}
 .add-snack-btns button{min-height:44px; padding:0 12px; border:1.5px solid rgba(255,255,255,.4); border-radius:12px; background:transparent; color:#fff; font-weight:700; font-size:0.8rem; cursor:pointer; font-family:inherit;}
 .add-snack-btns button.primary{background:var(--red); border-color:var(--red);}
+
+
+/* टेस्ट-ड्रॉपडाउनमधली बास्केट-पट्टी */
+.tm-foot{flex:none; display:flex; align-items:center; gap:10px; padding:10px 14px calc(10px + env(safe-area-inset-bottom)); background:var(--navy); color:#fff; border-radius:0; transition:background .2s ease;}
+.tm-foot[hidden]{display:none !important;}
+.tm-foot.flash{background:#12793f;}
+.tm-foot-text{flex:1; min-width:0; font-size:0.88rem; line-height:1.3; overflow-wrap:anywhere;}
+.tm-foot-text small{color:#cfe9d9; font-size:0.74rem;}
+.tm-foot:not(.flash) .tm-foot-text small{color:#cfd4ee;}
+.tm-foot-btns{display:flex; gap:6px; flex:none;}
+.tm-foot-btns button{min-height:44px; padding:0 12px; border:1.5px solid rgba(255,255,255,.45); border-radius:12px; background:transparent; color:#fff; font-weight:700; font-size:0.8rem; cursor:pointer; font-family:inherit;}
+.tm-foot-btns button.primary{background:var(--red); border-color:var(--red);}
+.add-snack{z-index:95;}
+.qa-f{display:flex; flex-direction:column; gap:4px; font-size:0.82rem; font-weight:600; color:var(--muted); margin-top:10px;}
+.qa-f input,.qa-f select{width:100%; box-sizing:border-box; padding:11px 12px; border:1.5px solid var(--line); border-radius:12px; font:inherit; font-size:0.95rem; min-height:46px; background:#fff;}
+.bucket-foot{flex-wrap:wrap;}
+.bucket-foot .btn{flex:1 1 30%; padding-left:6px; padding-right:6px; font-size:0.86rem;}
+#quoteAsk{z-index:94;}

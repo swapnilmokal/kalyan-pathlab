@@ -29,6 +29,13 @@
   /* ---------- Bill (printed document) labels ---------- */
   const BL = {
     en: {
+      title_quote: "QUOTATION", quote_no: "Quote No.", valid_till: "Valid till", prepared: "Prepared For", quote_details: "Quotation Details",
+      pref_sample: "Preferred sample date", est_total: "ESTIMATED TOTAL", email: "Email", coll_policy: "Home collection",
+      coll_policy_v: "Rs. 100 on bills below Rs. 499; free from Rs. 499", note_lbl: "Note",
+      qt1: "Rates are for blood tests with home sample collection as per the Kalyan Pathlab rate list.",
+      qt2: "Home collection charge of Rs. 100 applies if the bill is below Rs. 499; it is waived for Rs. 499 and above.",
+      qt3: "This quotation is valid till the date mentioned; rates may change after that.",
+      qt4: "This is a quotation, not a bill or payment receipt.",
       title_b2c: "BILL / RECEIPT", title_b2b: "INVOICE", bill_no: "Bill No.", date: "Date", pid: "Patient ID",
       patient: "Patient Details", name: "Name", agesex: "Age / Sex", mobile: "Mobile", address: "Address", ref: "Referred by",
       coll: "Collection & Payment", sample: "Sample collection", report: "Report via", pmode: "Payment mode", pstatus: "Payment status",
@@ -45,6 +52,13 @@
       upi: "Pay via UPI", regno: "Reg. No.", hours: "Hours", self: "Self"
     },
     mr: {
+      title_quote: "दरपत्रक (कोटेशन)", quote_no: "कोटेशन क्र.", valid_till: "वैधता", prepared: "कोणासाठी", quote_details: "कोटेशन तपशील",
+      pref_sample: "पसंतीची सॅम्पल तारीख", est_total: "अंदाजे एकूण", email: "ईमेल", coll_policy: "होम कलेक्शन",
+      coll_policy_v: "₹499 पेक्षा कमी बिलावर ₹100; ₹499 पासून मोफत", note_lbl: "टीप",
+      qt1: "दर Kalyan Pathlab च्या दरपत्रकानुसार, घरी सॅम्पल कलेक्शनसह ब्लड टेस्टसाठी आहेत.",
+      qt2: "बिल ₹499 पेक्षा कमी असल्यास ₹100 होम कलेक्शन चार्ज लागतो; ₹499 किंवा जास्त बिलावर तो माफ आहे.",
+      qt3: "हे कोटेशन नमूद तारखेपर्यंत वैध आहे; नंतर दर बदलू शकतात.",
+      qt4: "हे कोटेशन आहे, बिल किंवा पेमेंट पावती नाही.",
       title_b2c: "बिल / पावती", title_b2b: "इनव्हॉइस", bill_no: "बिल क्र.", date: "दिनांक", pid: "पेशंट ID",
       patient: "पेशंट तपशील", name: "नाव", agesex: "वय / लिंग", mobile: "मोबाईल", address: "पत्ता", ref: "रेफर करणारे",
       coll: "कलेक्शन व पेमेंट", sample: "सॅम्पल कलेक्शन", report: "रिपोर्ट", pmode: "पेमेंट पद्धत", pstatus: "पेमेंट स्थिती",
@@ -61,6 +75,13 @@
       upi: "UPI ने पेमेंट", regno: "नोंदणी क्र.", hours: "वेळ", self: "स्वतः"
     },
     hi: {
+      title_quote: "कोटेशन (दर पत्र)", quote_no: "कोटेशन नं.", valid_till: "वैधता", prepared: "किसके लिए", quote_details: "कोटेशन विवरण",
+      pref_sample: "पसंदीदा सैंपल तारीख", est_total: "अनुमानित कुल", email: "ईमेल", coll_policy: "होम कलेक्शन",
+      coll_policy_v: "₹499 से कम के बिल पर ₹100; ₹499 से मुफ्त", note_lbl: "टिप्पणी",
+      qt1: "दर Kalyan Pathlab की दर सूची के अनुसार, घर पर सैंपल कलेक्शन के साथ ब्लड टेस्ट के लिए हैं।",
+      qt2: "बिल ₹499 से कम होने पर ₹100 होम कलेक्शन चार्ज लगता है; ₹499 या अधिक पर माफ है।",
+      qt3: "यह कोटेशन बताई गई तारीख तक मान्य है; उसके बाद दर बदल सकते हैं।",
+      qt4: "यह कोटेशन है, बिल या भुगतान रसीद नहीं।",
       title_b2c: "बिल / रसीद", title_b2b: "इनवॉइस", bill_no: "बिल नं.", date: "दिनांक", pid: "मरीज़ ID",
       patient: "मरीज़ विवरण", name: "नाम", agesex: "उम्र / लिंग", mobile: "मोबाइल", address: "पता", ref: "रेफर",
       coll: "कलेक्शन व पेमेंट", sample: "सैंपल कलेक्शन", report: "रिपोर्ट", pmode: "पेमेंट तरीका", pstatus: "पेमेंट स्थिति",
@@ -97,11 +118,68 @@
   }
 
 
+
+  /* बिल / इनव्हॉइस / कोटेशन — दोन्ही (HTML + PDF) साठी सामायिक मजकूर-मॉडेल */
+  function model(inv) {
+    const L = BL[inv.lang] || BL.en;
+    const isQ = inv.type === "QUOTE", isB2B = inv.type === "B2B";
+    const p = inv.patient || {}, cl = inv.client || {}, pay = inv.pay || {};
+    const agesex = [p.age ? p.age + " Y" : "", p.gender].filter(Boolean).join(" / ");
+    const sampleStr = [fmtDate(p.sampleDate), p.sampleTime].filter(Boolean).join(", ");
+    const meta = [[isQ ? L.quote_no : L.bill_no, inv.billNo], [L.date, fmtDate(inv.date)]];
+    if (isQ && inv.validTill) meta.push([L.valid_till, fmtDate(inv.validTill)]);
+    if (p.pid) meta.push([L.pid, p.pid]);
+    let leftTitle, leftRows, rightTitle, rightRows;
+    if (isB2B) {
+      leftTitle = L.billed;
+      leftRows = [[L.name, cl.name], [L.address, cl.address], [L.gstin, cl.gstin], [L.contact, cl.contact], [L.patient_ref, [p.name, agesex].filter(Boolean).join(" · ")]];
+      rightTitle = L.coll;
+      rightRows = [[L.sample, sampleStr], [L.report, p.report], [L.pmode, pay.mode], [L.pstatus, pay.status === "Paid" ? L.paid : L.unpaid]];
+      if (p.phone) rightRows.push([L.mobile, p.phone]);
+    } else if (isQ) {
+      leftTitle = L.prepared;
+      leftRows = [[L.name, p.name], [L.agesex, agesex], [L.mobile, p.phone], [L.email, p.email], [L.address, p.address], [L.ref, p.doctor]];
+      rightTitle = L.quote_details;
+      rightRows = [[L.valid_till, inv.validTill ? fmtDate(inv.validTill) : ""], [L.pref_sample, sampleStr], [L.report, p.report], [L.coll_policy, L.coll_policy_v]];
+    } else {
+      leftTitle = L.patient;
+      leftRows = [[L.name, p.name], [L.agesex, agesex], [L.mobile, p.phone], [L.address, p.address], [L.ref, p.doctor || L.self]];
+      rightTitle = L.coll;
+      rightRows = [[L.sample, sampleStr], [L.report, p.report], [L.pmode, pay.mode], [L.pstatus, pay.status === "Paid" ? L.paid : L.unpaid]];
+    }
+    const terms = isQ ? [L.qt1, L.qt2, L.qt3, L.qt4].concat(inv.notes ? [`${L.note_lbl}: ${inv.notes}`] : []) : [L.t1, isB2B ? L.t5 : L.t2, L.t3, L.t4];
+    return {
+      L, isQ, isB2B, p, cl, pay, agesex, sampleStr, meta, leftTitle, leftRows, rightTitle, rightRows, terms,
+      title: isQ ? L.title_quote : isB2B ? L.title_b2b : L.title_b2c,
+      netLabel: isQ ? L.est_total : L.net,
+      showUpi: !isQ && pay.status !== "Paid"
+    };
+  }
+
+  /* WhatsApp / ईमेल साठी छोटा मजकूर */
+  function text(inv, forEmail) {
+    const c = calc(inv); const m = model(inv); const star = forEmail ? "" : "*";
+    const kind = m.isQ ? "Quotation" : m.isB2B ? "Invoice" : "Bill";
+    const out = [`${star}${LAB.name}${star} — ${kind} ${inv.billNo}`, `Date: ${fmtDate(inv.date)}` + (m.isQ && inv.validTill ? `   Valid till: ${fmtDate(inv.validTill)}` : "")];
+    const who = m.isB2B ? (m.cl.name || "") : (m.p.name || "");
+    if (who) out.push(`${m.isQ ? "Prepared for" : m.isB2B ? "Billed to" : "Patient"}: ${who}`);
+    out.push("");
+    inv.lines.forEach((l) => out.push(`• ${l.name} — Rs. ${plain(num(l.rate))}`));
+    out.push("", `Sub-total: Rs. ${plain(c.sumRate)}`);
+    out.push(`Home collection charge: ${c.coll > 0 ? "Rs. " + plain(c.coll) : (c.waived ? "Waived (bill Rs. 499+)" : "Rs. 0")}`);
+    out.push(`${star}${m.isQ ? "Estimated total" : "Net payable"}: Rs. ${plain(c.net)}${star}`);
+    if (m.isQ) out.push("", "Home collection: Rs. 100 below Rs. 499, free from Rs. 499.");
+    else out.push(m.pay.status === "Paid" ? "Payment: PAID" : "Payment: DUE");
+    if (inv.notes) out.push("", `Note: ${inv.notes}`);
+    out.push("", "Kalyan Pathlab · Care For Quality", `Call / WhatsApp: ${LAB.phone}`);
+    return out.join("\n");
+  }
+
   function calc(inv) {
     const sumRate = inv.lines.reduce((a, l) => a + num(l.rate), 0);
     const sumMrp = inv.lines.reduce((a, l) => a + (num(l.mrp) || num(l.rate)), 0);
     const coll = num(inv.collection);
-    return { sumRate, sumMrp, discount: Math.max(0, sumMrp - sumRate), coll, net: sumRate + coll, waived: inv.type === "B2C" && sumRate >= FREE_MIN };
+    return { sumRate, sumMrp, discount: Math.max(0, sumMrp - sumRate), coll, net: sumRate + coll, waived: (inv.type === "B2C" || inv.type === "QUOTE") && sumRate >= FREE_MIN };
   }
 
   function stampSVG() {
@@ -131,13 +209,12 @@
     opts = opts || {};
     const L = BL[inv.lang] || BL.en;
     const c = calc(inv);
-    const isB2B = inv.type === "B2B";
-    const p = inv.patient, cl = inv.client, lab = inv.lab;
+    const M = model(inv);
+    const isB2B = M.isB2B;
+    const p = M.p, lab = inv.lab || {};
     const row = (k, v) => (v ? `<tr><td class="k">${k}</td><td class="v">${esc(v)}</td></tr>` : "");
     const lines = inv.lines.map((l, i) => `<tr><td class="c">${i + 1}</td><td>${esc(l.name)}</td>${!isB2B ? `<td class="r">${plain(num(l.mrp) || num(l.rate))}</td>` : ""}<td class="r">${plain(num(l.rate))}</td></tr>`).join("");
     const colSpan = isB2B ? 2 : 3;
-    const sampleStr = [fmtDate(p.sampleDate), p.sampleTime].filter(Boolean).join(", ");
-    const agesex = [p.age ? p.age + " Y" : "", p.gender].filter(Boolean).join(" / ");
     const upi = opts.upi || "enterprises60658@nyes";
     const legal = [lab.gstin ? `GSTIN: ${esc(lab.gstin)}` : "", lab.reg ? `${L.regno}: ${esc(lab.reg)}` : ""].filter(Boolean).join(" &nbsp;|&nbsp; ");
     return `
@@ -152,11 +229,9 @@
           ${legal ? `<div class="inv-lab-line strong">${legal}</div>` : ""}
         </div>
         <div class="inv-title-box">
-          <div class="inv-title">${isB2B ? L.title_b2b : L.title_b2c}</div>
+          <div class="inv-title">${M.title}</div>
           <table class="inv-meta">
-            <tr><td>${L.bill_no}</td><td><b>${esc(inv.billNo)}</b></td></tr>
-            <tr><td>${L.date}</td><td><b>${fmtDate(inv.date)}</b></td></tr>
-            ${p.pid ? `<tr><td>${L.pid}</td><td><b>${esc(p.pid)}</b></td></tr>` : ""}
+            ${M.meta.map((r) => `<tr><td>${r[0]}</td><td><b>${esc(r[1])}</b></td></tr>`).join("")}
           </table>
         </div>
       </div>
@@ -164,19 +239,12 @@
 
       <div class="inv-grid">
         <div class="inv-box">
-          <div class="inv-box-h">${isB2B ? L.billed : L.patient}</div>
-          <table class="inv-kv">
-            ${isB2B
-              ? row(L.name, cl.name) + row(L.address, cl.address) + row(L.gstin, cl.gstin) + row(L.contact, cl.contact) + row(L.patient_ref, [p.name, agesex].filter(Boolean).join(" · "))
-              : row(L.name, p.name) + row(L.agesex, agesex) + row(L.mobile, p.phone) + row(L.address, p.address) + row(L.ref, p.doctor || L.self)}
-          </table>
+          <div class="inv-box-h">${M.leftTitle}</div>
+          <table class="inv-kv">${M.leftRows.map((r) => row(r[0], r[1])).join("")}</table>
         </div>
         <div class="inv-box">
-          <div class="inv-box-h">${L.coll}</div>
-          <table class="inv-kv">
-            ${row(L.sample, sampleStr) + row(L.report, p.report) + row(L.pmode, inv.pay.mode) + row(L.pstatus, inv.pay.status === "Paid" ? L.paid : L.unpaid)}
-            ${isB2B && p.phone ? row(L.mobile, p.phone) : ""}
-          </table>
+          <div class="inv-box-h">${M.rightTitle}</div>
+          <table class="inv-kv">${M.rightRows.map((r) => row(r[0], r[1])).join("")}</table>
         </div>
       </div>
 
@@ -188,20 +256,17 @@
           <tr><td colspan="${colSpan}" class="r lbl">${L.discount}</td><td class="r">− ${plain(c.discount)}</td></tr>` : ""}
           <tr><td colspan="${colSpan}" class="r lbl">${L.subtotal}</td><td class="r">${plain(c.sumRate)}</td></tr>
           <tr><td colspan="${colSpan}" class="r lbl">${L.collection}</td><td class="r">${c.coll > 0 ? plain(c.coll) : (c.waived ? `<span class="waived">${L.waived}</span>` : plain(0))}</td></tr>
-          <tr class="net"><td colspan="${colSpan}" class="r">${L.net}</td><td class="r">₹ ${plain(c.net)}</td></tr>
+          <tr class="net"><td colspan="${colSpan}" class="r">${M.netLabel}</td><td class="r">₹ ${plain(c.net)}</td></tr>
         </tfoot>
       </table>
       <div class="inv-words"><b>${L.words}:</b> Rupees ${esc(inWords(c.net))} Only</div>
-      ${inv.pay.status !== "Paid" ? `<div class="inv-upi">${L.upi}: <b>${esc(upi)}</b></div>` : ""}
+      ${M.showUpi ? `<div class="inv-upi">${L.upi}: <b>${esc(upi)}</b></div>` : ""}
 
       <div class="inv-foot">
         <div class="inv-terms">
           <div class="inv-box-h">${L.terms}</div>
           <ol>
-            <li>${L.t1}</li>
-            ${!isB2B ? `<li>${L.t2}</li>` : `<li>${L.t5}</li>`}
-            <li>${L.t3}</li>
-            <li>${L.t4}</li>
+            ${M.terms.map((x) => `<li>${esc(x)}</li>`).join("")}
           </ol>
         </div>
         <div class="inv-sign">
@@ -239,8 +304,9 @@
     opts = opts || {};
     const L = BL[inv.lang] || BL.en;
     const c = calc(inv);
-    const isB2B = inv.type === "B2B";
-    const p = inv.patient, cl = inv.client || {}, lab = inv.lab || {};
+    const M = model(inv);
+    const isB2B = M.isB2B;
+    const p = M.p, lab = inv.lab || {};
     const W = 794, H = 1123, S = 1240 / 794;
     const cv = document.createElement("canvas");
     cv.width = 1240; cv.height = Math.round(H * S);
@@ -269,15 +335,14 @@
     if (legal) { font("700", 11.5); T(legal, 138, hy, NAVY); }
     // title box
     const bx = 552, by = 30, bw = 206;
-    const meta = [[L.bill_no, inv.billNo], [L.date, fmtDate(inv.date)]];
-    if (p.pid) meta.push([L.pid, p.pid]);
+    const meta = M.meta;
     const bh = 30 + meta.length * 22 + 6;
     g.save(); rrect(g, bx, by, bw, bh, 8); g.clip();
     g.fillStyle = NAVY; g.fillRect(bx, by, bw, 30);
     g.restore();
     g.strokeStyle = NAVY; g.lineWidth = 1.5; rrect(g, bx, by, bw, bh, 8); g.stroke();
     font("800", 14); try { g.letterSpacing = "1.5px"; } catch (_) {}
-    T(isB2B ? L.title_b2b : L.title_b2c, bx + bw / 2, by + 20, "#fff", "center");
+    T(M.title, bx + bw / 2, by + 20, "#fff", "center");
     try { g.letterSpacing = "0px"; } catch (_) {}
     meta.forEach((m, i) => {
       const yy = by + 30 + 20 + i * 22;
@@ -289,13 +354,7 @@
     g.fillStyle = NAVY; g.fillRect(36, ry, 722 * 0.7, 4); g.fillStyle = RED; g.fillRect(36 + 722 * 0.7, ry, 722 * 0.3, 4);
 
     // ---- info boxes ----
-    const agesex = [p.age ? p.age + " Y" : "", p.gender].filter(Boolean).join(" / ");
-    const sampleStr = [fmtDate(p.sampleDate), p.sampleTime].filter(Boolean).join(", ");
-    const leftRows = isB2B
-      ? [[L.name, cl.name], [L.address, cl.address], [L.gstin, cl.gstin], [L.contact, cl.contact], [L.patient_ref, [p.name, agesex].filter(Boolean).join(" · ")]]
-      : [[L.name, p.name], [L.agesex, agesex], [L.mobile, p.phone], [L.address, p.address], [L.ref, p.doctor || L.self]];
-    const rightRows = [[L.sample, sampleStr], [L.report, p.report], [L.pmode, inv.pay.mode], [L.pstatus, inv.pay.status === "Paid" ? L.paid : L.unpaid]];
-    if (isB2B && p.phone) rightRows.push([L.mobile, p.phone]);
+    const leftRows = M.leftRows, rightRows = M.rightRows;
     const lw = 378, rw = 330, bx1 = 36, bx2 = 36 + lw + 14, iy = ry + 20;
     function measureRows(rows, w) {
       font("700", 12.5);
@@ -318,8 +377,8 @@
         yy += r.lines.length * 16 + 4;
       });
     }
-    drawBox(bx1, lw, isB2B ? L.billed : L.patient, lm);
-    drawBox(bx2, rw, L.coll, rm);
+    drawBox(bx1, lw, M.leftTitle, lm);
+    drawBox(bx2, rw, M.rightTitle, rm);
 
     // ---- table ----
     let ty = iy + ih + 16;
@@ -351,7 +410,7 @@
     totRow(L.subtotal, plain(c.sumRate));
     totRow(L.collection, c.coll > 0 ? plain(c.coll) : (c.waived ? L.waived : plain(0)), c.coll > 0 ? INK : (c.waived ? "#12793f" : INK));
     g.fillStyle = NAVY; g.fillRect(36, ty + 2, 722, 38);
-    font("800", 15); T(L.net, labelRight, ty + 27, "#fff", "right"); T("Rs. " + plain(c.net), rateX, ty + 27, "#fff", "right");
+    font("800", 15); T(M.netLabel, labelRight, ty + 27, "#fff", "right"); T("Rs. " + plain(c.net), rateX, ty + 27, "#fff", "right");
     ty += 40 + 12;
     // words
     g.fillStyle = "#fff8e1"; g.fillRect(36, ty, 722, 30); g.fillStyle = "#f5b400"; g.fillRect(36, ty, 4, 30);
@@ -359,12 +418,12 @@
     const wl = g.measureText(L.words + ": ").width;
     font("400", 12.5); T("Rupees " + inWords(c.net) + " Only", 50 + wl, ty + 19, INK);
     ty += 30;
-    if (inv.pay.status !== "Paid") { ty += 8; font("400", 12.5); T(L.upi + ": ", 36, ty + 14, NAVY); const uw = g.measureText(L.upi + ": ").width; font("700", 12.5); T(opts.upi || "enterprises60658@nyes", 36 + uw, ty + 14, NAVY); }
+    if (M.showUpi) { ty += 8; font("400", 12.5); T(L.upi + ": ", 36, ty + 14, NAVY); const uw = g.measureText(L.upi + ": ").width; font("700", 12.5); T(opts.upi || "enterprises60658@nyes", 36 + uw, ty + 14, NAVY); }
 
     // ---- footer ----
     const footBottom = H - 86;
     // terms
-    const terms = [L.t1, !isB2B ? L.t2 : L.t5, L.t3, L.t4];
+    const terms = M.terms;
     font("400", 11);
     const tl = terms.map((tx, i) => wrap(g, `${i + 1}. ${tx}`, 440));
     const th = 24 + 8 + tl.reduce((a, l) => a + l.length * 15, 0) + 8;
@@ -415,5 +474,5 @@
     return new Blob(chunks, { type: "application/pdf" });
   }
 
-  global.KPInv = { html, calc, pdfBlob, inWords, LAB, BL, fmtDate, FREE_MIN };
+  global.KPInv = { html, calc, pdfBlob, text, model, inWords, LAB, BL, fmtDate, FREE_MIN };
 })(window);

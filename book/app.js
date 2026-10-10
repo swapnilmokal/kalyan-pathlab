@@ -404,6 +404,7 @@ function updateCartBar() {
   lastSubtotal = c.subtotal;
   updateChargeBox();
   if (window.kpSaveCart) kpSaveCart();
+  if (window.kpAfterCart) kpAfterCart();
   if (selectedTests.length === 0) {
     bar.hidden = true;
     return;

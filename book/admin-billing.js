@@ -61,6 +61,15 @@
     ib_back_edit: { en: "← Edit", mr: "← एडिट", hi: "← एडिट" },
     ib_print: { en: "🖨 Print", mr: "🖨 प्रिंट", hi: "🖨 प्रिंट" },
     ib_report_shared: { en: "Report shared by patient", mr: "पेशंटने रिपोर्ट शेअर केला", hi: "मरीज़ ने रिपोर्ट शेयर की" },
+    ib_quote_btn: { en: "📄 New Quotation", mr: "📄 नवे कोटेशन", hi: "📄 नया कोटेशन" },
+    ib_quote_title: { en: "Quotation", mr: "कोटेशन", hi: "कोटेशन" },
+    ib_quote_date: { en: "Quotation date", mr: "कोटेशनची तारीख", hi: "कोटेशन की तारीख" },
+    ib_valid_till: { en: "Valid till", mr: "वैधता (तारखेपर्यंत)", hi: "वैधता (तारीख तक)" },
+    ib_notes: { en: "Note on quotation (optional)", mr: "कोटेशनवरची टीप (ऐच्छिक)", hi: "कोटेशन पर टिप्पणी (वैकल्पिक)" },
+    ib_email_f: { en: "Email", mr: "ईमेल", hi: "ईमेल" },
+    ib_pref_sample: { en: "Preferred sample date (optional)", mr: "पसंतीची सॅम्पल तारीख (ऐच्छिक)", hi: "पसंदीदा सैंपल तारीख (वैकल्पिक)" },
+    ib_quote_preview: { en: "Preview & Share", mr: "प्रीव्ह्यू व शेअर", hi: "प्रीव्यू व शेयर" },
+    ib_email_btn: { en: "✉️ Email", mr: "✉️ ईमेल", hi: "✉️ ईमेल" },
     ib_pdf: { en: "⬇ PDF", mr: "⬇ PDF", hi: "⬇ PDF" },
     ib_share: { en: "📤 Share", mr: "📤 शेअर", hi: "📤 शेयर" },
     ib_wa: { en: "💬 WhatsApp", mr: "💬 WhatsApp", hi: "💬 WhatsApp" },
@@ -260,6 +269,8 @@
     body.addEventListener("input", onInput);
     body.addEventListener("change", onInput);
     body.addEventListener("click", onClick);
+    body.addEventListener("mousedown", (e) => { if (e.target.closest("#ibSuggest")) e.preventDefault(); });
+    body.addEventListener("touchstart", (e) => { if (e.target.closest("#ibSuggest")) { const s = document.getElementById("ibSearch"); if (s) s.blur = s.blur; } }, { passive: true });
     return m;
   }
   function closeModal() { const m = document.getElementById("invModal"); if (m) m.hidden = true; }
@@ -273,19 +284,21 @@
 
   function renderBody() {
     const body = document.getElementById("invModalBody");
-    document.getElementById("invModalTitle").textContent = "🧾 " + t("ib_title") + " · " + inv.billNo;
+    document.getElementById("invModalTitle").textContent = (inv.type === "QUOTE" ? "📄 " + t("ib_quote_title") : "🧾 " + t("ib_title")) + " · " + inv.billNo;
     const p = inv.patient, c = inv.client;
     const isB2B = inv.type === "B2B";
+    const isQ = inv.type === "QUOTE";
     body.innerHTML = `
-      <div class="ib-seg" role="tablist">
+      ${isQ ? "" : `<div class="ib-seg" role="tablist">
         <button type="button" class="${!isB2B ? "on" : ""}" data-type="B2C">${t("ib_type_b2c")}</button>
         <button type="button" class="${isB2B ? "on" : ""}" data-type="B2B">${t("ib_type_b2b")}</button>
-      </div>
+      </div>`}
       <label class="ib-field"><span>${t("ib_lang")}</span>
         <select data-f="lang"><option value="en" ${inv.lang === "en" ? "selected" : ""}>English</option><option value="mr" ${inv.lang === "mr" ? "selected" : ""}>मराठी</option><option value="hi" ${inv.lang === "hi" ? "selected" : ""}>हिंदी</option></select>
       </label>
 
-      ${fld(t("ib_bill_date"), "date", toISO(inv.date) || todayStr(), { type: "date" })}
+      ${fld(isQ ? t("ib_quote_date") : t("ib_bill_date"), "date", toISO(inv.date) || todayStr(), { type: "date" })}
+      ${isQ ? fld(t("ib_valid_till"), "validTill", toISO(inv.validTill), { type: "date" }) : ""}
 
       ${isB2B ? `<h4 class="ib-h">${t("ib_client")}</h4>
         ${allClients().length ? `<label class="ib-field"><span>${t("ib_saved_clients")}</span><select id="ibClientPick"><option value="">${t("ib_pick_client")}</option>${allClients().map((x) => `<option value="${esc(x.name)}" ${norm(x.name) === norm(c.name) ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>` : ""}
@@ -298,8 +311,8 @@
       <div class="ib-row">${fld(t("ib_age"), "patient.age", p.age, { inputmode: "numeric" })}
         <label class="ib-field"><span>${t("ib_gender")}</span><select data-f="patient.gender">
           ${["", "Male", "Female", "Other"].map((g) => `<option value="${g}" ${p.gender === g ? "selected" : ""}>${g || "—"}</option>`).join("")}</select></label></div>
-      <div class="ib-row">${fld(t("ib_mobile"), "patient.phone", p.phone, { type: "tel", inputmode: "numeric" })}${fld(t("ib_sample_date"), "patient.sampleDate", toISO(p.sampleDate), { type: "date" })}</div>
-      ${fld(t("ib_sample_time"), "patient.sampleTime", p.sampleTime)}
+      <div class="ib-row">${fld(t("ib_mobile"), "patient.phone", p.phone, { type: "tel", inputmode: "numeric" })}${fld(isQ ? t("ib_pref_sample") : t("ib_sample_date"), "patient.sampleDate", toISO(p.sampleDate), { type: "date" })}</div>
+      ${isQ ? fld(t("ib_email_f"), "patient.email", p.email || "", { type: "email" }) : fld(t("ib_sample_time"), "patient.sampleTime", p.sampleTime)}
       ${fld(t("ib_addr"), "patient.address", p.address, { area: true })}
       ${fld(t("ib_doc"), "patient.doctor", p.doctor)}
 
@@ -312,11 +325,11 @@
       <p class="ib-hint">${isB2B ? t("ib_coll_b2b") : t("ib_coll_b2c")}</p>
       <div id="ibTotals" class="ib-totals"></div>
 
-      <h4 class="ib-h">${t("ib_pay")}</h4>
+      ${isQ ? fld(t("ib_notes"), "notes", inv.notes || "", { area: true }) : `<h4 class="ib-h">${t("ib_pay")}</h4>
       <div class="ib-row">
         <label class="ib-field"><span>${t("ib_pay_mode")}</span><select data-f="pay.mode">${["Cash", "UPI", "Card", "Bank Transfer", "Credit"].map((x) => `<option ${inv.pay.mode === x ? "selected" : ""}>${x}</option>`).join("")}</select></label>
         <label class="ib-field"><span>${t("ib_pay_status")}</span><select data-f="pay.status"><option value="Paid" ${inv.pay.status === "Paid" ? "selected" : ""}>${t("ib_paid")}</option><option value="Unpaid" ${inv.pay.status !== "Paid" ? "selected" : ""}>${t("ib_unpaid")}</option></select></label>
-      </div>
+      </div>`}
 
       <details class="ib-details"><summary>${t("ib_lab")}</summary>
         ${fld(t("ib_lab_gstin"), "lab.gstin", inv.lab.gstin)}
@@ -324,8 +337,8 @@
         ${fld(t("ib_lab_sign"), "lab.sign", inv.lab.sign)}
       </details>
 
-      ${isB2B ? `<label class="ib-check"><input type="checkbox" id="ibSaveClient" ${inv.saveClient ? "checked" : ""}/> <span>${t("ib_save_client")}</span></label><p class="ib-hint">${t("ib_b2b_nosave")}</p>` : `<label class="ib-check"><input type="checkbox" id="ibSave" ${inv.save && !inv.savedOnce ? "checked" : ""} ${inv.savedOnce ? "disabled" : ""}/> <span>${t("ib_save_list")}</span></label>`}
-      <button type="button" class="btn btn-block" id="ibPreview" style="background:var(--navy);color:#fff;margin-top:6px">${t("ib_preview")}</button>`;
+      ${isQ ? "" : isB2B ? `<label class="ib-check"><input type="checkbox" id="ibSaveClient" ${inv.saveClient ? "checked" : ""}/> <span>${t("ib_save_client")}</span></label><p class="ib-hint">${t("ib_b2b_nosave")}</p>` : `<label class="ib-check"><input type="checkbox" id="ibSave" ${inv.save && !inv.savedOnce ? "checked" : ""} ${inv.savedOnce ? "disabled" : ""}/> <span>${t("ib_save_list")}</span></label>`}
+      <button type="button" class="btn btn-block" id="ibPreview" style="background:var(--navy);color:#fff;margin-top:6px">${isQ ? t("ib_quote_preview") : t("ib_preview")}</button>`;
     renderLines();
   }
 
@@ -386,6 +399,7 @@
     if (el.id === "ibColl") { inv.collection = num(el.value); inv.collAuto = false; renderTotals(); return; }
     if (el.id === "ibSave") { inv.save = el.checked; return; }
     if (el.id === "ibSearch") {
+      if (e.type !== "input") return;   // blur वरचा change इव्हेंट सूचना-यादी पुन्हा तयार करून टॅप गिळू नये
       const term = el.value.trim().toLowerCase();
       const box = document.getElementById("ibSuggest");
       if (!term) { box.hidden = true; return; }
@@ -500,11 +514,33 @@
     }
   }
 
+  function addDays(iso, n) {
+    const d = new Date(iso + "T00:00:00"); d.setDate(d.getDate() + n);
+    return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  }
+  function nextQuoteNo() {
+    const d = todayStr().replace(/-/g, ""), key = "kp_quote_seq_" + d;
+    const n = Number(localStorage.getItem(key) || 0) + 1;
+    try { localStorage.setItem(key, String(n)); } catch (_) {}
+    return `QT-${d}-${String(n).padStart(3, "0")}`;
+  }
+  function openQuotation() {
+    inv = baseInv("QUOTE");
+    inv.billNo = nextQuoteNo();
+    inv.validTill = addDays(todayStr(), 7);
+    inv.notes = "";
+    inv.save = false; inv.savedOnce = true;
+    inv.collection = 0;
+    showModal();
+  }
+  window.openQuotation = openQuotation;
+
   function doPreview() {
     if (!inv.patient.name.trim()) { showToast(t("ib_err_name")); return; }
     if (inv.type === "B2B" && !inv.client.name.trim()) { showToast(t("ib_err_client")); return; }
     if (inv.lines.length === 0) { showToast(t("ib_err_lines")); return; }
     inv.date = toISO(inv.date) || todayStr();
+    if (inv.type === "QUOTE") inv.validTill = toISO(inv.validTill) || addDays(inv.date, 7);
     saveProfile({ gstin: inv.lab.gstin, reg: inv.lab.reg, sign: inv.lab.sign });
     syncToSheet();
     if (inv.type === "B2C" && inv.save && !inv.savedOnce) { saveToBills(); inv.savedOnce = true; }
@@ -524,12 +560,14 @@
         <button type="button" id="invPdf"></button>
         <button type="button" id="invShare"></button>
         <button type="button" id="invWa"></button>
+        <button type="button" id="invMail"></button>
       </div>
       <div class="inv-scroll"><div id="invScaleWrap"><div id="invSheet"></div></div></div>`;
     document.body.appendChild(o);
     o.querySelector("#invBack").addEventListener("click", () => { o.hidden = true; });
     o.querySelector("#invPrint").addEventListener("click", () => window.print());
     o.querySelector("#invWa").addEventListener("click", shareWhatsApp);
+    o.querySelector("#invMail").addEventListener("click", shareEmail);
     o.querySelector("#invPdf").addEventListener("click", downloadPdf);
     o.querySelector("#invShare").addEventListener("click", sharePdf);
     window.addEventListener("resize", () => { if (!o.hidden) fitSheet(); });
@@ -549,6 +587,7 @@
     o.querySelector("#invBack").textContent = t("ib_back_edit");
     o.querySelector("#invPrint").textContent = t("ib_print");
     o.querySelector("#invWa").textContent = t("ib_wa");
+    o.querySelector("#invMail").textContent = t("ib_email_btn");
     o.querySelector("#invPdf").textContent = t("ib_pdf");
     o.querySelector("#invShare").textContent = t("ib_share");
     document.getElementById("invSheet").innerHTML = KPInv.html(inv, { upi: upiId() });
@@ -582,21 +621,24 @@
   }
 
   function shareWhatsApp() {
-    const c = calc();
-    const lines = [];
-    lines.push(`*${LAB.name}* — ${inv.type === "B2B" ? "Invoice" : "Bill"} ${inv.billNo}`);
-    lines.push(`Date: ${fmtDate(inv.date)}`);
-    lines.push(`Patient: ${inv.patient.name}`);
-    if (inv.type === "B2B" && inv.client.name) lines.push(`Billed to: ${inv.client.name}`);
-    lines.push("");
-    inv.lines.forEach((l) => lines.push(`• ${l.name} — ${rupee(l.rate)}`));
-    lines.push(`Sub-total: ${rupee(c.sumRate)}`);
-    lines.push(`Home collection charge: ${c.coll > 0 ? rupee(c.coll) : (c.waived ? "Waived" : rupee(0))}`);
-    lines.push(`*Net payable: ${rupee(c.net)}*`);
-    lines.push(inv.pay.status === "Paid" ? "Payment: PAID ✓" : "Payment: DUE");
-    lines.push("", "Care For Quality • Managed by Sanskar Foundation");
     const digits = String(inv.patient.phone || "").replace(/\D/g, "").slice(-10);
     const to = digits.length === 10 ? "91" + digits : "";
-    window.open(`https://wa.me/${to}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
+    window.open(`https://wa.me/${to}?text=${encodeURIComponent(KPInv.text(inv))}`, "_blank");
   }
+  function shareEmail() {
+    const kind = inv.type === "QUOTE" ? "Quotation" : inv.type === "B2B" ? "Invoice" : "Bill";
+    const to = inv.type === "B2B" ? "" : (inv.patient.email || "");
+    window.location.href = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(`${kind} ${inv.billNo} — Kalyan Pathlab`)}&body=${encodeURIComponent(KPInv.text(inv, true))}`;
+  }
+
+  /* ---- Admin मध्ये "नवे कोटेशन" बटण (टेस्ट व बिलिंग टॅबवर) ---- */
+  ["tab-tests", "tab-billing"].forEach((id) => {
+    const sec = document.getElementById(id);
+    if (!sec || sec.querySelector(".quote-open-btn")) return;
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "btn btn-block quote-open-btn";
+    btn.textContent = t("ib_quote_btn");
+    btn.addEventListener("click", openQuotation);
+    sec.insertBefore(btn, sec.firstChild);
+  });
 })();

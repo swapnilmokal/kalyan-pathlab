@@ -34,6 +34,18 @@
     snack_added: { mr: "जोडली ✓", hi: "जोड़ी ✓", en: "added ✓" },
     snack_more: { mr: "+ आणखी टेस्ट", hi: "+ और टेस्ट", en: "+ More tests" },
     snack_book: { mr: "बुक करा →", hi: "बुक करें →", en: "Book →" },
+    qt_btn: { mr: "📄 कोटेशन", hi: "📄 कोटेशन", en: "📄 Quotation" },
+    qt_title: { mr: "कोटेशन बनवा", hi: "कोटेशन बनाएं", en: "Create quotation" },
+    qt_sub: { mr: "निवडलेल्या टेस्टचं दरपत्रक — स्वतःसाठी किंवा कुटुंबासाठी शेअर करा. नाव/नंबर ऐच्छिक.", hi: "चुनी हुई टेस्ट का दर पत्र — अपने या परिवार के लिए शेयर करें। नाम/नंबर वैकल्पिक।", en: "A rate quotation for your selected tests — share it with yourself or family. Name/phone optional." },
+    qt_name: { mr: "नाव (ऐच्छिक)", hi: "नाम (वैकल्पिक)", en: "Name (optional)" },
+    qt_phone: { mr: "मोबाईल (ऐच्छिक)", hi: "मोबाइल (वैकल्पिक)", en: "Mobile (optional)" },
+    qt_email: { mr: "ईमेल (ऐच्छिक)", hi: "ईमेल (वैकल्पिक)", en: "Email (optional)" },
+    qt_lang: { mr: "कोटेशनची भाषा", hi: "कोटेशन की भाषा", en: "Quotation language" },
+    qt_create: { mr: "कोटेशन बनवा", hi: "कोटेशन बनाएं", en: "Create" },
+    qt_cancel: { mr: "रद्द", hi: "रद्द", en: "Cancel" },
+    qt_empty: { mr: "आधी टेस्ट निवडा.", hi: "पहले टेस्ट चुनें।", en: "Select tests first." },
+    tm_basket: { mr: "🧺 बास्केट", hi: "🧺 बास्केट", en: "🧺 Basket" },
+    tm_added: { mr: "जोडली ✓", hi: "जोड़ी ✓", en: "added ✓" },
     back_word: { mr: "← मागे", hi: "← पीछे", en: "← Back" }
   });
 
@@ -238,12 +250,24 @@
         <button type="button" id="pbPdf" class="primary"></button>
         <button type="button" id="pbSave"></button>
         <button type="button" id="pbShare"></button>
+        <button type="button" id="pbWa"></button>
+        <button type="button" id="pbMail"></button>
         <button type="button" id="pbPrint"></button>
       </div>
       <div class="inv-scroll"><div id="invScaleWrap"><div id="invSheet"></div></div></div>`;
     document.body.appendChild(o);
     o.querySelector("#pbBack").addEventListener("click", popOverlayByUI);
     o.querySelector("#pbPrint").addEventListener("click", () => window.print());
+    o.querySelector("#pbWa").addEventListener("click", () => {
+      if (!curBill) return;
+      const d = String(curBill.patient.phone || "").replace(/\D/g, "").slice(-10);
+      window.open(`https://wa.me/${d.length === 10 ? "91" + d : ""}?text=${encodeURIComponent(KPInv.text(curBill))}`, "_blank");
+    });
+    o.querySelector("#pbMail").addEventListener("click", () => {
+      if (!curBill) return;
+      const kind = curBill.type === "QUOTE" ? "Quotation" : "Bill";
+      window.location.href = `mailto:${encodeURIComponent(curBill.patient.email || "")}?subject=${encodeURIComponent(`${kind} ${curBill.billNo} — Kalyan Pathlab`)}&body=${encodeURIComponent(KPInv.text(curBill, true))}`;
+    });
     o.querySelector("#pbPdf").addEventListener("click", () => billAction("download"));
     o.querySelector("#pbSave").addEventListener("click", () => billAction("save"));
     o.querySelector("#pbShare").addEventListener("click", () => billAction("share"));
@@ -257,14 +281,17 @@
     wrap.style.width = Math.round(794 * scale) + "px";
     wrap.style.height = Math.round(sheet.offsetHeight * scale) + "px";
   }
-  function openBill(b) {
-    curBill = billFromBooking(b);
+  function openBill(b) { openDoc(billFromBooking(b)); }
+  function openDoc(inv) {
+    curBill = inv;
     const o = ensureBillOverlay();
     o.querySelector("#pbBack").textContent = t("back_word");
     o.querySelector("#pbPdf").textContent = "⬇ PDF";
     o.querySelector("#pbSave").textContent = "💾 " + t("btn_save");
     o.querySelector("#pbShare").textContent = "📤 " + t("btn_share");
     o.querySelector("#pbPrint").textContent = "🖨";
+    o.querySelector("#pbWa").textContent = "💬 WhatsApp";
+    o.querySelector("#pbMail").textContent = "✉️ Email";
     o.querySelector("#invSheet").innerHTML = KPInv.html(curBill, { upi: (typeof liveSettings !== "undefined" && liveSettings.upiId) || "enterprises60658@nyes" });
     o.hidden = false;
     o.querySelector(".inv-scroll").scrollTop = 0;
@@ -282,6 +309,65 @@
     if (kind === "download") { downloadBlob(blob, name); showToast(t("toast_downloading")); }
     else if (kind === "save") { const r = await saveFile(blob, name); if (r !== "cancel") showToast(r === "downloaded" ? t("toast_downloading") : t("toast_saved")); }
     else await shareFile(blob, name, `Kalyan Pathlab — ${curBill.billNo}`, `Kalyan Pathlab — Bill ${curBill.billNo}`, "");
+  }
+
+  /* ---------------- कोटेशन (बास्केटमधल्या टेस्टचं दरपत्रक) ---------------- */
+  function mrpOf(name) {
+    let m = 0;
+    (TEST_CATEGORIES || []).forEach((c) => (c.tests || []).forEach((x) => { if (x.name === name) m = Number(x.mrp) || 0; }));
+    return m;
+  }
+  function isoToday() { const d = new Date(), p = (x) => String(x).padStart(2, "0"); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
+  function isoPlus(n) { const d = new Date(); d.setDate(d.getDate() + n); const p = (x) => String(x).padStart(2, "0"); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
+  function quoteFromBasket(d) {
+    const c = calcTotals();
+    const today = isoToday();
+    const seq = String(Math.floor(Math.random() * 900) + 100);
+    return {
+      type: "QUOTE", lang: d.lang || "en", billNo: `QT-${today.replace(/-/g, "")}-${seq}`, date: today, validTill: isoPlus(7),
+      patient: { name: d.name || "", phone: d.phone || "", email: d.email || "", address: "", age: "", gender: "", doctor: "", pid: "", sampleDate: "", sampleTime: "", report: "" },
+      client: {}, lines: selectedTests.map((x) => ({ name: x.name, mrp: mrpOf(x.name) || x.price, rate: x.price })),
+      collection: c.charge, pay: {}, lab: {}, notes: ""
+    };
+  }
+  function ensureQuoteAsk() {
+    let m = document.getElementById("quoteAsk");
+    if (m) return m;
+    m = document.createElement("div");
+    m.id = "quoteAsk"; m.className = "dlg-backdrop"; m.hidden = true;
+    m.innerHTML = `<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="qaTitle" style="text-align:left">
+      <h3 id="qaTitle" style="text-align:center"></h3>
+      <p id="qaSub" style="font-size:.86rem;color:var(--muted)"></p>
+      <label class="qa-f"><span id="qaNameL"></span><input type="text" id="qaName" autocomplete="name"></label>
+      <label class="qa-f"><span id="qaPhoneL"></span><input type="tel" id="qaPhone" inputmode="numeric" maxlength="10"></label>
+      <label class="qa-f"><span id="qaEmailL"></span><input type="email" id="qaEmail" autocomplete="email"></label>
+      <label class="qa-f"><span id="qaLangL"></span><select id="qaLang"><option value="en">English</option><option value="mr">मराठी</option><option value="hi">हिंदी</option></select></label>
+      <div class="dlg-actions" style="margin-top:12px"><button type="button" class="btn btn-outline" id="qaCancel"></button><button type="button" class="btn btn-primary" id="qaGo"></button></div></div>`;
+    document.body.appendChild(m);
+    m.addEventListener("click", (e) => { if (e.target === m) m.hidden = true; });
+    m.querySelector("#qaCancel").addEventListener("click", () => { m.hidden = true; });
+    m.querySelector("#qaGo").addEventListener("click", () => {
+      const ph = m.querySelector("#qaPhone").value.trim();
+      if (ph && !/^[0-9]{10}$/.test(ph)) { showToast(t("toast_invalid_phone")); return; }
+      const d = { name: m.querySelector("#qaName").value.trim(), phone: ph, email: m.querySelector("#qaEmail").value.trim(), lang: m.querySelector("#qaLang").value };
+      try { localStorage.setItem("kp_quote_prefs", JSON.stringify(d)); } catch (_) {}
+      m.hidden = true;
+      openDoc(quoteFromBasket(d));
+    });
+    return m;
+  }
+  function openQuoteAsk() {
+    if (!selectedTests.length) { showToast(t("qt_empty")); return; }
+    const m = ensureQuoteAsk();
+    let pref = {}; try { pref = JSON.parse(localStorage.getItem("kp_quote_prefs") || "{}"); } catch (_) {}
+    m.querySelector("#qaTitle").textContent = "📄 " + t("qt_title");
+    m.querySelector("#qaSub").textContent = t("qt_sub");
+    m.querySelector("#qaNameL").textContent = t("qt_name"); m.querySelector("#qaPhoneL").textContent = t("qt_phone");
+    m.querySelector("#qaEmailL").textContent = t("qt_email"); m.querySelector("#qaLangL").textContent = t("qt_lang");
+    m.querySelector("#qaCancel").textContent = t("qt_cancel"); m.querySelector("#qaGo").textContent = t("qt_create");
+    m.querySelector("#qaName").value = pref.name || ""; m.querySelector("#qaPhone").value = pref.phone || localStorage.getItem("kp_phone") || "";
+    m.querySelector("#qaEmail").value = pref.email || ""; m.querySelector("#qaLang").value = pref.lang || "en";
+    m.hidden = false;
   }
 
   /* ---------------- बुकिंग इतिहास (तारखेनुसार) ---------------- */
@@ -384,12 +470,14 @@
         <div id="bucketBody" class="bucket-body"></div>
         <div class="bucket-foot">
           <button type="button" class="btn btn-outline" id="bucketMore"></button>
+          <button type="button" class="btn btn-outline" id="bucketQuote"></button>
           <button type="button" class="btn btn-primary" id="bucketBook"></button>
         </div></div>`;
     document.body.appendChild(s);
     s.addEventListener("click", (e) => { if (e.target === s) s.hidden = true; });
     s.querySelector("#bucketClose").addEventListener("click", () => { s.hidden = true; });
     s.querySelector("#bucketMore").addEventListener("click", () => { s.hidden = true; showSection("tests"); });
+    s.querySelector("#bucketQuote").addEventListener("click", () => { s.hidden = true; openQuoteAsk(); });
     s.querySelector("#bucketBook").addEventListener("click", () => { s.hidden = true; askChargePopup(() => showSection("booking")); });
     s.querySelector("#bucketBody").addEventListener("click", (e) => {
       const rm = e.target.closest("[data-rm]");
@@ -402,6 +490,7 @@
     s.querySelector("#bucketTitle").textContent = "🧺 " + t("bucket_title");
     s.querySelector("#bucketMore").textContent = t("bucket_add_more");
     s.querySelector("#bucketBook").textContent = t("bucket_book");
+    s.querySelector("#bucketQuote").textContent = t("qt_btn");
     const body = s.querySelector("#bucketBody");
     if (!selectedTests.length) { body.innerHTML = `<p class="empty-msg" style="text-align:center;color:var(--muted);padding:18px 0">${t("bucket_empty")}</p>`; s.querySelector("#bucketBook").disabled = true; return; }
     s.querySelector("#bucketBook").disabled = false;
@@ -425,8 +514,34 @@
     s.querySelector("#snackBook").addEventListener("click", () => { s.hidden = true; askChargePopup(() => showSection("booking")); });
     return s;
   }
+  /* ---- टेस्ट-ड्रॉपडाउन (sheet) च्या आतच बास्केट-पट्टी: ड्रॉपडाउन बंद करावं लागत नाही ---- */
+  let flashName = "", flashTimer = null;
+  const modalOpen = () => { const m = document.getElementById("testModal"); return m && !m.hidden; };
+  window.kpAfterCart = function () {
+    const f = document.getElementById("tmFoot"); if (!f) return;
+    if (!selectedTests.length) { f.hidden = true; return; }
+    const c = calcTotals();
+    f.hidden = false;
+    f.classList.toggle("flash", !!flashName);
+    document.getElementById("tmFootText").innerHTML = flashName
+      ? `<b>✓ ${esc(flashName)}</b> ${t("tm_added")}<br><small>${selectedTests.length} · ₹${c.total}</small>`
+      : `<b>🧺 ${selectedTests.length} · ₹${c.total}</b><br><small>${c.waived ? t("cart_note_waived") : fillTpl(t("cart_note_charge"), { more: c.more })}</small>`;
+    document.getElementById("tmBasket").textContent = t("tm_basket");
+    document.getElementById("tmBook").textContent = t("bucket_book");
+  };
+  (function wireFoot() {
+    const b1 = document.getElementById("tmBasket"), b2 = document.getElementById("tmBook");
+    if (b1) b1.addEventListener("click", openBucket);
+    if (b2) b2.addEventListener("click", () => { closeTestModal(); askChargePopup(() => showSection("booking")); });
+  })();
+
   // test-add बटणावर टॅप केल्यावर (app.js मधून बोलावतो)
   window.kpOnTestAdded = function (name) {
+    if (modalOpen()) {                       // ड्रॉपडाउन उघडं आहे: त्याच्या आतल्या पट्टीत "जोडली ✓" दाखवा
+      flashName = name; clearTimeout(flashTimer);
+      flashTimer = setTimeout(() => { flashName = ""; window.kpAfterCart(); }, 2600);
+      return;
+    }
     if (document.body.dataset.sec === "booking") return;
     const s = ensureSnack(); const c = calcTotals();
     s.querySelector(".add-snack-text").innerHTML = `<b>${esc(name)}</b> ${t("snack_added")}<br><small>${selectedTests.length} · ₹${c.total}</small>`;
@@ -469,6 +584,7 @@
   }
 
   document.getElementById("cartInfo") && document.getElementById("cartInfo").addEventListener("click", openBucket);
+  window.kpAfterCart();
 
   window.KPDocs = { render, closeIfOpen, openBucket, restoreState, refresh: () => render(histData) };
   restoreState();

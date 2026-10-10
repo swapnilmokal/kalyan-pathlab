@@ -179,3 +179,9 @@ img{color:transparent; font-size:0;}
 #adminInstallBar #adminInstallClose{background:none;color:var(--muted);width:44px}
 
 .shared-tag{display:inline-block;background:#e3f7ea;color:#12793f;border-radius:999px;padding:4px 10px;font-size:.78rem;font-weight:700;margin-top:4px}
+
+.quote-open-btn{background:var(--navy);color:#fff;margin:0 0 12px;min-height:48px;font-weight:700}
+.pin-bio-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;margin-top:10px;border-radius:999px;border:1.5px solid rgba(255,255,255,.5);background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:1rem;cursor:pointer;font-family:inherit}
+.pin-bio-btn svg{width:26px;height:26px}
+.bio-status{font-size:.86rem;font-weight:700;margin:6px 0 10px}
+.bio-status.on{color:#12793f}.bio-status.off{color:var(--muted)}
