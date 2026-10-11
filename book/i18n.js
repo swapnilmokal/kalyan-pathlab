@@ -310,6 +310,10 @@ const TRANSLATIONS = {
   toast_cancel_done: { mr: "बुकिंग रद्द झाली ✓", hi: "बुकिंग रद्द हो गई ✓", en: "Booking cancelled ✓" },
   toast_cancel_pending: { mr: "स्थिती अजून बदलली नाही. कृपया 98700 20674 वर कॉल/WhatsApp करा.", hi: "स्थिति अभी नहीं बदली। कृपया 98700 20674 पर कॉल/WhatsApp करें।", en: "Status not updated yet. Please call/WhatsApp 98700 20674." },
   btn_dl_short: { mr: "डाउनलोड", hi: "डाउनलोड", en: "Download" },
+  tile_quote: { mr: "कोटेशन", hi: "कोटेशन", en: "Quotation" },
+  quote_cta: { mr: "कोटेशन मिळवा", hi: "कोटेशन पाएं", en: "Get quotation" },
+  quote_cta_sub: { mr: "निवडलेल्या टेस्टचं दरपत्रक — PDF / WhatsApp / ईमेल", hi: "चुनी हुई टेस्ट का दर पत्र — PDF / WhatsApp / ईमेल", en: "Rate quotation for your selected tests — PDF / WhatsApp / email" },
+  qt_select_first: { mr: "आधी टेस्ट निवडा, मग कोटेशन मिळवा.", hi: "पहले टेस्ट चुनें, फिर कोटेशन पाएं।", en: "Select tests first, then get the quotation." },
   /* ---------- बुकिंग टप्पे व स्लॉट ---------- */
   bstep1: { mr: "टेस्ट", hi: "टेस्ट", en: "Tests" },
   bstep2: { mr: "पत्ता", hi: "पता", en: "Address" },

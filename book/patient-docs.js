@@ -357,7 +357,7 @@
     return m;
   }
   function openQuoteAsk() {
-    if (!selectedTests.length) { showToast(t("qt_empty")); return; }
+    if (!selectedTests.length) { showToast(t("qt_select_first")); if (document.body.dataset.sec !== "tests") showSection("tests"); return; }
     const m = ensureQuoteAsk();
     let pref = {}; try { pref = JSON.parse(localStorage.getItem("kp_quote_prefs") || "{}"); } catch (_) {}
     m.querySelector("#qaTitle").textContent = "📄 " + t("qt_title");
@@ -586,6 +586,8 @@
   document.getElementById("cartInfo") && document.getElementById("cartInfo").addEventListener("click", openBucket);
   window.kpAfterCart();
 
-  window.KPDocs = { render, closeIfOpen, openBucket, restoreState, refresh: () => render(histData) };
+  document.addEventListener("click", (e) => { const q = e.target.closest("[data-quote-open]"); if (q) openQuoteAsk(); });
+
+  window.KPDocs = { openQuoteAsk, render, closeIfOpen, openBucket, restoreState, refresh: () => render(histData) };
   restoreState();
 })();

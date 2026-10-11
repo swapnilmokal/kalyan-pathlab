@@ -522,3 +522,19 @@ input,select,textarea{min-height:46px;}
 .bucket-foot{flex-wrap:wrap;}
 .bucket-foot .btn{flex:1 1 30%; padding-left:6px; padding-right:6px; font-size:0.86rem;}
 #quoteAsk{z-index:94;}
+
+
+/* कोटेशन मिळवा — होम टाईल + टेस्ट पेजवरचं बटण */
+.quick-grid{grid-template-columns:repeat(5,1fr); gap:6px;}
+.quick-grid .menu-tile{padding:8px 2px;}
+.quick-grid .menu-tile-label{font-size:0.64rem;}
+.quick-grid .menu-tile-icon{width:36px; height:36px;}
+.quick-grid .menu-tile:nth-child(3) .menu-tile-icon{background:#e8f0ff; color:#0b4ea2;}
+.quick-grid .menu-tile:nth-child(4) .menu-tile-icon{background:#fff4d6; color:#a36b00;}
+.quick-grid .menu-tile:nth-child(5) .menu-tile-icon{background:#e3f9ec; color:#128c4a;}
+.quote-cta{width:100%; display:flex; align-items:center; gap:12px; margin:10px 0 4px; padding:10px 14px; min-height:56px; border-radius:14px; border:1.5px dashed #9fb2e6; background:#f1f5ff; color:var(--navy); text-align:left; cursor:pointer; font-family:inherit;}
+.quote-cta:active{background:#e3ebff;}
+.quote-cta-ico{font-size:1.5rem; flex:none;}
+.quote-cta-text{flex:1; min-width:0; display:flex; flex-direction:column; line-height:1.25;}
+.quote-cta-text b{font-size:0.95rem;}
+.quote-cta-text small{font-size:0.74rem; color:var(--muted);}
