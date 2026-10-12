@@ -1,8 +1,8 @@
-/* Kalyan Pathlab — Service Worker (v24)
+/* Kalyan Pathlab — Service Worker (v25)
    - Network-first: नेहमी आधी ताजी फाईल (HTTP cache बायपास करून); इंटरनेट नसेल तरच सेव्ह केलेली कॉपी
    - फक्त 200 OK उत्तरं cache मध्ये ठेवतो (404/एरर कधीच cache होत नाही)
    - activate वर जुने सर्व cache डिलीट + clients.claim() */
-const CACHE = "kalyan-pathlab-v24";
+const CACHE = "kalyan-pathlab-v25";
 const ASSETS = [
   "./",
   "./index.html",
@@ -14,6 +14,7 @@ const ASSETS = [
   "./invoice-core.js",
   "./invoice.css",
   "./patient-docs.js",
+  "./rx-scan.js",
   "./manifest.json",
   "./icons/logo.png",
   "./icons/qr.png",
