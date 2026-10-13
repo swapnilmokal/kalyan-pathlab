@@ -570,3 +570,7 @@ input,select,textarea{min-height:46px;}
 .dlg label.rx-row{flex-direction:row; align-items:center; text-align:left; gap:10px; margin:0;}
 .dlg label.rx-row input[type=checkbox]{width:22px; min-width:22px; height:22px; min-height:22px; margin:0; padding:0;}
 .rx-name{text-align:left;}
+
+.rx-type{margin:12px 0 4px; border:1.5px dashed var(--line); border-radius:12px; padding:0 12px 12px;}
+.rx-type summary{cursor:pointer; color:var(--navy); font-weight:700; font-size:0.86rem; min-height:46px; display:flex; align-items:center;}
+.rx-type textarea{width:100%; box-sizing:border-box; border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; font:inherit; font-size:0.92rem; margin-bottom:8px; min-height:80px;}

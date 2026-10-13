@@ -26,6 +26,11 @@
     rx_added: { mr: "{n} टेस्ट बास्केटमध्ये जोडल्या ✓", hi: "{n} टेस्ट बास्केट में जोड़ी ✓", en: "{n} tests added to basket ✓" },
     rx_disc: { mr: "ही फक्त सूचना आहे — चूक असू शकते. जोडण्यापूर्वी तपासा. लॅब तुमचं प्रिस्क्रिप्शन पुन्हा तपासेल. फोटो फक्त टेस्ट शोधण्यासाठी वापरला जातो.", hi: "यह सिर्फ़ सुझाव है — गलती हो सकती है। जोड़ने से पहले जाँचें। लैब आपका प्रिस्क्रिप्शन फिर से जाँचेगी। फ़ोटो केवल टेस्ट खोजने के लिए इस्तेमाल होता है।", en: "These are only suggestions and may be wrong — please check before adding. The lab will re-check your prescription. The photo is used only to find tests." },
     rx_text: { mr: "प्रिस्क्रिप्शनमधून वाचलेला मजकूर", hi: "प्रिस्क्रिप्शन से पढ़ा गया पाठ", en: "Text read from the prescription" },
+    rx_empty: { mr: "फोटोतून मजकूर वाचता आला नाही. फोटो सरळ, स्पष्ट आणि उजेडात घ्या — किंवा खाली स्वतः टाईप करा.", hi: "फ़ोटो से पाठ नहीं पढ़ा जा सका। फ़ोटो सीधा, साफ़ और रोशनी में लें — या नीचे खुद टाइप करें।", en: "Couldn't read any text from the photo. Take it straight, sharp and well-lit — or type the tests below." },
+    rx_old: { mr: "स्कॅन सेवा सध्या उपलब्ध नाही. खाली प्रिस्क्रिप्शनमधील टेस्ट स्वतः टाईप करून शोधा.", hi: "स्कैन सेवा अभी उपलब्ध नहीं है। नीचे प्रिस्क्रिप्शन की टेस्ट खुद टाइप करके खोजें।", en: "The scan service isn't available right now. Type the prescription's tests below to find them." },
+    rx_type_title: { mr: "✍️ स्वतः टाईप करा (हस्ताक्षर वाचलं नाही तर)", hi: "✍️ खुद टाइप करें (लिखावट न पढ़ी जाए तो)", en: "✍️ Type it yourself (if handwriting can't be read)" },
+    rx_type_ph: { mr: "प्रिस्क्रिप्शनमध्ये जे लिहिलंय ते टाईप करा, उदा. CBC, CRP, FBS, PP, HbA1c, TSH, Vit D", hi: "प्रिस्क्रिप्शन में जो लिखा है वह टाइप करें, जैसे CBC, CRP, FBS, PP, HbA1c, TSH, Vit D", en: "Type what the prescription says, e.g. CBC, CRP, FBS, PP, HbA1c, TSH, Vit D" },
+    rx_type_go: { mr: "🔍 या मजकुरावरून शोधा", hi: "🔍 इस पाठ से खोजें", en: "🔍 Find from this text" },
     rx_close: { mr: "बंद करा", hi: "बंद करें", en: "Close" },
     rx_from_booking: { mr: "🔍 या प्रिस्क्रिप्शनवरून टेस्ट शोधा", hi: "🔍 इस प्रिस्क्रिप्शन से टेस्ट खोजें", en: "🔍 Find tests from this prescription" }
   });
@@ -83,7 +88,11 @@
     ["ecg", ["ecg", "ekg"]],
     ["troponin", ["troponin", "trop i", "trop t"]],
     ["ra factor", ["ra factor", "rheumatoid factor", "ra test"]],
-    ["aso titer", ["aso", "aso titre", "aso titer"]]
+    ["aso titer", ["aso", "aso titre", "aso titer"]],
+    ["widal", ["typhi igm", "typhi dot", "typhidot", "typhoid igm", "typhi igg"]],
+    ["malaria antigen", ["malarial ag", "malaria ag", "mp ag", "malarial antigen", "malaria card"]],
+    ["blood sugar fasting", ["bs fasting", "bs f", "sugar f"]],
+    ["blood sugar pp", ["bs pp", "sugar pp"]]
   ];
 
   // छोटे शब्द जे टेस्ट नसलेल्या अर्थानेही येऊ शकतात — फक्त "कदाचित"
@@ -104,6 +113,17 @@
     (typeof TEST_CATEGORIES !== "undefined" ? TEST_CATEGORIES : []).forEach((c) => (c.tests || []).forEach((x) => { if (x && x.name) out.push(x); }));
     return out;
   }
+
+  // डॉक्टरांचं शॉर्टहँड: "BS < F / PP", "Sugar F, PP", "U R/M", "S R/M" …
+  const RULES = [
+    [/\b(bs|bsl|sugar|blood sugar)\b(\s+\w+){0,3}?\s+(f|fasting|fbs)\b/, "blood sugar fasting", "high"],
+    [/\b(bs|bsl|sugar|blood sugar)\b(\s+\w+){0,3}?\s+(pp|ppbs|pp2|post|postprandial)\b/, "blood sugar pp", "high"],
+    [/\b(bs|bsl|sugar|blood sugar)\b(\s+\w+){0,3}?\s+(r|rbs|random)\b/, "random blood sugar", "maybe"],
+    [/\b(fbs|fasting|f)\b(\s+\w+){0,2}?\s+pp\b/, "blood sugar pp", "high"],
+    [/\bpp\b/, "blood sugar pp", "maybe"],
+    [/\bu(rine)?\s+r\s*m\b/, "complete urine", "maybe"],
+    [/\b(s|stool)\s+r\s*m\b/, "stool routine", "maybe"]
+  ];
 
   /* मजकुरातून टेस्ट सुचवतो: [{test, conf:"high"|"maybe", hit}] */
   function suggest(text) {
@@ -134,6 +154,10 @@
       return false;
     };
 
+    RULES.forEach(([re, key, conf]) => {
+      const mm = T.match(re);
+      if (mm) tests.filter((x) => x.name.toLowerCase().includes(key)).slice(0, 1).forEach((x) => add(x, conf, mm[0], mm.index));
+    });
     ALIASES.forEach(([key, list]) => {
       const m = tests.filter((x) => x.name.toLowerCase().includes(key));
       if (m.length) tryAlias(list, m.slice(0, 3));
@@ -175,7 +199,8 @@
     const res = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "ocrPrescription", mime: p.mime, image: p.data }) });
     const j = await res.json();
     if (!j || !j.ok) throw new Error((j && j.error) || "ocr_failed");
-    return String(j.text || "");
+    if (typeof j.text !== "string") throw new Error("old_backend");   // जुना Apps Script: फक्त {ok:true} देतो
+    return j.text;
   }
 
   /* ---------------- UI (डायलॉग) ---------------- */
@@ -197,6 +222,9 @@
       <button type="button" class="btn btn-primary btn-block" id="rxScan" disabled></button>
       <div id="rxStatus" class="rx-status" aria-live="polite"></div>
       <div id="rxResults"></div>
+      <details class="rx-type" id="rxType"><summary id="rxTypeT"></summary>
+        <textarea id="rxTypeBox" rows="3"></textarea>
+        <button type="button" class="btn btn-outline btn-block" id="rxTypeGo"></button></details>
       <p class="rx-disc" id="rxDisc"></p>
       <button type="button" class="btn btn-outline btn-block" id="rxClose"></button></div>`;
     document.body.appendChild(m);
@@ -205,6 +233,10 @@
     m.querySelector("#rxPick").addEventListener("click", () => m.querySelector("#rxFile").click());
     m.querySelector("#rxFile").addEventListener("change", (e) => setFile(e.target.files[0]));
     m.querySelector("#rxScan").addEventListener("click", scan);
+    m.querySelector("#rxTypeGo").addEventListener("click", () => {
+      const v = m.querySelector("#rxTypeBox").value.trim(); if (!v) return;
+      lastText = v; m.querySelector("#rxStatus").textContent = ""; render(v, true);
+    });
     return m;
   }
   function setFile(f) {
@@ -222,6 +254,7 @@
     m.querySelector("#rxScan").textContent = t("rx_scan");
     m.querySelector("#rxDisc").textContent = t("rx_disc");
     m.querySelector("#rxClose").textContent = t("rx_close");
+    m.querySelector("#rxTypeT").textContent = t("rx_type_title"); m.querySelector("#rxTypeBox").placeholder = t("rx_type_ph"); m.querySelector("#rxTypeGo").textContent = t("rx_type_go");
     setFile(file || curFile);
     m.hidden = false;
   }
@@ -235,17 +268,21 @@
       render(lastText);
     } catch (e) {
       st.className = "rx-status err";
-      st.textContent = e && e.message === "big" ? t("rx_big") : t("rx_fail");
+      const code = e && e.message;
+      st.textContent = code === "big" ? t("rx_big") : code === "old_backend" ? t("rx_old") : t("rx_fail");
+      m.querySelector("#rxType").open = true;      // स्कॅन न जमल्यास टाईप करण्याचा पर्याय आपोआप उघडतो
     }
     btn.disabled = false;
   }
 
-  function render(text) {
+  function render(text, typed) {
     const m = ensureDialog(); const st = m.querySelector("#rxStatus"), box = m.querySelector("#rxResults");
     lastSug = suggest(text);
     if (!lastSug.length) {
-      st.className = "rx-status err"; st.textContent = t("rx_none");
-      box.innerHTML = text ? `<details class="rx-text"><summary>${t("rx_text")}</summary><pre>${esc(text)}</pre></details>` : "";
+      st.className = "rx-status err";
+      st.textContent = !String(text).trim() ? t("rx_empty") : t("rx_none");
+      box.innerHTML = text && !typed ? `<details class="rx-text" open><summary>${t("rx_text")}</summary><pre>${esc(text)}</pre></details>` : "";
+      m.querySelector("#rxType").open = true;
       return;
     }
     st.className = "rx-status ok"; st.textContent = tt("rx_found", { n: lastSug.length });
