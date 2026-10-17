@@ -49,7 +49,7 @@
     back_word: { mr: "← मागे", hi: "← पीछे", en: "← Back" }
   });
 
-  const APPS = () => CONFIG.appsScriptUrl;
+  const APPS = () => kpApi();
   const phoneNow = () => document.getElementById("statusPhoneInput").value.trim();
   const esc = (s) => escapeHtml(s);
   const tt = (k, vals) => String(t(k)).replace(/\{(\w+)\}/g, (_, x) => (vals && vals[x] !== undefined ? vals[x] : ""));

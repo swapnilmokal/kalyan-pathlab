@@ -2,6 +2,12 @@
    Kalyan Pathlab - App Logic
    खाली दिलेला CONFIG बदलून तुम्ही नंबर/ईमेल/बॅकएंड लिंक अपडेट करू शकता.
    ===================================================================== */
+/* नवी "Extras" Apps Script (रद्द करणे, रिपोर्ट, प्रिस्क्रिप्शन-स्कॅन) — config.js मध्ये URL असेल तर ती, नाहीतर जुनी URL */
+function kpApi() {
+  const u = (window.KP_CONFIG && window.KP_CONFIG.extrasUrl) || "";
+  return /^https?:\/\//.test(u) ? u : CONFIG.appsScriptUrl;
+}
+
 const CONFIG = {
   labWhatsApp: "919870020674",          // बुकिंग/रिपोर्ट साठी लॅबचा WhatsApp नंबर
   labEmail: "kalyan.pathlab.21@gmail.com",
@@ -910,7 +916,7 @@ document.getElementById("statusCheckBtn").addEventListener("click", () => {
   }
   try { localStorage.setItem("kp_phone", phone); } catch (_) {}   // पुढच्या वेळी नंबर आपोआप भरतो
   if (!CONFIG.appsScriptUrl || CONFIG.appsScriptUrl.startsWith("PASTE_")) return;
-  fetch(`${CONFIG.appsScriptUrl}?action=bookingStatus&phone=${phone}`)
+  fetch(`${kpApi()}?action=bookingStatus&phone=${phone}`)
     .then((res) => res.json())
     .then((data) => renderStatusResults(data.bookings))
     .catch(() => showToast(t("network_weak")));
@@ -920,7 +926,7 @@ document.getElementById("statusCheckBtn").addEventListener("click", () => {
 function checkForStatusUpdate() {
   const phone = localStorage.getItem("kp_phone");
   if (!phone || !CONFIG.appsScriptUrl || CONFIG.appsScriptUrl.startsWith("PASTE_")) return;
-  fetch(`${CONFIG.appsScriptUrl}?action=bookingStatus&phone=${phone}`)
+  fetch(`${kpApi()}?action=bookingStatus&phone=${phone}`)
     .then((res) => res.json())
     .then((data) => {
       if (!data.bookings || data.bookings.length === 0) return;
@@ -1175,11 +1181,11 @@ document.getElementById("cancelConfirm").addEventListener("click", async () => {
   cancelBusy = true;
   closeCancelModal();
   try {
-    await fetch(CONFIG.appsScriptUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "cancelBooking", rowNum, phone }) });
+    await fetch(kpApi(), { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "cancelBooking", rowNum, phone }) });
     showToast(t("toast_cancel_sent"));
     setTimeout(async () => {
       try {
-        const res = await fetch(`${CONFIG.appsScriptUrl}?action=bookingStatus&phone=${phone}`);
+        const res = await fetch(`${kpApi()}?action=bookingStatus&phone=${phone}`);
         const data = await res.json();
         renderStatusResults(data.bookings);
         const b = (data.bookings || []).find((x) => x.rowNum === rowNum);

@@ -193,7 +193,7 @@
   }
 
   async function ocr(file) {
-    const url = CONFIG.appsScriptUrl;
+    const url = kpApi();
     if (!url || url.startsWith("PASTE_")) throw new Error("no_backend");
     const p = await prepare(file);
     const res = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "ocrPrescription", mime: p.mime, image: p.data }) });

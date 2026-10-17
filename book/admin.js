@@ -1,5 +1,9 @@
 /* Kalyan Pathlab - Admin Panel (no login — keep this page's link private) */
 
+function kpApi() {
+  const u = (window.KP_CONFIG && window.KP_CONFIG.extrasUrl) || "";
+  return /^https?:\/\//.test(u) ? u : APPS_SCRIPT_URL;
+}
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzLz9yim3gKfD98p574l1kB8yENS1cJgspb5Ewt6HYRM-XetF4awiaGya5diEAE1Na81A/exec";
 const CUSTOMER_APP_URL = "https://swapnilmokal.github.io/kalyan-pathlab/book/";
 const LAB_WHATSAPP = "919870020674";
@@ -203,8 +207,21 @@ function fetchWithRetry(url, tries = 3, delayMs = 1200) {
 function loadData() {
   fetchWithRetry(`${APPS_SCRIPT_URL}?action=adminData`)
     .then(res => res.json())
-    .then(data => { ALL_DATA = data; renderAll(); })
+    .then(data => { ALL_DATA = data; renderAll(); loadExtras(); })
     .catch(() => showToast(t("network_weak")));
+}
+
+// नवी Extras Apps Script असेल तर: क्लायंट लॅब्स + "रिपोर्ट शेअर केला" माहिती मिळवून जोडतो
+function loadExtras() {
+  const u = (window.KP_CONFIG && window.KP_CONFIG.extrasUrl) || "";
+  if (!/^https?:\/\//.test(u)) return;
+  fetch(`${u}?action=adminExtras`).then(r => r.json()).then(x => {
+    if (!x || !x.ok) return;
+    ALL_DATA.clients = x.clients || [];
+    const shared = x.shared || {};
+    (ALL_DATA.bookings || []).forEach(b => { b.reportShared = shared[b.rowNum] || ""; });
+    renderBookings();
+  }).catch(() => {});
 }
 
 document.getElementById("refreshBtn").addEventListener("click", () => {
@@ -440,7 +457,8 @@ function postAdminAction(extra, successMsg) {
     if (_recentPosts[_key] && _now - _recentPosts[_key] < 3000) return;
     _recentPosts[_key] = _now;
   }
-  fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "adminAction", ...extra }) })
+  const _target = (extra.action === "saveClient" || extra.action === "deleteClient") ? kpApi() : APPS_SCRIPT_URL;   // क्लायंट सेव्ह = Extras URL
+  fetch(_target, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "adminAction", ...extra }) })
     .then(() => { showToast(successMsg || t("saved_refreshing")); setTimeout(loadData, 900); });
 }
 
