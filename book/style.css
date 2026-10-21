@@ -574,3 +574,8 @@ input,select,textarea{min-height:46px;}
 .rx-type{margin:12px 0 4px; border:1.5px dashed var(--line); border-radius:12px; padding:0 12px 12px;}
 .rx-type summary{cursor:pointer; color:var(--navy); font-weight:700; font-size:0.86rem; min-height:46px; display:flex; align-items:center;}
 .rx-type textarea{width:100%; box-sizing:border-box; border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; font:inherit; font-size:0.92rem; margin-bottom:8px; min-height:80px;}
+.rx-pick-row{display:flex; gap:8px; margin-bottom:6px;}
+.rx-pick-row .btn{flex:1; margin-top:0; font-size:0.84rem; padding-left:6px; padding-right:6px;}
+.rx-prev-wrap{display:flex; flex-direction:column; align-items:stretch;}
+#rxPrev{width:100%; max-height:170px; object-fit:contain; border-radius:12px; background:#f4f5fa; margin:8px 0 2px;}
+.rx-diag{font-size:0.68rem; color:#9aa0b8; text-align:center; margin:4px 0 8px; word-break:break-all;}

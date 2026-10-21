@@ -31,6 +31,15 @@
     rx_type_title: { mr: "✍️ स्वतः टाईप करा (हस्ताक्षर वाचलं नाही तर)", hi: "✍️ खुद टाइप करें (लिखावट न पढ़ी जाए तो)", en: "✍️ Type it yourself (if handwriting can't be read)" },
     rx_type_ph: { mr: "प्रिस्क्रिप्शनमध्ये जे लिहिलंय ते टाईप करा, उदा. CBC, CRP, FBS, PP, HbA1c, TSH, Vit D", hi: "प्रिस्क्रिप्शन में जो लिखा है वह टाइप करें, जैसे CBC, CRP, FBS, PP, HbA1c, TSH, Vit D", en: "Type what the prescription says, e.g. CBC, CRP, FBS, PP, HbA1c, TSH, Vit D" },
     rx_type_go: { mr: "🔍 या मजकुरावरून शोधा", hi: "🔍 इस पाठ से खोजें", en: "🔍 Find from this text" },
+    rx_bad_type: { mr: "ही फाईल वाचता येत नाही. फक्त फोटो (JPG/PNG) किंवा PDF निवडा.", hi: "यह फ़ाइल पढ़ी नहीं जा सकती। केवल फ़ोटो (JPG/PNG) या PDF चुनें।", en: "This file can't be read. Choose a photo (JPG/PNG) or a PDF." },
+    rx_limit: { mr: "आजचं स्कॅन-प्रमाण संपलं. कृपया टेस्ट स्वतः निवडा किंवा उद्या पुन्हा प्रयत्न करा.", hi: "आज की स्कैन सीमा पूरी हो गई। कृपया टेस्ट खुद चुनें या कल फिर कोशिश करें।", en: "Today's scan limit is reached. Please pick tests yourself or try again tomorrow." },
+    rx_network: { mr: "इंटरनेट/सर्व्हर अडचण — थोड्या वेळाने पुन्हा प्रयत्न करा किंवा टेस्ट स्वतः निवडा.", hi: "इंटरनेट/सर्वर समस्या — थोड़ी देर बाद फिर कोशिश करें या टेस्ट खुद चुनें।", en: "Network/server problem — try again shortly or pick tests yourself." },
+    rx_cam: { mr: "📷 कॅमेऱ्याने फोटो काढा", hi: "📷 कैमरे से फ़ोटो लें", en: "📷 Take a photo" },
+    rx_gallery: { mr: "🖼 गॅलरी / PDF निवडा", hi: "🖼 गैलरी / PDF चुनें", en: "🖼 Gallery / PDF" },
+    rx_scan_btn: { mr: "📷 प्रिस्क्रिप्शन स्कॅन करा", hi: "📷 प्रिस्क्रिप्शन स्कैन करें", en: "📷 Scan prescription" },
+    rx_more: { mr: "+ आणखी टेस्ट स्वतः जोडा", hi: "+ और टेस्ट खुद जोड़ें", en: "+ Add more tests manually" },
+    rx_diag: { mr: "तांत्रिक माहिती", hi: "तकनीकी जानकारी", en: "Technical details" },
+    rx_review: { mr: "टेस्ट तपासा", hi: "टेस्ट जाँचें", en: "Review tests" },
     rx_close: { mr: "बंद करा", hi: "बंद करें", en: "Close" },
     rx_from_booking: { mr: "🔍 या प्रिस्क्रिप्शनवरून टेस्ट शोधा", hi: "🔍 इस प्रिस्क्रिप्शन से टेस्ट खोजें", en: "🔍 Find tests from this prescription" }
   });
@@ -97,6 +106,7 @@
 
   // छोटे शब्द जे टेस्ट नसलेल्या अर्थानेही येऊ शकतात — फक्त "कदाचित"
   const AMBIGUOUS = new Set(["hb", "alt", "ast", "tg", "lh", "plt", "pbs", "bun", "prl", "upt", "mp", "tpo", "iron", "lipid", "thyroid", "urea", "calcium", "albumin"]);
+  const MAX_PDF = 3 * 1024 * 1024, MAX_IMG = 25 * 1024 * 1024;
   const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9\u0900-\u097f]+/g, " ").replace(/\s+/g, " ").trim();
   function lev(a, b) {
     const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
@@ -125,11 +135,28 @@
     [/\b(s|stool)\s+r\s*m\b/, "stool routine", "maybe"]
   ];
 
+  // औषधांच्या ओळी (Tab/Cap/Syp/Inj, mg/ml/IU डोस) आणि डॉक्टर/क्लिनिक ओळी वगळतो — म्हणजे औषध/डॉक्टरच्या नावाशी चुकीची जुळणी होत नाही
+  const MED_LINE = /^\s*(rx\s*:?\s*)?(tab|tablet|cap|capsule|syp|syrup|inj|injection|oint|ointment|cream|drops?|gel|lotion|susp|t\.|c\.)\b/i;
+  const DOSE = /\b\d+(\.\d+)?\s*(mg|mcg|ml|gm|g|iu|units?)\b/i;
+  const DOC_LINE = /^\s*(dr\.?|doctor|reg\.?\s*no|m\.?b\.?b\.?s|clinic|hospital|address|tel|ph\b|mob)/i;
+  const TESTWORD = /\b(adv|inv|investigations?|tests?|profile|report)\b/i;
+  function cleanForMatching(text) {
+    return String(text || "").split(/\r?\n/).filter((l) => {
+      if (!l.trim()) return false;
+      const hasTw = TESTWORD.test(l);
+      if (MED_LINE.test(l)) return false;
+      if (DOSE.test(l) && !hasTw) return false;
+      if (DOC_LINE.test(l) && !hasTw) return false;
+      return true;
+    }).join("\n");
+  }
+
   /* मजकुरातून टेस्ट सुचवतो: [{test, conf:"high"|"maybe", hit}] */
-  function suggest(text) {
-    const tests = allTests();
-    const T = " " + norm(text) + " ";
-    const toks = norm(text).split(" ").filter(Boolean);
+  function suggest(text, master) {
+    const tests = master || allTests();
+    const cleaned = cleanForMatching(text);
+    const T = " " + norm(cleaned) + " ";
+    const toks = norm(cleaned).split(" ").filter(Boolean);
     const found = new Map();
     const add = (test, conf, hit, pos) => {
       const ex = found.get(test.name);
@@ -175,15 +202,26 @@
     return [...found.values()].sort((a, b) => (a.conf === b.conf ? a.pos - b.pos : a.conf === "high" ? -1 : 1)).slice(0, 18);
   }
 
-  /* ---------------- फोटो लहान करणे ---------------- */
+  /* ---------------- फाईल तपासणी + फोटो लहान करणे ---------------- */
+  function kindOf(file) {
+    const ty = String(file.type || "").toLowerCase(), nm = String(file.name || "").toLowerCase();
+    if (ty === "application/pdf" || /\.pdf$/.test(nm)) return "pdf";
+    if (/^image\/(jpeg|png|webp|gif|bmp)$/.test(ty) || /\.(jpe?g|png|webp|gif|bmp)$/.test(nm)) return "img";
+    return "";
+  }
+  function validate(file) {
+    if (!file) return "bad_type";
+    const k = kindOf(file);
+    if (!k) return "bad_type";
+    if (k === "pdf" && file.size > MAX_PDF) return "big";
+    if (file.size > MAX_IMG) return "big";
+    return "";
+  }
   function readAsDataURL(file) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); }); }
   async function prepare(file) {
-    if (file.type === "application/pdf" || /\.pdf$/i.test(file.name)) {
-      if (file.size > 3 * 1024 * 1024) throw new Error("big");
-      return { mime: "application/pdf", data: (await readAsDataURL(file)).split(",")[1] };
-    }
+    if (kindOf(file) === "pdf") return { mime: "application/pdf", data: (await readAsDataURL(file)).split(",")[1] };
     const url = await readAsDataURL(file);
-    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error("bad_type")); i.src = url; });
     const max = 1800; const sc = Math.min(1, max / Math.max(img.width, img.height));
     const cv = document.createElement("canvas"); cv.width = Math.round(img.width * sc); cv.height = Math.round(img.height * sc);
     const g = cv.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, cv.width, cv.height); g.drawImage(img, 0, 0, cv.width, cv.height);
@@ -192,21 +230,34 @@
     return { mime: "image/jpeg", data: out.split(",")[1] };
   }
 
+  const lastDiag = { stage: "", error: "", ocrChars: 0, matches: 0 };
+  function setDiag(o) { Object.assign(lastDiag, o); const d = document.getElementById("rxDiag"); if (d) d.textContent = `OCR: ${lastDiag.ocrChars} · Matches: ${lastDiag.matches} · ${lastDiag.stage}${lastDiag.error ? " · " + lastDiag.error : ""}`; }
+
+  /* बॅकएंडला पाठवतो. प्रत्येक अपयशाचा वेगळा कोड: big, bad_type, network, timeout, bad_response, old_backend, + बॅकएंडचे कोड */
   async function ocr(file) {
     const url = kpApi();
-    if (!url || url.startsWith("PASTE_")) throw new Error("no_backend");
+    if (!url || url.startsWith("PASTE_")) throw new Error("old_backend");
+    const bad = validate(file); if (bad) throw new Error(bad);
     const p = await prepare(file);
-    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "ocrPrescription", mime: p.mime, image: p.data }) });
-    const j = await res.json();
-    if (!j || !j.ok) throw new Error((j && j.error) || "ocr_failed");
-    if (typeof j.text !== "string") throw new Error("old_backend");   // जुना Apps Script: फक्त {ok:true} देतो
+    const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 60000);
+    let res;
+    try {
+      res = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ type: "ocrPrescription", mime: p.mime, image: p.data }), signal: ctl.signal });
+    } catch (e) { throw new Error(e && e.name === "AbortError" ? "timeout" : "network"); }
+    finally { clearTimeout(timer); }
+    let j;
+    try { j = await res.json(); } catch (e) { throw new Error("bad_response"); }   // उदा. Apps Script ची login/HTML एरर
+    if (!j || typeof j !== "object") throw new Error("bad_response");
+    if (!j.ok) throw new Error(String(j.error || "ocr_failed"));
+    if (typeof j.text !== "string") throw new Error("old_backend");               // जुना कोड: फक्त {ok:true}
     return j.text;
   }
 
   /* ---------------- UI (डायलॉग) ---------------- */
   const esc = (s) => escapeHtml(s);
   const tt = (k, v) => String(t(k)).replace(/\{(\w+)\}/g, (_, x) => (v && v[x] !== undefined ? v[x] : ""));
-  let curFile = null, lastText = "", lastSug = [];
+  let curFile = null, lastText = "", lastSug = [], busy = false, lastKey = "", prevUrl = "";
+  const fileKey = (f) => f ? `${f.name}|${f.size}|${f.lastModified}` : "";
 
   function ensureDialog() {
     let m = document.getElementById("rxDialog");
@@ -216,9 +267,10 @@
     m.innerHTML = `<div class="dlg rx-dlg" role="dialog" aria-modal="true" aria-labelledby="rxTitle">
       <h3 id="rxTitle"></h3>
       <p class="rx-hint" id="rxHint"></p>
-      <input type="file" id="rxFile" accept="image/*,.pdf" hidden>
-      <button type="button" class="btn btn-outline btn-block" id="rxPick"></button>
-      <div class="rx-fname" id="rxFname"></div>
+      <input type="file" id="rxCamFile" accept="image/*" capture="environment" hidden>
+      <input type="file" id="rxFile" accept="image/*,.pdf,application/pdf" hidden>
+      <div class="rx-pick-row"><button type="button" class="btn btn-outline" id="rxCam"></button><button type="button" class="btn btn-outline" id="rxPick"></button></div>
+      <div class="rx-prev-wrap"><img id="rxPrev" alt="" hidden><div class="rx-fname" id="rxFname"></div></div>
       <button type="button" class="btn btn-primary btn-block" id="rxScan" disabled></button>
       <div id="rxStatus" class="rx-status" aria-live="polite"></div>
       <div id="rxResults"></div>
@@ -226,76 +278,101 @@
         <textarea id="rxTypeBox" rows="3"></textarea>
         <button type="button" class="btn btn-outline btn-block" id="rxTypeGo"></button></details>
       <p class="rx-disc" id="rxDisc"></p>
+      <div class="rx-diag" id="rxDiag"></div>
       <button type="button" class="btn btn-outline btn-block" id="rxClose"></button></div>`;
     document.body.appendChild(m);
     m.addEventListener("click", (e) => { if (e.target === m) m.hidden = true; });
     m.querySelector("#rxClose").addEventListener("click", () => { m.hidden = true; });
     m.querySelector("#rxPick").addEventListener("click", () => m.querySelector("#rxFile").click());
-    m.querySelector("#rxFile").addEventListener("change", (e) => setFile(e.target.files[0]));
+    m.querySelector("#rxCam").addEventListener("click", () => m.querySelector("#rxCamFile").click());
+    m.querySelector("#rxFile").addEventListener("change", (e) => { setFile(e.target.files[0]); e.target.value = ""; });
+    m.querySelector("#rxCamFile").addEventListener("change", (e) => { setFile(e.target.files[0]); e.target.value = ""; });
     m.querySelector("#rxScan").addEventListener("click", scan);
     m.querySelector("#rxTypeGo").addEventListener("click", () => {
       const v = m.querySelector("#rxTypeBox").value.trim(); if (!v) return;
-      lastText = v; m.querySelector("#rxStatus").textContent = ""; render(v, true);
+      lastText = v; m.querySelector("#rxStatus").textContent = ""; setDiag({ stage: "typed", error: "", ocrChars: v.length }); render(v, true);
     });
     return m;
   }
   function setFile(f) {
-    curFile = f || null;
     const m = ensureDialog();
+    m.querySelector("#rxResults").innerHTML = ""; m.querySelector("#rxStatus").textContent = ""; m.querySelector("#rxStatus").className = "rx-status";
+    const bad = f ? validate(f) : "";
+    if (f && bad) {
+      curFile = null;
+      m.querySelector("#rxScan").disabled = true; m.querySelector("#rxFname").textContent = "";
+      const st = m.querySelector("#rxStatus"); st.className = "rx-status err"; st.textContent = t(bad === "big" ? "rx_big" : "rx_bad_type");
+      setDiag({ stage: "validate", error: bad, ocrChars: 0, matches: 0 });
+      return;
+    }
+    curFile = f || null;
     m.querySelector("#rxFname").textContent = f ? "📎 " + f.name : "";
     m.querySelector("#rxScan").disabled = !f;
-    m.querySelector("#rxResults").innerHTML = ""; m.querySelector("#rxStatus").textContent = "";
+    const img = m.querySelector("#rxPrev");
+    if (prevUrl) { try { URL.revokeObjectURL(prevUrl); } catch (_) {} prevUrl = ""; }
+    if (f && kindOf(f) === "img") { prevUrl = URL.createObjectURL(f); img.src = prevUrl; img.hidden = false; } else { img.hidden = true; img.removeAttribute("src"); }
   }
   function open(file) {
     const m = ensureDialog();
     m.querySelector("#rxTitle").textContent = "📋 " + t("rx_title");
     m.querySelector("#rxHint").textContent = t("rx_hint");
-    m.querySelector("#rxPick").textContent = t("rx_pick");
+    m.querySelector("#rxCam").textContent = t("rx_cam");
+    m.querySelector("#rxPick").textContent = t("rx_gallery");
     m.querySelector("#rxScan").textContent = t("rx_scan");
     m.querySelector("#rxDisc").textContent = t("rx_disc");
     m.querySelector("#rxClose").textContent = t("rx_close");
     m.querySelector("#rxTypeT").textContent = t("rx_type_title"); m.querySelector("#rxTypeBox").placeholder = t("rx_type_ph"); m.querySelector("#rxTypeGo").textContent = t("rx_type_go");
-    setFile(file || curFile);
+    if (file) setFile(file); else if (!curFile) setFile(null);
     m.hidden = false;
   }
 
   async function scan() {
-    if (!curFile) return;
+    if (!curFile || busy) return;                       // दुबार टॅप = दुसरी विनंती नाही
     const m = ensureDialog(); const st = m.querySelector("#rxStatus"), box = m.querySelector("#rxResults"), btn = m.querySelector("#rxScan");
-    box.innerHTML = ""; st.className = "rx-status busy"; st.textContent = t("rx_reading"); btn.disabled = true;
+    const key = fileKey(curFile);
+    if (key && key === lastKey && lastText) { render(lastText); return; }   // तीच फाईल पुन्हा: जुनं उत्तर
+    busy = true; btn.disabled = true;
+    box.innerHTML = ""; st.className = "rx-status busy"; st.textContent = t("rx_reading");
     try {
-      lastText = await ocr(curFile);
+      lastText = await ocr(curFile); lastKey = key;
+      setDiag({ stage: "ocr-ok", error: "", ocrChars: lastText.trim().length, matches: 0 });
       render(lastText);
     } catch (e) {
+      const code = (e && e.message) || "ocr_failed";
       st.className = "rx-status err";
-      const code = e && e.message;
-      st.textContent = code === "big" ? t("rx_big") : code === "old_backend" ? t("rx_old") : t("rx_fail");
-      m.querySelector("#rxType").open = true;      // स्कॅन न जमल्यास टाईप करण्याचा पर्याय आपोआप उघडतो
+      st.textContent = t(code === "big" ? "rx_big" : code === "bad_type" ? "rx_bad_type" : code === "limit" ? "rx_limit" : (code === "network" || code === "timeout") ? "rx_network" : (code === "old_backend" || code === "bad_response" || code === "drive_api_off") ? "rx_old" : code === "too_large" ? "rx_big" : "rx_fail");
+      setDiag({ stage: "ocr-failed", error: code, ocrChars: 0, matches: 0 });
+      m.querySelector("#rxType").open = true;      // OCR न जमल्यास टाईप करण्याचा पर्याय उघडतो — टेस्ट स्वतःही निवडता येतात
     }
-    btn.disabled = false;
+    busy = false; btn.disabled = !curFile;
   }
 
   function render(text, typed) {
     const m = ensureDialog(); const st = m.querySelector("#rxStatus"), box = m.querySelector("#rxResults");
-    lastSug = suggest(text);
+    lastSug = matchPrescriptionTests(text);
+    setDiag({ stage: lastSug.length ? "matched" : (String(text).trim() ? "no-match" : "empty-ocr"), matches: lastSug.length, ocrChars: String(text).trim().length });
     if (!lastSug.length) {
       st.className = "rx-status err";
       st.textContent = !String(text).trim() ? t("rx_empty") : t("rx_none");
-      box.innerHTML = text && !typed ? `<details class="rx-text" open><summary>${t("rx_text")}</summary><pre>${esc(text)}</pre></details>` : "";
+      box.innerHTML = (text && !typed ? `<details class="rx-text" open><summary>${t("rx_text")}</summary><pre>${esc(text)}</pre></details>` : "") + `<button type="button" class="btn btn-outline btn-block" id="rxMore">${t("rx_more")}</button>`;
+      box.querySelector("#rxMore").addEventListener("click", () => { m.hidden = true; showSection("tests"); });
       m.querySelector("#rxType").open = true;
       return;
     }
-    st.className = "rx-status ok"; st.textContent = tt("rx_found", { n: lastSug.length });
+    st.className = "rx-status ok"; st.textContent = "✓ " + t("rx_review") + " — " + tt("rx_found", { n: lastSug.length });
     const have = new Set((typeof selectedTests !== "undefined" ? selectedTests : []).map((x) => x.name));
     box.innerHTML = `<div class="rx-list">${lastSug.map((s, i) => `
       <label class="rx-row ${s.conf}"><input type="checkbox" data-i="${i}" ${s.conf === "high" && !have.has(s.test.name) ? "checked" : ""} ${have.has(s.test.name) ? "disabled" : ""}>
         <span class="rx-name">${esc(s.test.name)}<small>₹${s.test.price}${s.test.mrp > s.test.price ? ` <s>₹${s.test.mrp}</s>` : ""}</small></span>
-        <span class="rx-badge ${s.conf}">${s.conf === "high" ? t("rx_exact") : t("rx_maybe")}</span></label>`).join("")}</div>
+        <span class="rx-badge ${s.conf}">${have.has(s.test.name) ? "✓" : s.conf === "high" ? t("rx_exact") : t("rx_maybe")}</span></label>`).join("")}</div>
       <button type="button" class="btn btn-primary btn-block" id="rxAdd">${t("rx_add")}</button>
+      <button type="button" class="btn btn-outline btn-block" id="rxMore" style="margin-top:8px">${t("rx_more")}</button>
       <details class="rx-text"><summary>${t("rx_text")}</summary><pre>${esc(text)}</pre></details>`;
     box.querySelector("#rxAdd").addEventListener("click", addSelected);
+    box.querySelector("#rxMore").addEventListener("click", () => { m.hidden = true; showSection("tests"); });
   }
 
+  /* पेशंटने निवडलेल्या टेस्टच बास्केटमध्ये जातात (डुप्लिकेट नाही). बुकिंग आपोआप होत नाही. */
   function addSelected() {
     const m = ensureDialog(); let n = 0;
     m.querySelectorAll('#rxResults input[type=checkbox]:checked:not(:disabled)').forEach((cb) => {
@@ -308,6 +385,12 @@
     if (n) showToast(tt("rx_added", { n }));
     if (n && document.body.dataset.sec !== "booking") { setTimeout(() => { if (window.KPDocs && KPDocs.openBucket) KPDocs.openBucket(); }, 400); }
   }
+
+  /* सार्वजनिक फंक्शन: matchPrescriptionTests(ocrText, testsMaster) → [{test, conf:"high"|"maybe", confidence:"exact"|"suggested", hit}] */
+  function matchPrescriptionTests(ocrText, testsMaster) {
+    return suggest(ocrText, testsMaster).map((s) => Object.assign({}, s, { confidence: s.conf === "high" ? "exact" : "suggested" }));
+  }
+  window.matchPrescriptionTests = matchPrescriptionTests;
 
   /* ---------------- प्रवेश-बिंदू: टेस्ट पेज + बुकिंग पायरी १ ---------------- */
   function inject() {
@@ -323,14 +406,15 @@
     const rx = document.getElementById("prescription");
     if (rx && !document.getElementById("rxFromBooking")) {
       const b = document.createElement("button");
-      b.type = "button"; b.id = "rxFromBooking"; b.className = "btn btn-outline btn-block rx-booking-btn"; b.hidden = true;
+      b.type = "button"; b.id = "rxFromBooking"; b.className = "btn btn-outline btn-block rx-booking-btn";
       rx.closest("label").insertAdjacentElement("afterend", b);
-      b.addEventListener("click", () => { const f = rx.files[0]; if (f) open(f); });
-      const upd = () => { b.hidden = !rx.files[0]; b.textContent = t("rx_from_booking"); };
+      b.addEventListener("click", () => { const f = rx.files[0]; open(f && !validate(f) ? f : undefined); });
+      const upd = () => { b.textContent = rx.files[0] ? t("rx_from_booking") : t("rx_scan_btn"); };
       rx.addEventListener("change", upd); upd();
+      document.addEventListener("kp-lang", upd);
     }
   }
   inject();
 
-  window.KPRx = { suggest, open, ocr, render, norm };
+  window.KPRx = { suggest, matchPrescriptionTests, open, ocr, render, norm, validate, cleanForMatching, diag: lastDiag };
 })();

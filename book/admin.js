@@ -215,12 +215,19 @@ function loadData() {
 function loadExtras() {
   const u = (window.KP_CONFIG && window.KP_CONFIG.extrasUrl) || "";
   if (!/^https?:\/\//.test(u)) return;
-  fetch(`${u}?action=adminExtras`).then(r => r.json()).then(x => {
-    if (!x || !x.ok) return;
-    ALL_DATA.clients = x.clients || [];
-    const shared = x.shared || {};
-    (ALL_DATA.bookings || []).forEach(b => { b.reportShared = shared[b.rowNum] || ""; });
+  const apply = (clients, shared, bookingsWithShared) => {
+    ALL_DATA.clients = clients || [];
+    (ALL_DATA.bookings || []).forEach(b => {
+      b.reportShared = shared ? (shared[b.rowNum] || "") : ((bookingsWithShared || []).find(x => x.rowNum === b.rowNum) || {}).reportShared || "";
+    });
     renderBookings();
+  };
+  // 1) वेगळा Extras Apps Script असेल तर त्याचं adminExtras; 2) नाहीतर पूर्ण (नवा) Code.gs चं adminData
+  fetch(`${u}?action=adminExtras`).then(r => r.json()).then(x => {
+    if (x && x.ok) { apply(x.clients, x.shared || {}); return; }
+    return fetch(`${u}?action=adminData`).then(r => r.json()).then(d => {
+      if (d && Array.isArray(d.bookings)) apply(d.clients, null, d.bookings);
+    });
   }).catch(() => {});
 }
 

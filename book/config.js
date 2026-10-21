@@ -5,5 +5,5 @@
    रिकामी ठेवली तर अ‍ॅप जुन्या URL वरच चालतो (नवी सोय बंद राहते).
    ===================================================================== */
 window.KP_CONFIG = {
-  extrasUrl: ""
+  extrasUrl: "https://script.google.com/macros/s/AKfycbx43EwxTE-CPxnc8JLw13ovAcCy6ewXICU22q6bk25W4b4HFNLkkGQSEf6VfvCuQiq5PA/exec"
 };
